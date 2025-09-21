@@ -47,7 +47,7 @@ Base context
 """
     )
     _write_text(
-        _route_and_reset_workspace, "docs/adr-new/ADR-0001-base.md", base_md
+        _route_and_reset_workspace, "docs/adrs/ADR-0001-base.md", base_md
     )
 
     # Delta with ptr to a section the base doesn't have
@@ -67,7 +67,7 @@ ptr:
         + delta_body
     )
     p = _write_text(
-        _route_and_reset_workspace, "docs/adr-new/ADR-0002-delta.md", delta_md
+        _route_and_reset_workspace, "docs/adrs/ADR-0002-delta.md", delta_md
     )
 
     all_files = load_files(_route_and_reset_workspace)

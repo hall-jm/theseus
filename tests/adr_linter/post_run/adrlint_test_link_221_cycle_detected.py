@@ -50,10 +50,10 @@ def test_adrlint029_link221_supersede_cycle_detection(
         + "Body B"
     )
     _write_text(
-        _route_and_reset_workspace, "docs/adr-new/ADR-0001-cycle-a.md", adr_a
+        _route_and_reset_workspace, "docs/adrs/ADR-0001-cycle-a.md", adr_a
     )
     _write_text(
-        _route_and_reset_workspace, "docs/adr-new/ADR-0002-cycle-b.md", adr_b
+        _route_and_reset_workspace, "docs/adrs/ADR-0002-cycle-b.md", adr_b
     )
 
     idx = build_index_from_files(load_files(_route_and_reset_workspace))

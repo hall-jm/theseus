@@ -125,9 +125,7 @@ def test_adrlint030_link222_fork_without_rationale_graph(
         )
         + "Body"
     )
-    _write_text(
-        _route_and_reset_workspace, "docs/adr-new/ADR-0003-fork.md", md
-    )
+    _write_text(_route_and_reset_workspace, "docs/adrs/ADR-0003-fork.md", md)
 
     idx = build_index_from_files(load_files(_route_and_reset_workspace))
     rpt = Report()

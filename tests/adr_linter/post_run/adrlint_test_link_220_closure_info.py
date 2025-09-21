@@ -32,7 +32,7 @@ def test_adrlint031_link220_multiple_descendants_info(
     # Base ADR
     base_md = _good_meta_front_matter(**{"id": "ADR-0001"}) + "Base"
     _write_text(
-        _route_and_reset_workspace, "docs/adr-new/ADR-0001-base.md", base_md
+        _route_and_reset_workspace, "docs/adrs/ADR-0001-base.md", base_md
     )
 
     # Two children superseding base
@@ -46,12 +46,12 @@ def test_adrlint031_link220_multiple_descendants_info(
     )
     _write_text(
         _route_and_reset_workspace,
-        "docs/adr-new/ADR-0002-child1.md",
+        "docs/adrs/ADR-0002-child1.md",
         child1_md,
     )
     _write_text(
         _route_and_reset_workspace,
-        "docs/adr-new/ADR-0003-child2.md",
+        "docs/adrs/ADR-0003-child2.md",
         child2_md,
     )
 

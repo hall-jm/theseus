@@ -19,14 +19,17 @@ from adr_linter.services.index import load_files
 
 
 def test_adrlint005_loader_excludes_dot_adr_dir(_route_and_reset_workspace):
+    # FIXME: anything .adr/ related should be written and read from logs/,
+    #        not docs/; '.' meta files should be kept in docs/ unless there
+    #        is a clear ADR to reference and cite for the exception;
     _write_text(
         _route_and_reset_workspace,
-        "docs/adr-new/.adr/2025-01-01.md",
+        "docs/adrs/.adr/2025-01-01.md",
         "# run log\n",
     )
     _write_text(
         _route_and_reset_workspace,
-        "docs/adr-new/ADR-0001-demo.md",
+        "docs/adrs/ADR-0001-demo.md",
         _good_meta_front_matter() + "Body\n",
     )
 
@@ -36,7 +39,7 @@ def test_adrlint005_loader_excludes_dot_adr_dir(_route_and_reset_workspace):
         for p in found
     }
 
-    assert "docs/adr-new/ADR-0001-demo.md" in found_rel
+    assert "docs/adrs/ADR-0001-demo.md" in found_rel
     assert not any(
         "/.adr/" in s for s in found_rel
     ), f"Found unexpected telemetry: {found_rel}"
