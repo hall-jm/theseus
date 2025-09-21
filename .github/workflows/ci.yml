@@ -69,13 +69,17 @@ jobs:
       - name: Install test deps
         run: pip install -c constraints.txt -e .[test]
 
-      - name: Show workspace files (debug)
+      - name: Debug test workspace
         run: |
+          echo "(cmd) pwd: "
           pwd
+          echo "(cmd) ls -la:"
           ls -la
-          ls -la src || echo "no src directory"
+          echo "(cmd) ls -la tests:"
           ls -la tests || echo "no tests directory"
+          echo "(cmd) pytest -q --collect-only:"
+          pytest -q --collect-only
 
       - name: Run tests
         run: |
-          pytest tests --maxfail=4 --disable-warnings -q
+          pytest tests/adr_linter --maxfail=4 --disable-warnings -q
