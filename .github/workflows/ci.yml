@@ -1,41 +1,68 @@
 ---
+# .github/workflows/ci.yml
+
 name: CI
+
 "on":
   - push
   - pull_request
+
 env:
   THESEUS_LOAD_DOTENV: false
+
 jobs:
   lint:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: .
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
-      - name: Install dependencies
+          python-version-file: .python-version
+          cache: pip
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install dev deps
         run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt flake8 yamllint
+          pip install -c constraints.txt -e .[dev]
+
       - name: Lint Python
         run: flake8 src tests
+
       - name: Lint YAML
-        run: yamllint config
+        run: yamllint .
+
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
     needs: lint
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+          python-version-file: .python-version
+          cache: pip
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install test deps
+        run: pip install -c constraints.txt -e .[test]
+
       - name: Run tests
         run: |
           pytest \
