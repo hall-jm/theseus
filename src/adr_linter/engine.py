@@ -78,7 +78,7 @@ def run(
     # TOREVIEW: Have this logic moved to telemetry.py if values need
     #           to be created or set during runtime
     metrics_path = (
-        (root / "docs" / "adr-new" / ".adr" / "lint_metrics.json")
+        (root / "logs" / ".adr" / "lint_metrics.json")
         if emit_metrics
         else None
     )

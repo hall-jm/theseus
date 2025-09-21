@@ -61,7 +61,6 @@ testpaths = ["tests"]
 python_files = ["adrlint_test_*.py", "test_*.py", "*_test.py"]
 addopts = "-q"
 
-
 [tool.setuptools.packages.find]
 where = ["src"]
 

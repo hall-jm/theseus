@@ -1,2 +1,0 @@
-[console_scripts]
-theseus = adr_linter.cli:main

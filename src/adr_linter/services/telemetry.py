@@ -25,8 +25,10 @@ def _run_log_path(root: Path, fmt: str) -> Path:
       - md    -> docs/adr-new/.adr/YYYY-MM-DD.md
       - jsonl -> docs/adr-new/.adr/YYYY-MM-DD.jsonl
     """
+    # FIXME: This log directory is defined in `engine.py` and this file:
+    #        e.g., engine.run(), services.telemetry._run_log_path()
     date_str = datetime.date.today().isoformat()
-    log_dir = root / "docs" / "adr-new" / ".adr"
+    log_dir = root / "logs" / ".adr"
     log_dir.mkdir(parents=True, exist_ok=True)
     ext = "md" if fmt == "md" else "jsonl"
     return log_dir / f"{date_str}.{ext}"

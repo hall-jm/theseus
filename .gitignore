@@ -6,7 +6,7 @@ __pycache__/
 # Local env for this repo
 .venv_theseus/
 
-# Test runner cache
+# test cache
 .pytest_cache/
 
 # Runtime artifacts
@@ -15,7 +15,7 @@ logs/
 # === Uncomment when you start publishing ===
 # dist/
 # build/
-# *.egg-info/
+*.egg-info/
 
 # === coverage-related
 # .coverage
