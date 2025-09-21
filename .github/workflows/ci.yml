@@ -1,0 +1,44 @@
+---
+name: CI
+"on":
+  - push
+  - pull_request
+env:
+  THESEUS_LOAD_DOTENV: false
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt flake8 yamllint
+      - name: Lint Python
+        run: flake8 src tests
+      - name: Lint YAML
+        run: yamllint config
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run tests
+        run: |
+          pytest \
+            --maxfail=4 \
+            --disable-warnings \
+            -q
