@@ -57,11 +57,11 @@ docs/adrs/ADR-0001-style-guide.md
 
 Theseus enforces structural consistency across multiple dimensions:
 
-**Delta Semantics** - Override target validation, dependency resolution, change tracking
-**Link Integrity** - Cross-document references, bidirectional supersede relationships, pointer validation  
-**Normative Language** - RFC-2119 keyword placement, vague term detection in requirements
-**Schema Validation** - Required metadata, canonical section ordering, class-specific constraints
-**Template Compliance** - Section mirroring, placeholder usage, inheritance rules
+- **Delta Semantics** - Override target validation, dependency resolution, change tracking
+- **Link Integrity** - Cross-document references, bidirectional supersede relationships, pointer validation  
+- **Normative Language** - RFC-2119 keyword placement, vague term detection in requirements
+- **Schema Validation** - Required metadata, canonical section ordering, class-specific constraints
+- **Template Compliance** - Section mirroring, placeholder usage, inheritance rules
 
 ## Current Status
 

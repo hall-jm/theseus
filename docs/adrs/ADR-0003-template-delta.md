@@ -143,3 +143,13 @@ Inherited via ptr.
 <!-- llm_tail:end -->
 
 ````
+
+## License
+
+Architecture Decision Records ("ADRs") are covered by the 
+Creative Commons Attribution-NonCommercial 4.0 International License.
+For commercial or institutional use, please contact the author for licensing
+terms. Canonical URL: https://creativecommons.org/licenses/by-nc/4.0/
+
+© 2025 John Hall
+Canonical GitHub Repository URL: https://github.com/hall-jm/theseus/
