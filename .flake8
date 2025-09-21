@@ -1,0 +1,18 @@
+[flake8]
+max-line-length = 79
+extend-ignore = E203, W293
+exclude =
+    .git,
+    __pycache__,
+    docs,
+    build,
+    dist,
+    .venv,
+    venv,
+    .venv_theseus,
+    archive
+paths =
+    src/
+    tests/
+    tools/
+

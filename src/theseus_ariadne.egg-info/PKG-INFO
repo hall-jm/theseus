@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: theseus-ariadne
+Version: 0.0.1
+Requires-Python: >=3.13
+Provides-Extra: dev
+Requires-Dist: black==25.1.0; extra == "dev"
+Requires-Dist: flake8==7.3.0; extra == "dev"
+Requires-Dist: pytest==8.4.1; extra == "dev"
+Requires-Dist: pytest-timeout==2.4.0; extra == "dev"
