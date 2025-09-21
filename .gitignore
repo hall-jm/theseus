@@ -11,6 +11,7 @@ __pycache__/
 
 # Runtime artifacts
 logs/
+anchors/
 
 # === Uncomment when you start publishing ===
 # dist/

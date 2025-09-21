@@ -69,17 +69,11 @@ jobs:
       - name: Install test deps
         run: pip install -c constraints.txt -e .[test]
 
-      - name: Debug test workspace
+      - name: CI pytest Discovery Sanity Review
         run: |
-          echo "(cmd) pwd: "
-          pwd
-          echo "(cmd) ls -la:"
-          ls -la
-          echo "(cmd) ls -la tests:"
-          ls -la tests || echo "no tests directory"
           echo "(cmd) pytest -q --collect-only:"
           pytest -q --collect-only
 
       - name: Run tests
         run: |
-          pytest tests/adr_linter --maxfail=4 --disable-warnings -q
+          pytest --maxfail=4 --disable-warnings -q
