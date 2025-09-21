@@ -33,6 +33,8 @@ def load_files(root: Path) -> List[Path]:
     seen: set[Path] = set()
     files: list[Path] = []
 
+    # TODO: If ADR_LOCATIONS do not exist in current file structure,
+    #       fail now and raise exception
     for pattern in ADR_LOCATIONS:
         for p in root.glob(pattern):
             try:
@@ -40,7 +42,7 @@ def load_files(root: Path) -> List[Path]:
                 if any(part.startswith(".") for part in rel_path.parts):
                     continue
             except ValueError:
-                # If not relative to root, skip (mirrors previous behavior)
+                # If not relative to root, skip
                 continue
             rp = p.resolve()
             if rp not in seen:

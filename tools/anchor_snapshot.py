@@ -772,7 +772,7 @@ def _run_pytest(root: Path) -> Dict[str, Any]:
                 sys.executable,
                 "-m",
                 "pytest",
-                "tests/adrlinter/",
+                "tests/adr_linter/",
                 "-q",
                 "-m",
                 "not live",

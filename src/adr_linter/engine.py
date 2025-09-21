@@ -94,6 +94,7 @@ def run(
         for validation. While this seems wasteful, it provides isolation
         between the index-building phase and the validation phase.
         """
+
         text = service_read_text(p, encoding="utf-8")
         meta, end = parse_front_matter(text)
         body = text[end:]

@@ -18,8 +18,8 @@ import re
 # --- File I/O Definitions ----------------------------------------------------
 
 ADR_LOCATIONS = (
-    "docs/adr-new/**/*.md",  # New Style Guide Enforced ADR location
-    "docs/adr-new/*.md",
+    "docs/adrs/**/*.md",  # New Style Guide Enforced ADR location
+    "docs/adrs/*.md",
     # "docs/adr/**/*.md",      # (optional) legacy tree if present
     # "docs/adr/*.md",
 )
