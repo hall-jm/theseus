@@ -1,0 +1,62 @@
+# pyproject.toml
+
+[project]
+name = "theseus"  # temporary; rename when building packages
+version = "0.0.1"
+description = ""
+readme = { file = "README.md", content-type = "text/markdown" }
+authors = [
+  { name = "John Hall (GitHub: hall-jm)" },
+]
+license = {file = "LICENSE"}
+requires-python = ">=3.11"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Operating System :: OS Independent",
+]
+
+dependencies = [
+  "pyyaml>=6,<7",
+  "pip>25,<26",
+]
+
+[project.optional-dependencies]
+dev = [
+  "black>=25.8,<26",
+  "flake8>=7.2,<8",
+  "pre-commit>=4.2,<5",
+  "yamllint>=1.37,<2",
+]
+test = [
+  "pytest>=8.3,<9",
+  "pytest-timeout>=2.3,<3",
+]
+docs = []
+all = ["theseus[dev,test,docs]"]
+
+[project.scripts]
+theseus = "adr_linter.cli:main"
+
+[project.urls]
+
+Homepage = "https://github.com/hall-jm/theseus"
+# Documentation = ""
+Issues = "https://github.com/hall-jm/theseus/issues"
+CI = "https://github.com/hall-jm/theseus/actions"
+Changelog = "https://github.com/hall-jm/theseus/releases"
+
+[tool.black]
+line-length = 79
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
