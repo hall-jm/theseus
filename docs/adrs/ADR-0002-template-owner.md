@@ -41,7 +41,7 @@ placeholders_ok: true         # templates may use <angle-bracket> placeholders
 | 0.1.0   | <Today's Date> | Initial draft of ADR                         |
 
 
-# Decision (one-liner)
+## Decision (one-liner)
 <!-- key: decision_one_liner -->
 Because <driver>, we choose <option> so that <benefit>.
 

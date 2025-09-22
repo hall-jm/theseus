@@ -435,14 +435,23 @@ Override via: `--fail-on W` to change threshold.
 
 ### Code Bands
 
-| Band | Range | Purpose |
-| ---- | ----- | ------- |
-| `ADR-SCHEMA-###` | 001–099 | Front-matter & structure     |
-| `ADR-NORM-###`   | 100–149 | Normative language rules     |
-| `ADR-META-###`   | 150–169 | LLM tail & meta consistency  |
-| `ADR-LINK-###`   | 200–239 | Links, pointers, inheritance |
-| `ADR-PROC-###`   | 240–269 | Process & auto-resolve       |
-| `ADR-DELTA-###`  | 300–339 | Delta/extends semantics      |
+| Band               | Range   | Purpose                      |
+| ------------------ | ------- | ---------------------------- |
+| `ADR-SCHEMA-###`   | 001–099 | Front-matter & structure     |
+| `ADR-NORM-###`     | 100–149 | Normative language rules     |
+| `ADR-META-###`     | 150–169 | LLM tail & meta consistency  |
+| `ADR-LINK-###`     | 200–239 | Links, pointers, inheritance |
+| `ADR-PROC-###`     | 240–269 | Process & auto-resolve       |
+| `ADR-DELTA-###`    | 300–339 | Delta/extends semantics      |
+| `ADR-TEMPLATE-###` | 340–379 | Template structure & usage   |
+
+#### Discrepencies
+
+Upon reviewing the linting outcome of drafting a new ADR for CLI System Architecture, new gaps were identified:
+
+- Does ADR-TEMPLATE-\* focus on ensuring templates follow proper inheritance issues?
+- Does ADR-TEMPLATE-\* focus on ensuring templates used to create new ADRs with the proper template structure?
+  - If a new ADR (e.g., 0006) has the right section in the right place (e.g., ## Decision (one-liner)) but the actual section is structured differently (e.g., paragraphs for a decision vs. a 1 line user story) is that a rule violation?
 
 ### Blocking Set
 
@@ -518,6 +527,11 @@ Description: Front-matter and class structure constraints that don’t require l
 - **ADR-SCHEMA-001 (E)**: Missing required metadata (`id,title,status,class,date,review_by`) or bad `id`.
 - **ADR-SCHEMA-002 (E)**: Invalid class (`owner|delta|strategy|style-guide|template`).
 - **ADR-SCHEMA-003 (E)**: Canonical section keys missing or out of order.
+  - TOADD: Must have corresponding markdown headers which would cover (2025-09-21)
+    - Missing sections entirely
+    - Wrong section order
+    - Present sections with missing headers
+    - Present sections with mismatched headers
 - **ADR-SCHEMA-004 (E)**: Invalid status transition or illegal class change.
 - **ADR-SCHEMA-005 (E)**: Invalid date format (must be `YYYY-MM-DD`) for `date` or `review_by`.
 - **ADR-SCHEMA-011 (E)**: Owner ADR must not use `extends`.
@@ -533,6 +547,13 @@ Description: Front-matter and class structure constraints that don’t require l
 - **ADR-TEMPLATE-703 (E)**: template participates in link graph (`extends` or `supersedes` non-null).
 - **ADR-TEMPLATE-704 (W)**: RFC-2119 keyword outside code fences/inline code in template.
 - **ADR-TEMPLATE-705 (W)**: template does not mirror canonical section order of `template_of` (same keys, same order).
+- TOADD: **ADR-TEMPLATE-706 (W)**: content formatting matches documented format. (2025-09-21)
+  - Example: ## Decision is explicitly a one-liner following the format of: "Because <long-range driver>, we choose <strategic direction> so that <north star>."
+  - In the validator and/or pytest for this rule, we can capture additional insights as to what this rule will cover **OR** which sections are explicitly ignored for now.
+  - Expectation for this rule is: 
+    - Make decisions **atomic, auditable, and reversible**.
+    - Keep docs **human-skim friendly** and **machine-readable** (LLMs, linters).
+
 
 Notes:
 

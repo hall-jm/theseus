@@ -11,6 +11,10 @@ from .engine import run
 # from pathlib import Path
 from . import __package__  # noqa: F401  (keep relative imports stable)
 
+# TODO: Add versioning information from .env or pyproject.toml to support
+#       versioning functions within the application (even if just as a
+#       `--version` argument for now
+
 
 def create_parser():
     """

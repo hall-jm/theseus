@@ -30,6 +30,10 @@ def validate_norm_101_rfc_outside_normative(ctx, rpt) -> None:
     section_info = ctx.section_info
     path = ctx.path
 
+    # TODO: Get an estimated line count of how large the front matter
+    #       is and add that to `line_num` to give a text editor line
+    #       number
+
     # Start with precomputed exclusions (fences, inline code, URLs, comments).
     normative_exclusions = list(section_info.exclusion_ranges)
 
@@ -62,7 +66,7 @@ def validate_norm_101_rfc_outside_normative(ctx, rpt) -> None:
                 break
 
         line_num = line_from_pos(body, pos)
-        context = f"term: {m.group()}"
+        context = f"[line_count(front matter) + {line_num}] term: {m.group()}"
         if containing_section:
             context += f", section: {containing_section}"
 
@@ -72,4 +76,4 @@ def validate_norm_101_rfc_outside_normative(ctx, rpt) -> None:
             f"RFC-2119 keyword outside normative sections ({context})",
             line_num,
         )
-        break  # match legacy: report only the first
+        break
