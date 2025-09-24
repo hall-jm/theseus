@@ -23,9 +23,9 @@ change_history: []
 
 | Field                  | Value                                   |
 | ---------------------- | --------------------------------------- |
-| **Version**:           | 0.1.7                                   |
+| **Version**:           | 0.1.8                                   |
 | **Status**:            | Proposed                                |
-| **Date**:              | 2025-09-17                              |
+| **Date**:              | 2025-09-21                              |
 | **Applies to Schema**: | 0.1.0                                   |
 | **Related**:           | ADR-0002 (Template: Base/Owner), ADR-0003 (Template: Delta), ADR-0004 (Template: Strategy) |
 
@@ -33,6 +33,7 @@ change_history: []
 
 | Version | Date         | Notes                                        |
 | ------- | ------------ | -------------------------------------------- |
+| 0.2.0   | 21 Sept 2025 | Created new `governance` class of ADRs; added new requirements for ADR-SCHEMA-003 to handle, ADR-TEMPLATE-706 to be a catch-all error code for when explicit ADR formatting for a particular section isn't followed; rewrote Section 4 to handle the new `governance` class and create a universal set of keys vs. class-specific set of keys; rewrote Section 0 to handle this ADR's new bootstrap constitution and precedence authority; |
 | 0.1.7   | 19 Sept 2025 | Changed ADR-TEMPLT-\* -> ADR-TEMPLATE-\* to improve readability; | 
 | 0.1.6   | 11 Sept 2025 | Rewrite Section 11 to address gaps in the linter's implementation vs. the spirit of what the ADR is trying to capture for deterministic computer processes; |
 | 0.1.5   | 08 Sept 2025 | Created Section 17 to track ADR-0001 enhancements for future development as needed; |
@@ -43,8 +44,9 @@ change_history: []
 | 0.1.0   | 03 Sept 2025 | Initial draft of template file               |
 
 
+## §0-Previous. Constitution & Precedence (applies to every ADR)
 
-## §0. Constitution & Precedence (applies to every ADR)
+TODO: Remove this previous section after finishing this ADR-0001's review and rewrite.
 
 1) **Precedence (highest → lowest)**:  
    - 0103 (shapes/enums/tokens/cost) → 0110 (lifecycle/identity/cross-segment) → 0302 (exit codes & FS side-effects) → 0201/0202 (config/pricing/caps) → Strategies (mode deltas only).  
@@ -53,6 +55,73 @@ change_history: []
    - `[BLOCK-TENSION-DOCUMENTATION-GAP: ADR-<id>]` if an owner ADR is missing.  
 3) **Pointer-first rule**: For non-delta content, replace with:  
    `No additional mode-specific deltas; see ADR-<id> §<section>.`
+
+## **§0. Constitution & Precedence**
+
+This section explicitly applies to every ADR.
+
+### Authority Model
+
+- **Framework Authority**: Modification of ADR-0001 itself (classes, canonical sections, linter bands); known bootstrap violation as accepted tradeoff to unblock work;  
+- **Governance Authority**: Cross-component boundary definition and conflict resolution within declared scope
+- **Component Authority**: Decision-making within scope boundaries established by governance
+- **Final Authority**: Project Maintainer(s); definition is outside of scope for this ADR
+  - LLMs must accept this ambiguity and tension; no remediation was intentionally created for this section's rewriting
+
+### Scope Taxonomy & Precedence
+
+**Domain Scopes** (precedence order for cross-scope conflicts):
+
+1. `cli` - User-facing processes such as user interface, argument parsing, user-facing messages, process error code
+2. `engine` - Internal pure processes such as orchestration semantics, validator execution, structured response generation, exit code mapping
+3. `services` - Impure edge processes such as filesystem operations, network operations, IO failure classification
+4. `other` - All other processes not captured in the previous three groups
+
+**Governance Structure**:
+- Governance ADRs are defined by:
+  - class: `governance`
+  - scope: `cli|engine|services|other` (single)
+  - supersedes: chain much be linear
+  - subscope: future granularity to avoid having a giant `cli` governance ADR forever
+- Each domain scope **MUST** have exactly one active governance ADR via linear supersession chain
+- Cross-scope conflicts resolved by Domain Scope mapping above
+- **Transitional**: ADR-0001 §0 acts as default governance until domain-specific governance ADRs exist *(expires: 2026-03-01)*
+
+### Constraint Binding Semantics
+- `extends@pin`: Content inheritance with delta semantics
+- `governed_by@pin`: Authority constraint binding (single)
+  - Mandatory for Owner ADRs
+  - Delta ADRs inherit governed_by from base unless they narrow scope (then must declare)
+  - Strategy ADRs: warn if missing; error if they assert boundaries
+- `supersedes@pin`: Decision replacement with reciprocal tracking
+
+### Conflict Resolution Protocol
+
+1. **Same-scope**: Latest superseded governance ADR in linear chain controls
+2. **Governance mapping**:  If the governance names a specific topic (e.g., “exit codes → CLI”), that mapping overrides the generic order. Then fall back to **Cross-scope** 
+3. **Cross-scope**: Apply domain precedence (cli > engine > services)  
+4. **Interface classification**: User-facing → cli; orchestration → engine; IO → services
+  - Interface classification edge cases can be handled as exceptions after the core framework works; we need working governance now
+5. **Unmapped conflicts**: **ERROR** - work blocks until governance adjudication
+  - Create/land a governance ADR in the releant scope that adjudicates the topic
+  - Reference the two conflicting ADRs in `change_history`;
+
+**Machine Constraints**: Governance ADRs use fenced `yaml` blocks with `REQUIRED`/`FORBIDDEN`/`OWNED_BY` keys instead of RFC-2119 prose.
+
+```yaml
+# Example of Machine Constraints
+# Constraints are authoritative over prose
+constraints:
+  REQUIRED: [ "engine.exit_code_mapping" ]
+  FORBIDDEN: [ "cli.exit_code_mapping" ]
+  OWNED_BY:
+    - topic: "discovery.failure_handling"
+      owner: "services"
+```
+
+### Default Behavior
+
+When in doubt for any scenario not covered in the previous sections, HARD FAIL for maximum smoke detection.
 
 ---
 
@@ -129,45 +198,77 @@ When `class: template`:
 
 Use these **exact keys** (stable for tooling). Headings can be pretty; keys must map 1:1.
 
-### Owners 
+### Universal Sections (all classes)
+
+All ADR classes **MUST** include these sections in this order:
+
+#### Opening Sections 
 
 1. `decision_one_liner`
-2. `context_and_drivers`
+2. `context_and_drivers`  
 3. `options_considered`
 4. `decision_details`
-5. `consequences_and_risks`
-6. `rollout_backout`
-7. `implementation_notes`
-8. `evidence_and_links`
-9. `glossary`
-10. `related_adrs`
 
-### Deltas
+#### Class-Specific Sections
 
-Same as Owners (i.e., same visible skeleton)
+5. **[Class-specific sections inserted here]**
 
-### Strategy
+#### Closing Sections 
 
-1. `decision_one_liner`
-2. `context_and_drivers`
-3. `principles`
-4. `guardrails`
-5. `north_star_metrics`
-6. `consequences_and_risks`
-7. `implementation_notes`
-8. `evidence_and_links`
-9. `glossary`
-10. `related_adrs`
+6. `evidence_and_links`
+7. `glossary`
+8. `related_adrs`
+9. `license`
 
-<!-- PROPOSED:start -->
+### Class-Specific Section Insertions
 
-### Templates
+**After `decision_details`, insert the following sections based on class:**
+
+#### Owner
+
+- `consequences_and_risks`
+- `implementation_notes`
+- `rollout_backout`
+
+#### Governance
+
+- `authority_scope`
+- `constraint_rules`
+- `precedence_mappings`
+- `adoption_and_enforcement`
+
+#### Strategy  
+
+- `principles`
+- `guardrails`
+- `consequences_and_risks`
+- `implementation_notes`
+- `north_star_metrics`
+
+#### Delta
+
+Uses base ADR sections (inherited via `extends@pin`)
+
+#### Template
 
 - Templates inherit the skeleton of the class they scaffold (template_of).
-- They MUST include the same section keys and order as the base class, but may contain placeholders (e.g., <driver>, <YYYY-MM-DD>) instead of real values.
+- They MUST contain placeholders (e.g., <driver>, <YYYY-MM-DD>) instead of real values.
 
 > Strategy templates MUST NOT introduce rollout_backout (see §7.3).
-<!-- PROPOSED:end -->
+
+#### Style-Guide
+
+Based on its nature as a bootstrapping class, style guides are exempt from canonical section keys and ordering.
+
+### Complete Section Orders by Class
+
+**Owner**: `decision_one_liner`, `context_and_drivers`, `options_considered`, `decision_details`, `consequences_and_risks`, `implementation_notes`, `rollout_backout`, `evidence_and_links`, `glossary`, `related_adrs`, `license`
+
+**Governance**: `decision_one_liner`, `context_and_drivers`, `options_considered`, `decision_details`, `authority_scope`, `constraint_rules`, `precedence_mappings`, `adoption_and_enforcement`, `evidence_and_links`, `glossary`, `related_adrs`, `license`
+
+**Strategy**: `decision_one_liner`, `context_and_drivers`, `options_considered`, `decision_details`, `principles`, `guardrails`, `consequences_and_risks`, `implementation_notes`, `north_star_metrics`,  `evidence_and_links`, `glossary`, `related_adrs`, `license`
+
+This structure maintains universal LLM navigation while allowing semantic differentiation where classes need distinct content types. The governance class gets its constraint-specific sections without forcing inappropriate sections like `rollout_backout`.
 
 ### Reminders
 
