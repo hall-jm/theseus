@@ -50,6 +50,7 @@ Because the CLI is the user-facing contract and error boundary, we assign it exp
 - **Non-goals**
   - Redesigning engine orchestration or validator semantics (handled separately).
   - Introducing new flags beyond current surface unless justified by this ADR.
+  - Introducing transparency about planned dependencies shows architectural honesty rather than false completeness.
 - **Constraints**
   - Preserve current CLI flags where practical (`--path`, `--fail-on`, `-k`, `--format`, `--emit-metrics`).
   - Respect canonical section/ownership rules from ADR-0001.
