@@ -33,7 +33,7 @@ change_history: []
 
 | Version | Date         | Notes                                        |
 | ------- | ------------ | -------------------------------------------- |
-| 0.2.0   | 21 Sept 2025 | Created new `governance` class of ADRs; added new requirements for ADR-SCHEMA-003 to handle, ADR-TEMPLATE-706 to be a catch-all error code for when explicit ADR formatting for a particular section isn't followed; rewrote Section 4 to handle the new `governance` class and create a universal set of keys vs. class-specific set of keys; rewrote Section 0 to handle this ADR's new bootstrap constitution and precedence authority; rewrote sections 0 to 9 in this version; |
+| 0.2.0   | 21 Sept 2025 | Created new `governance` class of ADRs; added new requirements for ADR-SCHEMA-003 to handle, ADR-TEMPLATE-706 to be a catch-all error code for when explicit ADR formatting for a particular section isn't followed; rewrote Section 4 to handle the new `governance` class and create a universal set of keys vs. class-specific set of keys; rewrote Section 0 to handle this ADR's new bootstrap constitution and precedence authority; rewrote sections 0 to 13 in this version; |
 | 0.1.7   | 19 Sept 2025 | Changed ADR-TEMPLT-\* -> ADR-TEMPLATE-\* to improve readability; | 
 | 0.1.6   | 11 Sept 2025 | Rewrite Section 11 to address gaps in the linter's implementation vs. the spirit of what the ADR is trying to capture for deterministic computer processes; |
 | 0.1.5   | 08 Sept 2025 | Created Section 17 to track ADR-0001 enhancements for future development as needed; |
@@ -140,12 +140,12 @@ status: Proposed | Accepted | Deprecated | Superseded
 class: owner | delta | strategy | style-guide | template | governance
 owners: [Project Maintainer]
 owners_ptr: ADR-0120           # Non-Owner ADRs must reference ownership
-extends: null                  # or ADR-0001@<pin> (see §8)
-supersedes: null               # or ADR-0001@<pin> (see §8)
-superseded_by: null            # or ADR-0001@<pin> (see §8)
-governed_by: null              # or ADR-0001@<pin> (see §8)
-informs: null                  # or ADR-0001@<pin> (see §8)(strategy → owner)
-informed_by: null              # or ADR-0001@<pin> (see §8)
+extends: null                  # or ADR-<id>@<pin> (see §8)
+supersedes: null               # or ADR-<id>@<pin> (see §8)
+superseded_by: null            # or ADR-<id>@<pin> (see §8)
+governed_by: null              # or ADR-<id>@<pin> (see §8)
+informs: null                  # or ADR-<id>@<pin> (see §8)(strategy → owner)
+informed_by: null              # or ADR-<id>@<pin> (see §8)
 scope: null                    # cli|engine|services|other (required for governance)
 date: 2025-09-03
 review_by: 2026-03-03
@@ -209,7 +209,7 @@ This metadata schema supports governance implementation while maintaining class-
 
 When `class: template`:
 
-- `template_of` is REQUIRED and must be one of: `owner|delta|strategy|style-guide`.
+- `template_of` is REQUIRED and must be one of: `owner|delta|governance|strategy|style-guide`.
 - `status` MUST be `Proposed`.
 - `extends` and `supersedes` MUST be `null`.
 - Filenames SHOULD include `-template-` for discoverability.
@@ -499,6 +499,7 @@ TODO: Once the Linter Rules are reviewed, updated, and consolidated, delete any 
 
 All relationship fields using `@pin` must follow this format:
 - `ADR-####@YYYY-MM-DD` or `ADR-####@<7-40 lowercase hex>`
+- **Regex**: `^ADR-\d{4}@(20\d{2}-\d{2}-\d{2}|[0-9a-f]{7,40})$`
 
 **Applies to**: `extends`, `supersedes`, `superseded_by`, `governed_by`, `informs`, `informed_by`
 
@@ -588,13 +589,13 @@ If any fail, evaluate under standard **SCHEMA/LINK/NORM** rules.
 
 ### 10.1 Bi-directional links
 
-- `supersedes: ADR-XXXX@ver` **requires** reciprocal `superseded_by` on the target.
+- `supersedes: ADR-<id>@<pin> (see §8)` **requires** reciprocal `superseded_by` on the target.
+- `informs: ADR-<id>@<pin> (see §8)` **requires** reciprocal `informed_by` on the target.
 - **Lint**: `ADR-LINK-200` (E) missing reciprocal link.
 
 ### 10.2 Pinned `extends` (allowed format)
 
-- Allowed: `ADR-####@YYYY-MM-DD` **or** `ADR-####@<7–40 lowercase hex>`.
-- **Regex**: `^ADR-\d{4}@(20\d{2}-\d{2}-\d{2}|[0-9a-f]{7,40})$`
+- See Section 8 for allowed pinned formats
 - **Lint**: `ADR-LINK-201` (E) missing pin; `ADR-LINK-203` (E) bad format.
 
 ### 10.3 Pointers
@@ -607,17 +608,15 @@ If any fail, evaluate under standard **SCHEMA/LINK/NORM** rules.
 - **Error**: `ADR-LINK-221` cycle detected.
 - **Warn**: `ADR-LINK-222` fork without rationale.
 
-<!-- PROPOSED:start -->
 ### 10.5 Template exemptions
 
-When **class is `template`** or `template: true`:
+When **class is `template`**:
 
-- Do not enforce pinning for extends or bi-directional supersedes links (keep them null in templates).
+- Do not enforce pinning for extends or bi-directional links (keep them null in templates).
 - Do not require numeric thresholds/units; placeholders are allowed.
 - Do not require delta-only constraints (e.g., diff_summary).
-- Still enforce valid front-matter shape and the class ↔ template_of relationship, and forbid class-forbidden sections (e.g., strategy + rollout_backout).
+- Still enforce valid front-matter shape and the class ↔ template_of relationship, and forbid class-forbidden sections per §7 class rules.
 - RFC-2119 tokens are permitted only inside inline code or fenced code examples.
-<!-- PROPOSED:end -->
 
 ---
 
@@ -626,7 +625,7 @@ When **class is `template`** or `template: true`:
 **Detection scope.** RFC-2119 keywords (MUST, MUST NOT, SHOULD, SHOULD NOT, SHALL, SHALL NOT, MAY, RECOMMENDED, NOT RECOMMENDED) establish binding requirements. Detection is **case-insensitive**; authors SHOULD write these in uppercase.
 
 **Allowed locations (exhaustive):**
-1) Canonical sections: `<!-- key: decision_details -->`, `<!-- key: rollout_backout -->`.
+1) Canonical sections: See Section 5 for the authoritative list (e.g., `<!-- key: decision_details -->`, `<!-- key: rollout_backout -->`).
 2) Requirements subsection: `<!-- key: consequences_and_risks.requirements -->` (single, dotted key).
    - **No other dotted key patterns are permitted for normative content.** Examples that are **not** allowed: `decision_details.requirements`, `consequences_and_risks.musts`, etc.
 3) **Delta overrides:** RFC-2119 terms in fenced `yaml` **override blocks** (under `overrides:` in Delta ADRs) **establish modified requirements and are permitted.**
@@ -635,13 +634,15 @@ When **class is `template`** or `template: true`:
 - Case-insensitive keyword matching.
 - **Ignore:** fenced code blocks (``` ```), inline code (`…`), HTML comments (`<!-- … -->`), **blockquotes (`> …`)**, and URLs.  
   *Rationale:* Code/quotes/excerpts/examples must not accidentally create binding requirements.
-- Section recognition: primary via HTML markers; fallback heading aliases:
+  
+- Section recognition: primary via Markdown markers; fallback heading aliases:
   - “Decision Details” → `decision_details`
   - “Rollout & Backout” / “Rollout and Backout” → `rollout_backout`
   - “Requirements (normative)” under “Consequences & Risks” → `consequences_and_risks.requirements`
 - **Report all violations** in a file (no caps).
 
 **Class interactions.**
+- `class: governance` — exempt from RFC-2119 scanning in prose (constraint blocks provide binding authority).
 - `class: style-guide` — exempt from RFC-2119 scanning (examples permitted).
 - `class: template` — RFC terms allowed **only** inside fenced code or inline code; otherwise this section applies.
 
@@ -657,15 +658,13 @@ Four primary hooks for linter implementation:
 
 2. **Content filtering:** Skip scanning within fenced blocks, inline code, HTML comments, blockquotes, and URL patterns before applying RFC-2119 regex.
 
-3. **Class-aware routing:** Apply exemptions for `style-guide` (full skip) and `template` (code-fence-only allowance) before normative scanning.
+3. **Class-aware routing:** Apply exemptions for `style-guide` (full skip), `governance` (full skip), and `template` (code-fence-only allowance) before normative scanning.
 
-4. **YAML override recognition:** Identify fenced `yaml` blocks containing `overrides:` keys in Delta ADRs; permit RFC-2119 terms within those blocks.
+4. **YAML override recognition:** Identify fenced `yaml` blocks containing `overrides:` keys in Delta ADRs; permit RFC-2119 terms within those blocks. Governance `constraint_rules:` blocks do not permit RFC-2119 terms.
 
 ---
 
 ## §12. LLM tail (machine context, optional)
-
-Add a final fenced JSON block (delimited by HTML comments) to help tools/LLMs load context.
 
 <!-- llm_tail:begin -->
 ```json
@@ -675,20 +674,24 @@ Add a final fenced JSON block (delimited by HTML comments) to help tools/LLMs lo
   "status": "Accepted",
   "extends": "ADR-0120@2025-03-14",
   "owners_ptr": "ADR-0120"
+  "governed_by": "ADR-0110@2025-03-14",
+  "scope": null
 }
 ```
 <!-- llm_tail:end -->
 
-> When present, it must mirror front-matter for: id, class, status, extends, and ownership (owners[] or owners_ptr).
+> When present, it must mirror front-matter for: id, class, status, extends, ownership (owners[] or owners_ptr), governed_by, and scope.
 
-- **Info**: `ADR-META-150` missing (optional).  
-- **Warn**: `ADR-META-151` tail disagrees with front-matter for: `id`, `class`, `status`, `extends`, `owners` (or `effective_owner`).
+**Info**: `ADR-META-150` missing (optional).  
+**Warn**: `ADR-META-151` tail disagrees with front-matter for: `id`, `class`, `status`, `extends`, ownership (`owners[]` or `owners_ptr`), `governed_by`, `scope`.
 
 ---
 
 ## §13. CI Contract
 
 CI blocks on all codes marked (E) in §14 and warns on codes marked (W).
+
+(PROPOSED) Governance validation codes (ADR-GOV-###) are all blocking (E) by default.
 
 Override via: `--fail-on W` to change threshold.
 
