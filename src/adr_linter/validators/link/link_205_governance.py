@@ -4,6 +4,7 @@
 
 """
 ADR-LINK-205 — Missing references to governing ADRs.
+               OWNER ADR, not GOVERNANCE ADR (bad wording).
 
 Behavior is copied verbatim from the legacy implementation.
 
@@ -22,6 +23,15 @@ def validate_link_205_governance(ctx, rpt) -> None:
     Check if non-owner ADRs reference their governing documents appropriately.
     (Identical behavior to legacy implementation.)
     """
+
+    # FIXME: Wrong word choice in light of new `governance` ADR class
+    #        Needs to be rewritten to clarify this is for ownership of an
+    #        ADR, not the cross-ADR governance chain (as of 2025-09-25)
+    #        e.g., ADR-0001 owns ADR-0006 CLI Ownership, but for pieces
+    #              that could touch the same item such as CLI error codes
+    #              governance is for handling cli <-> engine <-> services
+    #              error code handling or scope of ownership and how to
+    #              navigate boundary ambiguities
     meta = ctx.meta
     path = ctx.path
     all_idx = ctx.all_idx

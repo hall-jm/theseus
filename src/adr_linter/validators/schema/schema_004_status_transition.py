@@ -8,7 +8,7 @@ ADR-SCHEMA-004 — Invalid status transition or missing required fields.
 Legacy behavior:
  - If status == Superseded: require non-empty `superseded_by`
  - If status == Deprecated: require either non-empty `superseded_by`
-   OR a non-empty `change_history` list (rationale)
+   AND a non-empty `change_history` list (rationale)
 
 Ref: ADR-0001 §Status/§14 · ADR-SCHEMA-004
 """

@@ -75,6 +75,7 @@ This section explicitly applies to every ADR.
 - **Transitional**: ADR-0001 §0 acts as default governance **only until** the first scope-specific Governance ADR for that domain is **Accepted**. Upon acceptance, §0 ceases to govern that scope. *(review_by: 2026-03-01)*
 
 ### Constraint Binding Semantics
+
 - `extends`: Content inheritance with delta semantics
 - `governed_by`: Authority constraint binding (single)
   - Mandatory for Owner ADRs
@@ -193,18 +194,6 @@ template_of: null              # owner|delta|strategy|style-guide|governance (te
 - `governed_by` (authority constraint, no reciprocal)
 - `extends` (content inheritance, no reciprocal)
 
-### **Validation Rules**
-
-TODO: Once the Linter Rules are reviewed, updated, and consolidated, delete this "Validation Rules" section to avoid redundant sections
-
-This metadata schema supports governance implementation while maintaining class-specific constraints and relationship validation.
-
-- **ADR-SCHEMA-006 (E)**: Governance ADR missing required `scope` field
-- **ADR-SCHEMA-007 (E)**: Owner ADR missing required `governed_by` field  
-- **ADR-SCHEMA-008 (E)**: Invalid `scope` value (must be cli|engine|services|other)
-- **ADR-SCHEMA-009 (E)**: Class-forbidden field present (e.g., governance with `extends`)
-- **ADR-SCHEMA-010 (E)**: Duplicate governance scope among active ADRs
-
 ### Notes 
 
 When `class: template`:
@@ -231,10 +220,10 @@ All ADR classes **MUST** include these sections in this order:
 
 #### Opening Sections (in order)
 
-- `decision_one_liner`
-- `context_and_drivers`  
-- `options_considered`
-- `decision_details`
+- `decision_one_liner`: one statement - explicit `Because <driver>, we choose <option> so that <benefit>.`
+- `context_and_drivers`: bullet list - goals, non-goals, constraints, assumptions
+- `options_considered`: see Section 6 for details
+- `decision_details`: bullet list - normative scope decision definitions with MUST/SHOULD/MAY requirements
 
 #### Class-Specific Sections
 
@@ -242,10 +231,10 @@ All ADR classes **MUST** include these sections in this order:
 
 #### Closing Sections (in order)
 
-- `evidence_and_links`
-- `glossary`
-- `related_adrs`
-- `license`
+- `evidence_and_links`: bullet list - benchmarks, supporting web links, research, or evidence supporting this ADR
+- `glossary`: see Section 5 for details (i.e., define acronyms once; keep a mini-glossary)
+- `related_adrs`: bread crumb documentation for related ADRs (e.g., base ADR if not owner, previous superseded ADRs) 
+- `license`: boilerplate copy - usage terms for this ADR's content
 
 ### Class-Specific Section Insertions
 
@@ -253,24 +242,24 @@ All ADR classes **MUST** include these sections in this order:
 
 #### Owner
 
-- `consequences_and_risks`
-- `implementation_notes`
-- `rollout_backout`
+- `consequences_and_risks`: bullet list - trade-offs and implementation impacts
+- `implementation_notes`: bullet list - technical details and system boundaries
+- `rollout_backout`: bullet lists (`phases`, `backout`) - phased implementation plan with explicit rollback procedure
 
 #### Governance
 
-- `authority_scope`
-- `constraint_rules`
-- `precedence_mappings`
-- `adoption_and_enforcement`
+- `authority_scope`: bullet list - which domains/topics are in scope for this governance ADR (e.g., "CLI UX")
+- `constraint_rules`: yaml block - what is required, forbidden, owned by for this governance ADR (e.g., "Engine FORBIDDEN from direct user messaging")
+- `precedence_mappings`: bullet list - explicit rules for conflict resolution between multiple components claiming authority over the same concern (e.g., "When CLI and Engine both user messaging, CLI precedence wins")
+- `adoption_and_enforcement`: bullet list - how are these constraints applied in practice and what are the results when components violate boundaries (e.g., LLM writes code that creates CLI error code which bypasses engine trigger escalation)
 
 #### Strategy  
 
-- `principles`
-- `guardrails`
-- `consequences_and_risks`
-- `implementation_notes`
-- `north_star_metrics`
+- `principles`: bullet list - foundational beliefs about what the system or a feature is trying to achieve, what are the larger overall goals we are trying to achieve
+- `guardrails`: bullet list - flexibility constraints that prevent strategy from becoming too rigid or brittle (e.g., "Governance rules should provide clear guidance but allow for exceptional cases with explicit justification")
+- `consequences_and_risks`: compare and contrast - strategic trade-offs and potential failure modes (e.g., "Stricter governance may slow initial development but prevents costly refactoring cycles")
+- `implementation_notes`: bullet list - high-level guidance on applying this strategic direction across multiple components (e.g., "Prioritize governance tooling over manual enforcement")
+- `north_star_metrics`: KPI - directional success indicators that show if the strategy is working (could be measurable or qualitative goals; e.g., "Reduce architectural drift incidents")
 
 #### Delta
 
@@ -322,7 +311,7 @@ This structure maintains universal LLM navigation while allowing semantic differ
 
 #### Governance ADRs
 
-**RFC-2119 FORBIDDEN** in prose sections - emit ADR-NORM-101 (E) if detected  
+**RFC-2119 FORBIDDEN** in prose sections (e.g., `adoption_and_enforcement`) - emit ADR-NORM-101 (E) if detected  
 **Machine-readable constraint blocks** provide sole binding authority in `constraint_rules`
 Prose provides context, rationale, and examples but establishes no binding requirements
 Authority boundaries defined exclusively through constraint block mappings
@@ -707,12 +696,13 @@ Override via: `--fail-on W` to change threshold.
 | Band               | Range   | Purpose                      |
 | ------------------ | ------- | ---------------------------- |
 | `ADR-SCHEMA-###`   | 001–099 | Front-matter & structure     |
-| `ADR-NORM-###`     | 100–149 | Normative language rules     |
-| `ADR-META-###`     | 150–169 | LLM tail & meta consistency  |
-| `ADR-LINK-###`     | 200–239 | Links, pointers, inheritance |
-| `ADR-PROC-###`     | 240–269 | Process & auto-resolve       |
-| `ADR-DELTA-###`    | 300–339 | Delta/extends semantics      |
-| `ADR-TEMPLATE-###` | 340–379 | Template structure & usage   |
+| `ADR-NORM-###`     | 100–199 | Normative language rules     |
+| `ADR-META-###`     | 200–299 | LLM tail & meta consistency  |
+| `ADR-LINK-###`     | 300–399 | Links, pointers, inheritance |
+| `ADR-PROC-###`     | 400–499 | Process & auto-resolve       |
+| `ADR-DELTA-###`    | 500–599 | Delta/extends semantics      |
+| `ADR-TEMPLATE-###` | 600–699 | Template structure & usage   |
+| `ADR-GOVERN-###`   | 700–799 | Governance Validation        |
 
 #### Discrepencies
 
@@ -723,6 +713,8 @@ Upon reviewing the linting outcome of drafting a new ADR for CLI System Architec
   - If a new ADR (e.g., 0006) has the right section in the right place (e.g., ## Decision (one-liner)) but the actual section is structured differently (e.g., paragraphs for a decision vs. a 1 line user story) is that a rule violation?
 
 ### Blocking Set
+
+Notes to LLMs: this section is dated and inaccurate compared to the `### Rules (abbrev.)` section as of 24 September 2025.
 
 **Blocks CI**: 
 
@@ -754,6 +746,51 @@ Description: Inheritance and override semantics for class: `delta` (targets exis
 
 - **ADR-DELTA-300 (E)**: Override targets non-existent key in base.
 
+TOADD:
+
+  - **ADR-DELTA-301 (E)**: Delta inheritance conflict - attempts to modify `governed_by` without scope narrowing justification
+  - **ADR-DELTA-302 (E)**: Delta violates inherited governance constraints 
+  - **ADR-DELTA-303 (E)**: Invalid scope narrowing - claims governance scope change without proper rationale
+  - **ADR-DELTA-304 (E)**: Delta missing required `extends` field
+  - **ADR-DELTA-305 (E)**: Delta attempts to override non-overrideable relationship fields
+  - **ADR-DELTA-306 (E)**: Delta override block malformed (invalid YAML or missing keys)
+  - **ADR-DELTA-308 (E)**: Delta inherits conflicting data custodianship from base
+  - **ADR-DELTA-309 (E)**: Delta changes authority boundaries without governance justification
+  - **ADR-DELTA-310 (E)**: Delta governance inheritance creates circular dependencies
+  - **ADR-DELTA-311 (E)**: Delta override violates inherited governance constraints
+
+**Key governance delta scenarios**:
+
+- Delta inherits governance from base but tries to make changes that violate those governance constraints
+- Delta attempts to change governance binding without proper scope narrowing
+- Delta tries to override relationship fields that shouldn't be modified
+
+#### ADR-GOVERN
+
+##### Proposed 
+
+TOADD:
+
+  - **ADR-GOVERN-401 (E)**: Missing required `scope` field in governance ADR
+  - **ADR-GOVERN-402 (E)**: Invalid `scope` value (must be cli|engine|services|other)  
+  - **ADR-GOVERN-403 (E)**: Missing constraint block in governance `constraint_rules` section
+  - **ADR-GOVERN-404 (E)**: Invalid constraint YAML syntax in constraint block
+  - **ADR-GOVERN-405 (E)**: Constraint block REQUIRED/FORBIDDEN topic overlap
+  - **ADR-GOVERN-406 (E)**: Invalid owner reference in OWNED_BY constraint (must match scope domains)
+  - **ADR-GOVERN-407 (E)**: RFC-2119 keyword in governance prose sections (moved from NORM-103)
+  - **ADR-GOVERN-408 (E)**: Governance ADR violates linear supersession within scope
+  - **ADR-GOVERN-409 (E)**: Constraint block syntax error (malformed YAML structure)
+  - **ADR-GOVERN-410 (E)**: Constraint OWNED_BY references invalid scope domain value
+  - **ADR-GOVERN-411 (E)**: Governance section contains binding language outside constraint blocks
+  - **ADR-GOVERN-412 (E)**: Required governance section empty or missing content
+
+**Validation coverage**:
+
+- Required fields (401, 402)
+- Constraint syntax and logic (403, 404, 405, 406) 
+- Class-specific rules (407 RFC-2119 prohibition)
+- Authority model compliance (408 linear supersession)
+
 #### ADR-LINK
 
 Description: Cross-ADR graph properties (pins, reciprocity, cycles).
@@ -761,21 +798,35 @@ Description: Cross-ADR graph properties (pins, reciprocity, cycles).
 - **ADR-LINK-200 (E)**: `supersedes` without reciprocal `superseded_by`.
 - **ADR-LINK-201 (E)**: `extends` missing base or version pin.
 - **ADR-LINK-202 (W)**: Pointer to section key missing in base.
-- **ADR-LINK-203 (E)**: Invalid `extends` pin format (must be `@YYYY-MM-DD` or lowercase hex `@[0-9a-f]{7,40}`).
+- **ADR-LINK-203 (E)**: Invalid pin format for any relationship field (extends, supersedes, governed_by, informs; see Section 8 for details).
 - **ADR-LINK-204 (E)**: Pointer to normative section key missing in base.
-- **ADR-LINK-205 (E)**: Missing references to governing ADRs. Escalates to (E) when clear dependency exists. 
+- **ADR-LINK-205 (E)**: Missing references to owner ADRs.
 - **ADR-LINK-220 (I)**: Supersede closure: multiple descendants (informational).
 - **ADR-LINK-221 (E)**: Supersede closure: cycle detected.
 - **ADR-LINK-222 (W)**: Supersede closure: fork without rationale in `change_history`.
 
+##### Proposed 
+
+1. **200**: Handle all bi-directional keys missing the reciprocal (e.g., `supersedes` <-> `superseded_by`, `informs` <-> `informed_by`)
+2. **201**: Handle all uni-directional keys (e.g., `extends`, `governed_by`)
+3. **203**: Invalid pin format for any relationship field (extends, supersedes, governed_by, informs)
+
 #### ADR-META
 
 - **ADR-META-150 (I)**: `llm_tail` missing (optional).
-- **ADR-META-151 (W)**: `llm_tail` disagrees with front-matter on required keys.
+- TOUPDATE: **ADR-META-151 (W)**: `llm_tail` disagrees with front-matter on required keys.
+- TOADD: **ADR-META-152 (W)**: `llm_tail` has malformed JSON syntax.
+
+##### Proposed 
+
+**META governance additions needed**:
+
+- **151**: needs field list expansion to include new governance relationship fields (`governed_by`, `informs`, `informed_by`, `scope`)
+- **152**: `llm_tail` malformed JSON syntax
 
 #### ADR-NORM
 
-Description: Language-level misuse (RFC-2119 outside normative sections; vague terms in normative text).
+Description: Language-level misuse (RFC-2119 outside normative sections; vague terms in normative text); cross-class normative language rules, not class-specific violations.
 
 - **ADR-NORM-101 (E)**: RFC-2119 keyword outside normative sections.
 - **ADR-NORM-102 (W)**: Vague term in normative section.
@@ -794,8 +845,8 @@ Description: Process/telemetry/auto-resolve.
 Description: Front-matter and class structure constraints that don’t require link graph or prose analysis (e.g., required keys, date formats, class-specific allows/forbids).
 
 - **ADR-SCHEMA-001 (E)**: Missing required metadata (`id,title,status,class,date,review_by`) or bad `id`.
-- **ADR-SCHEMA-002 (E)**: Invalid class (`owner|delta|strategy|style-guide|template`).
-- **ADR-SCHEMA-003 (E)**: Canonical section keys missing or out of order.
+- TOUPDATE: **ADR-SCHEMA-002 (E)**: Invalid class (`owner|delta|governance|strategy|style-guide|template`).
+- TOUPDATE: **ADR-SCHEMA-003 (E)**: Canonical section keys missing or out of order.
   - TOADD: Must have corresponding markdown headers which would cover (2025-09-21)
     - Missing sections entirely
     - Wrong section order
@@ -803,17 +854,35 @@ Description: Front-matter and class structure constraints that don’t require l
     - Present sections with mismatched headers
 - **ADR-SCHEMA-004 (E)**: Invalid status transition or illegal class change.
 - **ADR-SCHEMA-005 (E)**: Invalid date format (must be `YYYY-MM-DD`) for `date` or `review_by`.
+
+TOADD:
+
+  - **ADR-SCHEMA-006 (E)**: Governance ADR missing required `scope` field
+  - **ADR-SCHEMA-007 (E)**: Owner ADR missing required `governed_by` field  
+  - **ADR-SCHEMA-008 (E)**: Invalid `scope` value
+  - **ADR-SCHEMA-009 (E)**: Class-forbidden field present (e.g., governance with `extends`)
+  - **ADR-SCHEMA-010 (E)**: Governance ADR missing required `constraint_rules` section
+
 - **ADR-SCHEMA-011 (E)**: Owner ADR must not use `extends`.
 - **ADR-SCHEMA-012 (E)**: Non-Owner ADRs must never use `owner`.
 - **ADR-SCHEMA-013 (E)**: Non-Owner ADRs must identify ADR ownership
-- **ADR-SCHEMA-021 (E)**: Strategy ADR contains `rollout_backout` (by marker **or** heading `Rollout & Backout`).
+
+TOADD:
+
+  - **ADR-SCHEMA-014 (E)**: Invalid relationship field combination for ADR class
+  - **ADR-SCHEMA-015 (E)**: ADR metadata violates its declared governance constraints
+
+- TOREMOVE: **ADR-SCHEMA-021 (E)**: Strategy ADR contains `rollout_backout` (by marker **or** heading `Rollout & Backout`).
 
 #### ADR-TEMPLATE
 
-- **ADR-TEMPLATE-700 (E)**: `template_of` missing or invalid (`owner|delta|strategy|style-guide|template`).
+Description: Template structure and constraints that provide rules which can be validated via regex; not validating semantic content or judgment.
+
+- TOUPDATE: **ADR-TEMPLATE-700 (E)**: `template_of` missing or invalid (`owner|delta|governance|strategy|style-guide|template`).
 - **ADR-TEMPLATE-701 (W)**: `status` not `Proposed` in a template ADR.
 - **ADR-TEMPLATE-702 (W)**: filename does not include `-template-` (discoverability).
-- **ADR-TEMPLATE-703 (E)**: template participates in link graph (`extends` or `supersedes` non-null).
+- TOUPDATE: **ADR-TEMPLATE-703 (E)**: template participates in link graph (`extends`, `supersedes` non-null).
+  - Update to include new keys:   `governed_by`, `informs`, `informed_by` where non-null)
 - **ADR-TEMPLATE-704 (W)**: RFC-2119 keyword outside code fences/inline code in template.
 - **ADR-TEMPLATE-705 (W)**: template does not mirror canonical section order of `template_of` (same keys, same order).
 - TOADD: **ADR-TEMPLATE-706 (W)**: content formatting matches documented format. (2025-09-21)
@@ -822,9 +891,10 @@ Description: Front-matter and class structure constraints that don’t require l
   - Expectation for this rule is: 
     - Make decisions **atomic, auditable, and reversible**.
     - Keep docs **human-skim friendly** and **machine-readable** (LLMs, linters).
+- TOADD: **TEMPLATE-708 (E)**: Governance template missing `constraint_rules` block placeholder
+- TOADD: **TEMPLATE-709 (W)**: Template contains real governance values instead of placeholders
 
-
-Notes:
+##### Notes
 
 > TPL-704 gives you a gentle guardrail for examples that accidentally leak MUST/SHOULD outside code fences in templates (consistent with your §7.5 and §10.5 language).
 > TPL-705 is a soft wrapper around SCHEMA-003 so reviewers can see “it failed because it’s a template not mirroring the base,” while SCHEMA-003 remains the hard rule that enforces order. You can omit 705 if you prefer only the hard fail.
@@ -849,28 +919,34 @@ Notes:
 - `extends` pin issues
 - bi-directional link issues
 - **normative** missing pointer
+- governance constraint block syntax errors
+- governance scope/authority violations
+- missing governance required fields
 
 ### Section Recognition
 
-- Primary: HTML markers `<!-- key: … -->`.
+- Primary: HTML markers `<!-- key: … -->`
 - Secondary (fallback): Markdown headings mapped to keys (aliases)
-  - `Rollout & Backout` → `rollout_backout`
-  - `Decision (one-liner)` → `decision_one_liner`
-  - `Context & Drivers`, `Decision Details`, `Options Considered`, `Consequences & Risks`, `Implementation Notes`, `Evidence & Links`, `Glossary`, `Related ADRs`, plus strategy-only `Principles`, `Guardrails`, `North Star Metrics`.
+- See Section 4 for Canonical Keys
+  - Example of mapping human-friendly language to keys:
+    - `Rollout & Backout` → `rollout_backout`
+    - `Decision (one-liner)` → `decision_one_liner`
+    - `Adoption & Enforcement` → `adoption_enforcement`	
 
 ### Regexes (core)
 
 - **RFC-2119**: 
   - built from list `{"MUST", "MUST NOT", …}`
   - scanned outside normative sections and outside code fences/inline code
-- **Extends pin**: 
-  - `^ADR-\d{4}@(20\d{2}-\d{2}-\d{2}|[0-9a-f]{7,40})$` *(lowercase hex required)*
 - **LLM tail capture**: 
   - HTML delimited block with fenced ```json```; DOTALL; tolerant to CRLF.
+- **Governance constraint block**: 
+  - Fenced YAML with `constraint_rules:` key containing REQUIRED/FORBIDDEN/OWNED_BY structure
+- **Relationship pins**: See §8 for details; e.g., `extends`
 
 ### Telemetry
 
-- File: `.adr/lint_metrics.json` (repo root)
+- File: `logs/.adr/lint_metrics.json` (repo root)
 - Stores timestamps per `{code, file}` to auto-escalate minor deviations to warnings when ≥3 in 30 days
 
 ### Typical Fixes
@@ -880,77 +956,32 @@ Notes:
 - **ADR-NORM-101**: Move RFC-2119 phrasing into a normative section or de-normativize the wording.
 - **ADR-LINK-203**: Pin `extends` as `ADR-0001@2025-03-14` or `ADR-0001@deadbeef`.
 
-## CI Entry (example)
-
-```yaml
-- name: Run ADR linter
-  run: python tools/adr_linter.py --fail-on E
-```
-
-## §15. PR & review checklist
-
-- [ ] One decision per ADR; clear status & one-liner  
-- [ ] Options table with explicit rejections  
-- [ ] Numeric thresholds/units where applicable  
-- [ ] Consequences/risks & reversibility  
-- [ ] Rollout & **backout** (Owner/Delta only)  
-- [ ] Evidence links (permalinks)  
-- [ ] `review_by` and revisit triggers  
-- [ ] Deltas: `extends`, `diff_summary`, scoped `applies_to`  
-- [ ] Cross-links: `supersedes`/`superseded_by` bi-directional  
-- [ ] Non-normative sections contain **no** RFC-2119 keywords  
-- [ ] Minor tensions auto-resolved & logged (PROC-241/242)  
-- [ ] (Optional) LLM tail present & consistent (META-151 warns on drift)
-
 ## §16. Canonical Skeleton (for linter & discoverability)
 
-(You can keep the canonical skeleton if you like; it won’t hurt, but it’s no longer required for class `style-guide`.)
-
-<!-- key: decision_one_liner -->
-Define the structure and linting rules for ADRs across this repo.
-
-<!-- key: context_and_drivers -->
-We want ADRs that are human-skim friendly and machine-enforceable; this style guide standardizes both.
-
-<!-- key: options_considered -->
-Centralized style guide vs. ad-hoc per ADR; linter-enforced vs. best-effort review.
-
-<!-- key: decision_details -->
-All ADRs **MUST** include canonical section markers in the order defined in §4.  
-Strategy ADRs **MUST NOT** include `rollout_backout`.  
-Delta ADRs **MUST** pin `extends` and **MUST NOT** redefine `owners`.
-
-<!-- key: consequences_and_risks -->
-Stricter CI may add review friction; mitigations: auto-resolve minor issues and clear lint messaging.
-
-<!-- key: rollout_backout -->
-**Rollout**: adopt the linter in CI; fix violations incrementally.  
-**Backout**: temporarily disable specific codes via CI allow-list; no runtime impact.
-
-<!-- key: implementation_notes -->
-Tooling lives in `tools/adr_linter.py`; reserved code bands and regexes in §15.
-
-<!-- key: evidence_and_links -->
-- RFC 2119 — Key words for use in RFCs to Indicate Requirement Levels
-
-<!-- key: glossary -->
-**Normative**: text that sets requirements; **Delta**: ADR that modifies a base ADR by pin.
-
-<!-- key: related_adrs -->
-ADR-0002 (Template: Owner), ADR-0003 (Template: Delta), ADR-0004 (Template: Strategy)
+(Removed; intentionally left blank in current verson of ADR;)
 
 ## §17. Enhancement Registry
 
 ### Implementation Notes
 
-- Use existing `adr_check_code_consistency.py` framework
+- Use existing `verify_adr_architecture.py` framework
 - Leverage `anchor_snapshot.py` comment detection where possible
 
 ### ADR Improvements (in order)
 
-(empty)
+#### High Priority
 
-### Linter Improvements (in order)
+(Empty)
+
+#### Medium Priority
+
+- **Governance Template Creation** - Create ADR-00XX-governance-template.md for systematic governance ADR scaffolding
+- **Cross-file Governance Validation** - Implement multi-ADR analysis for duplicate scope detection, authority conflicts; e.g., (hypothetical):
+  - CLI & Engine ADRs own error codes
+  - Policy & Constants ADRs own global variables
+  - Parser & Constants ADRs own global variables
+
+### Linter Improvements (Ariadne) (in order)
 
 #### High Priority
 
@@ -958,15 +989,16 @@ ADR-0002 (Template: Owner), ADR-0003 (Template: Delta), ADR-0004 (Template: Stra
 
 #### Medium Priority  
 
-- **Comment-Based Technical Debt Scanner** - Auto-detect "TOREVIEW", "passes incorrectly" patterns
-- Expand linter validation to match ADR-0001 §9 specification
+- **Comment-Based Technical Debt Scanner** - Auto-detect "TOREVIEW", "passes incorrectly" patterns	
+- **Governance Constraint Parser** - YAML constraint block validation for REQUIRED/FORBIDDEN/OWNED_BY syntax
+- **Expand linter validation** to match ADR-0001 §9 specification
   - context: ADR-0001 §9 now defines complete PROC/SCHEMA boundary but linter only implements title format checking
   - tasks:
     - Implement prose drift detection (5-point heuristic)
     - Add template filename convention checking
     - Build governance reference validation (LINK-205)
     - Add pattern duplication detection (PROC-245)
-    - Expand PROC-241 beyond title checking    
+    - Expand PROC-241 beyond title checking
 
 #### Deferred
 
