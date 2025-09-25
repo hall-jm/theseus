@@ -16,6 +16,10 @@ Ref: ADR-0001 §Status/§14 · ADR-SCHEMA-004
 from __future__ import annotations
 
 
+# TOREVIEW: Possible enhancement of this validator to handle all
+#           bi-directional links and not just `superseded`
+
+
 def validate_schema_004_status_transition(ctx, rpt) -> None:
     meta = ctx.meta
     path = ctx.path

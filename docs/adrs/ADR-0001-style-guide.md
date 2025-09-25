@@ -23,17 +23,18 @@ change_history: []
 
 | Field                  | Value                                   |
 | ---------------------- | --------------------------------------- |
-| **Version**:           | 0.2.0                                   |
+| **Version**:           | 0.2.1                                   |
 | **Status**:            | Proposed                                |
-| **Date**:              | 2025-09-21                              |
+| **Date**:              | 2025-09-25                              |
 | **Applies to Schema**: | 0.1.0                                   |
-| **Related**:           | ADR-0002 (Template: Base/Owner), ADR-0003 (Template: Delta), ADR-0004 (Template: Strategy) |
+| **Related**:           |                                         |
 
 ### Changelog
 
 | Version | Date         | Notes                                        |
 | ------- | ------------ | -------------------------------------------- |
-| 0.2.0   | 21 Sept 2025 | Created new `governance` class of ADRs; added new requirements for ADR-SCHEMA-003 to handle, ADR-TEMPLATE-706 to be a catch-all error code for when explicit ADR formatting for a particular section isn't followed; rewrote Section 4 to handle the new `governance` class and create a universal set of keys vs. class-specific set of keys; rewrote Section 0 to handle this ADR's new bootstrap constitution and precedence authority; rewrote sections 0 to 13 in this version; |
+| 0.2.1   | 25 Sept 2025 | Rewrote sections 14 to 17 in this version to finish initial review; removed entries in **Related** field due to new `governance` class and its related changes;  |
+| 0.2.0   | 24 Sept 2025 | Created new `governance` class of ADRs; added new requirements for ADR-SCHEMA-003 to handle, ADR-TEMPLATE-706 to be a catch-all error code for when explicit ADR formatting for a particular section isn't followed; rewrote Section 4 to handle the new `governance` class and create a universal set of keys vs. class-specific set of keys; rewrote Section 0 to handle this ADR's new bootstrap constitution and precedence authority; rewrote sections 0 to 13 in this version; |
 | 0.1.7   | 19 Sept 2025 | Changed ADR-TEMPLT-\* -> ADR-TEMPLATE-\* to improve readability; | 
 | 0.1.6   | 11 Sept 2025 | Rewrite Section 11 to address gaps in the linter's implementation vs. the spirit of what the ADR is trying to capture for deterministic computer processes; |
 | 0.1.5   | 08 Sept 2025 | Created Section 17 to track ADR-0001 enhancements for future development as needed; |
@@ -429,7 +430,7 @@ TODO: Once the Linter Rules are reviewed, updated, and consolidated, delete any 
 
 ### 7.2 Delta ADR
 
-- **Must**: Use `extends@pin` (pin per §8) to reference base ADR; include override blocks (`overrides`, `not_applicable`, `adds`, `ptr`).
+- **Must**: Use `extends@<pin>` (pin per §8) to reference base ADR; include override blocks (`overrides`, `not_applicable`, `adds`, `ptr`).
 - **Must**: Use `owners_ptr` (inherits ownership from base).
 - **Must not**: Define `owners` or `scope`.
 - **Inheritance**: Inherits `governed_by` from base unless scope is narrowed (then must declare).
@@ -449,7 +450,7 @@ TODO: Once the Linter Rules are reviewed, updated, and consolidated, delete any 
 
 - **Purpose**: Define repository-wide ADR rules and standards.
 - **Exemptions**: 
-  - Not part of link graph (LINK-2xx exempt)
+  - Not part of link graph (Exempt from ADR-LINK-* validation)
   - RFC-2119 usage outside normative sections allowed (NORM-101 exempt)
   - Canonical section-order enforcement exempt (SCHEMA-003 exempt)
 - **Must not**: Use `extends`, `supersedes`, `governed_by`, `scope`.
@@ -744,20 +745,20 @@ Notes to LLMs: this section is dated and inaccurate compared to the `### Rules (
 
 Description: Inheritance and override semantics for class: `delta` (targets exist, not_applicable/overrides/adds sanity).
 
-- **ADR-DELTA-300 (E)**: Override targets non-existent key in base.
+- **ADR-DELTA-500 (E)**: Override targets non-existent key in base.
 
 TOADD:
 
-  - **ADR-DELTA-301 (E)**: Delta inheritance conflict - attempts to modify `governed_by` without scope narrowing justification
-  - **ADR-DELTA-302 (E)**: Delta violates inherited governance constraints 
-  - **ADR-DELTA-303 (E)**: Invalid scope narrowing - claims governance scope change without proper rationale
-  - **ADR-DELTA-304 (E)**: Delta missing required `extends` field
-  - **ADR-DELTA-305 (E)**: Delta attempts to override non-overrideable relationship fields
-  - **ADR-DELTA-306 (E)**: Delta override block malformed (invalid YAML or missing keys)
-  - **ADR-DELTA-308 (E)**: Delta inherits conflicting data custodianship from base
-  - **ADR-DELTA-309 (E)**: Delta changes authority boundaries without governance justification
-  - **ADR-DELTA-310 (E)**: Delta governance inheritance creates circular dependencies
-  - **ADR-DELTA-311 (E)**: Delta override violates inherited governance constraints
+  - **ADR-DELTA-501 (E)**: Delta inheritance conflict - attempts to modify `governed_by` without scope narrowing justification
+  - **ADR-DELTA-502 (E)**: Delta violates inherited governance constraints 
+  - **ADR-DELTA-503 (E)**: Invalid scope narrowing - claims governance scope change without proper rationale
+  - **ADR-DELTA-504 (E)**: Delta missing required uni-directional fields (e.g., `extends`)
+  - **ADR-DELTA-505 (E)**: Delta attempts to override non-overrideable relationship fields
+  - **ADR-DELTA-506 (E)**: Delta override block malformed (invalid YAML or missing keys)
+  - **ADR-DELTA-507 (E)**: Delta inherits conflicting data custodianship from base
+  - **ADR-DELTA-508 (E)**: Delta changes authority boundaries without governance justification
+  - **ADR-DELTA-509 (E)**: Delta governance inheritance creates circular dependencies
+  - **ADR-DELTA-510 (E)**: Delta override violates inherited governance constraints
 
 **Key governance delta scenarios**:
 
@@ -795,21 +796,17 @@ TOADD:
 
 Description: Cross-ADR graph properties (pins, reciprocity, cycles).
 
-- **ADR-LINK-200 (E)**: `supersedes` without reciprocal `superseded_by`.
-- **ADR-LINK-201 (E)**: `extends` missing base or version pin.
+TODO: Relabel code in registry.py, policy.py, validators/link/\*.py, tests/adr_linter/validators/link/\*.py
+
+- **ADR-LINK-300 (E)**: Handle all bi-directional keys missing the reciprocal (e.g., `supersedes` <-> `superseded_by`, `informs` <-> `informed_by`)
+- **ADR-LINK-301 (E)**: Handle all uni-directional keys (e.g., `extends`, `governed_by`)
 - **ADR-LINK-202 (W)**: Pointer to section key missing in base.
-- **ADR-LINK-203 (E)**: Invalid pin format for any relationship field (extends, supersedes, governed_by, informs; see Section 8 for details).
+- **ADR-LINK-303 (E)**: Invalid pin format for any relationship field (e.g., `extends`, `supersedes`; see Section 8 for details).
 - **ADR-LINK-204 (E)**: Pointer to normative section key missing in base.
 - **ADR-LINK-205 (E)**: Missing references to owner ADRs.
 - **ADR-LINK-220 (I)**: Supersede closure: multiple descendants (informational).
 - **ADR-LINK-221 (E)**: Supersede closure: cycle detected.
 - **ADR-LINK-222 (W)**: Supersede closure: fork without rationale in `change_history`.
-
-##### Proposed 
-
-1. **200**: Handle all bi-directional keys missing the reciprocal (e.g., `supersedes` <-> `superseded_by`, `informs` <-> `informed_by`)
-2. **201**: Handle all uni-directional keys (e.g., `extends`, `governed_by`)
-3. **203**: Invalid pin format for any relationship field (extends, supersedes, governed_by, informs)
 
 #### ADR-META
 
