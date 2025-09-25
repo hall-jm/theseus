@@ -36,14 +36,34 @@ CODES = {
     # D
     "ADR-DELTA-300": ("E", "Override targets non-existent key in base."),
     # L
-    "ADR-LINK-200": ("E", "`supersedes` without reciprocal `superseded_by`."),
-    "ADR-LINK-201": ("E", "`extends` missing base or version pin."),
-    "ADR-LINK-202": ("W", "Pointer to section key missing in base."),
-    "ADR-LINK-203": (
+    # "ADR-LINK-200": (
+    #     "E",
+    #     "`supersedes` without reciprocal `superseded_by`."
+    # ),
+    # "ADR-LINK-201": ("E", "`extends` missing base or version pin."),
+    # "ADR-LINK-202": ("W", "Pointer to section key missing in base."),
+    # "ADR-LINK-203": (
+    #     "E",
+    #     "Invalid `extends` pin format (must be `@YYYY-MM-DD` or "
+    #     "lowercase hex "
+    #     "`@[0-9a-f]{7,40}`).",
+    # ),
+    "ADR-LINK-300": ("E", "Bi-directional link missing reciprocal"),
+    "ADR-LINK-301": ("E", "Required uni-directional binding missing pin"),
+    "ADR-LINK-302": ("W", "Pointer to section key missing in base"),
+    "ADR-LINK-303": (
         "E",
-        "Invalid `extends` pin format (must be `@YYYY-MM-DD` or lowercase hex "
-        "`@[0-9a-f]{7,40}`).",
+        "Invalid pin format for relationship field - see  "
+        "ADR-0001 §8 'Pointers & Deltas (inheritance rules)' for details",
     ),
+    # "ADR-LINK-304": (
+    #     "E",
+    #     "Pointer to normative section key missing in base"
+    # ),
+    # "ADR-LINK-305": ("E", "Missing references to owner ADRs"),
+    # "ADR-LINK-320": ("I", "Supersede closure: multiple descendants"),
+    # "ADR-LINK-321": ("E", "Supersede closure: cycle detected"),
+    # "ADR-LINK-322": ("W", "Supersede closure: fork without rationale"),
     "ADR-LINK-204": ("E", "Pointer to normative section key missing in base."),
     "ADR-LINK-205": (
         "E",

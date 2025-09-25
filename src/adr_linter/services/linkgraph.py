@@ -3,16 +3,24 @@
 # src/adr_linter/services/linkgraph.py
 
 """
-Purpose: pure helper(s) to build supersede graphs used by LINK-220/221.
-Behavior mirrors the prior legacy implementation (zero change).
+Build supersede graphs for post-run validators.
+
+Used by:
+  - ADR-LINK-320 (I): multiple descendants
+  - ADR-LINK-321 (E): cycle detected
 
 Inputs: idx is the index built by the engine (id -> {meta, path, body, ...})
 Outputs:
  - graph[id] -> list of ids it supersedes
  - reverse_graph[id] -> list of ids that supersede it (descendants)
 
-Ref: ADR-0001 §(Missing) · (If needed, ADR-*-* is missing)
+NOTE: This introduces cross-file analysis while the main pipeline is
+      single-file oriented. Kept intentionally (per product direction),
+      with this note documenting the tension for future review.
+
+Ref: ADR-0001 §10.4
 """
+
 
 from __future__ import annotations
 

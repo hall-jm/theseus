@@ -27,7 +27,14 @@ from .constants import (
 )
 
 # Ordered classes for readability
-CLASSES = ("owner", "delta", "strategy", "style-guide", "template")
+CLASSES = (
+    "delta",
+    "governance",
+    "owner",
+    "strategy",
+    "style-guide",
+    "template",
+)
 
 
 # ---- Band policy (single source of truth for runtime expectations) ----------
@@ -35,11 +42,12 @@ CLASSES = ("owner", "delta", "strategy", "style-guide", "template")
 # and should have pytest coverage). Non-runtime bands (e.g. PROC) are
 # documentation/telemetry only unless promoted here in the future.
 BANDS_RUNTIME: Set[str] = {
-    "SCHEMA",
-    "NORM",
-    "META",
-    "LINK",
     "DELTA",
+    "GOVERN",
+    "LINK",
+    "META",
+    "NORM",
+    "SCHEMA",
     "TEMPLATE",
 }
 BANDS_NON_RUNTIME: Set[str] = {"PROC"}
@@ -78,7 +86,7 @@ for code in CODES.keys():
         APPLICABILITY[code] = {"template"}
 
     # Template-only codes
-    if code.startswith("ADR-DELTA-3"):
+    if code.startswith("ADR-DELTA-"):
         APPLICABILITY[code] = {"delta"}
 
     # Style-guide exemptions reflected in current behavior:
@@ -88,8 +96,8 @@ for code in CODES.keys():
     if code == "ADR-SCHEMA-003":
         APPLICABILITY[code].discard("style-guide")
 
-    # Documented ADR intent (not enforced at runtime yet):
-    if code.startswith("ADR-LINK-2"):
+    # Ref: ADR-0001 § 7.4
+    if code.startswith("ADR-LINK-"):
         APPLICABILITY[code].discard("style-guide")
 
 

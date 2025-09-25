@@ -62,15 +62,15 @@ from .schema.schema_021_strategy_no_rollout import (
 from .schema.schema_003_keys_order import validate_schema_003_keys_order
 
 # 3) LINK (per-file)
-from .link.link_200_bidi_supersedes import validate_link_200_bidi_supersedes
-from .link.link_201_extends_missing_pin import (
-    validate_link_201_extends_missing_pin,
+from .link.link_300_bidi_links import validate_link_300_bidi_links
+from .link.link_301_unidi_required_pin import (
+    validate_link_301_unidi_required_pin,
 )
-from .link.link_202_pointer_section_missing import (
-    validate_link_202_pointer_section_missing,
+from .link.link_302_pointer_section_missing import (
+    validate_link_302_pointer_section_missing,
 )
-from .link.link_203_extends_bad_format import (
-    validate_link_203_extends_bad_format,
+from .link.link_303_pin_format_any_field import (
+    validate_link_303_pin_format_any_field,
 )
 from .link.link_204_normative_ptr_missing import (
     validate_link_204_normative_ptr_missing,
@@ -179,10 +179,10 @@ ORDERED_RULES_PER_FILE: List[Tuple[str, Callable]] = [
     ("ADR-SCHEMA-013", validate_schema_013_non_owner_identify_ownership),
     ("ADR-SCHEMA-021", validate_schema_021_strategy_no_rollout),
     # --- link band (per-file) ---
-    ("ADR-LINK-200", validate_link_200_bidi_supersedes),
-    ("ADR-LINK-201", validate_link_201_extends_missing_pin),
-    ("ADR-LINK-202", validate_link_202_pointer_section_missing),
-    ("ADR-LINK-203", validate_link_203_extends_bad_format),
+    ("ADR-LINK-300", validate_link_300_bidi_links),
+    ("ADR-LINK-301", validate_link_301_unidi_required_pin),
+    ("ADR-LINK-302", validate_link_302_pointer_section_missing),
+    ("ADR-LINK-303", validate_link_303_pin_format_any_field),
     ("ADR-LINK-204", validate_link_204_normative_ptr_missing),
     ("ADR-LINK-205", validate_link_205_governance),
     # --- delta band (per-file) ---
