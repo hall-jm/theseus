@@ -23,7 +23,7 @@ change_history: []
 
 | Field                  | Value                                   |
 | ---------------------- | --------------------------------------- |
-| **Version**:           | 0.1.8                                   |
+| **Version**:           | 0.2.0                                   |
 | **Status**:            | Proposed                                |
 | **Date**:              | 2025-09-21                              |
 | **Applies to Schema**: | 0.1.0                                   |
@@ -33,7 +33,7 @@ change_history: []
 
 | Version | Date         | Notes                                        |
 | ------- | ------------ | -------------------------------------------- |
-| 0.2.0   | 21 Sept 2025 | Created new `governance` class of ADRs; added new requirements for ADR-SCHEMA-003 to handle, ADR-TEMPLATE-706 to be a catch-all error code for when explicit ADR formatting for a particular section isn't followed; rewrote Section 4 to handle the new `governance` class and create a universal set of keys vs. class-specific set of keys; rewrote Section 0 to handle this ADR's new bootstrap constitution and precedence authority; |
+| 0.2.0   | 21 Sept 2025 | Created new `governance` class of ADRs; added new requirements for ADR-SCHEMA-003 to handle, ADR-TEMPLATE-706 to be a catch-all error code for when explicit ADR formatting for a particular section isn't followed; rewrote Section 4 to handle the new `governance` class and create a universal set of keys vs. class-specific set of keys; rewrote Section 0 to handle this ADR's new bootstrap constitution and precedence authority; rewrote sections 0 to 8 in this version; |
 | 0.1.7   | 19 Sept 2025 | Changed ADR-TEMPLT-\* -> ADR-TEMPLATE-\* to improve readability; | 
 | 0.1.6   | 11 Sept 2025 | Rewrite Section 11 to address gaps in the linter's implementation vs. the spirit of what the ADR is trying to capture for deterministic computer processes; |
 | 0.1.5   | 08 Sept 2025 | Created Section 17 to track ADR-0001 enhancements for future development as needed; |
@@ -42,21 +42,6 @@ change_history: []
 | 0.1.2   | 05 Sept 2025 | Additional changes to ensure consistency across ADR regarding `style-guide` and `template` class documentation; |
 | 0.1.1   | 05 Sept 2025 | New proposed sections for class `template` documentation in the style guide; |
 | 0.1.0   | 03 Sept 2025 | Initial draft of template file               |
-
-
-## §0-Previous. Constitution & Precedence (applies to every ADR)
-
-TODO: Remove this previous section after finishing this ADR-0001's review and rewrite.
-
-1) **Precedence (highest → lowest)**:  
-   - 0103 (shapes/enums/tokens/cost) → 0110 (lifecycle/identity/cross-segment) → 0302 (exit codes & FS side-effects) → 0201/0202 (config/pricing/caps) → Strategies (mode deltas only).  
-2) **Tokens**:  
-   - `[FLAG-CONTRA-<owner>]` for material contradictions (wire format, lifecycle, exit codes).  
-   - `[BLOCK-TENSION-DOCUMENTATION-GAP: ADR-<id>]` if an owner ADR is missing.  
-3) **Pointer-first rule**: For non-delta content, replace with:  
-   `No additional mode-specific deltas; see ADR-<id> §<section>.`
-
----
 
 ## **§0. Constitution & Precedence**
 
@@ -74,7 +59,7 @@ This section explicitly applies to every ADR.
 
 **Domain Scopes** (precedence order for cross-scope conflicts):
 
-1. `cli` - User-facing processes such as user interface, argument parsing, user-facing messages, process error code
+1. `cli` - User-facing processes such as user interface, argument parsing, user-facing messages
 2. `engine` - Internal pure processes such as orchestration semantics, validator execution, structured response generation, exit code mapping
 3. `services` - Impure edge processes such as filesystem operations, network operations, IO failure classification
 4. `other` - All other processes not captured in the previous three groups
@@ -83,19 +68,19 @@ This section explicitly applies to every ADR.
 - Governance ADRs are defined by:
   - class: `governance`
   - scope: `cli|engine|services|other` (single)
-  - supersedes: chain much be linear
+  - supersedes: chain must be linear
   - subscope: future granularity to avoid having a giant `cli` governance ADR forever
 - Each domain scope **MUST** have exactly one active governance ADR via linear supersession chain
 - Cross-scope conflicts resolved by Domain Scope mapping above
-- **Transitional**: ADR-0001 §0 acts as default governance until domain-specific governance ADRs exist *(expires: 2026-03-01)*
+- **Transitional**: ADR-0001 §0 acts as default governance **only until** the first scope-specific Governance ADR for that domain is **Accepted**. Upon acceptance, §0 ceases to govern that scope. *(review_by: 2026-03-01)*
 
 ### Constraint Binding Semantics
-- `extends@pin`: Content inheritance with delta semantics
-- `governed_by@pin`: Authority constraint binding (single)
+- `extends`: Content inheritance with delta semantics
+- `governed_by`: Authority constraint binding (single)
   - Mandatory for Owner ADRs
   - Delta ADRs inherit governed_by from base unless they narrow scope (then must declare)
   - Strategy ADRs: warn if missing; error if they assert boundaries
-- `supersedes@pin`: Decision replacement with reciprocal tracking
+- `supersedes`: Decision replacement with reciprocal tracking
 
 ### Conflict Resolution Protocol
 
@@ -105,56 +90,34 @@ This section explicitly applies to every ADR.
 4. **Interface classification**: User-facing → cli; orchestration → engine; IO → services
   - Interface classification edge cases can be handled as exceptions after the core framework works; we need working governance now
 5. **Unmapped conflicts**: **ERROR** - work blocks until governance adjudication
-  - Create/land a governance ADR in the releant scope that adjudicates the topic
+  - Create/land a governance ADR in the relevant scope that adjudicates the topic
   - Reference the two conflicting ADRs in `change_history`;
 
 **Machine Constraints**: Governance ADRs use fenced `yaml` blocks as the **sole binding authority**. Prose provides context and rationale but is explicitly non-binding.
-
-```yaml
-# Constraints are the only enforceable requirements
-constraints:
-  REQUIRED: [ "engine.exit_code_mapping" ]
-  FORBIDDEN: [ "cli.exit_code_mapping" ]
-  OWNED_BY:
-    - topic: "discovery.failure_handling"
-      owner: "services"
-```
 
 **Constraint Enforcement**: Linters and automated tools MUST treat constraint blocks as the authoritative source. Governance prose MUST NOT use RFC-2119 keywords.
  
 ### Default Behavior
 
-When in doubt for any scenario not covered in the previous sections, HARD FAIL for maximum smoke detection.
-
----
-
-## §1-Previous Goals & Scope
-
-TODO: Remove this previous section after finishing this ADR-0001's review and rewrite.
-
-- Decisions are **atomic, auditable, reversible**.  
-- Docs are **human-skim friendly** and **machine-readable** (LLMs, linters).  
-- Support **inheritance** via pointers & deltas without ambiguity.
-
----
+When in doubt for any governance scenario not covered here, HARD FAIL for maximum smoke detection.
+When in conflict with later sections regarding process behavior, HARD FAIL for maximum smoke detection.
 
 ## §1. Goals & Scope
 
 - **Decisions** are atomic (one decision per ADR), auditable (front-matter + `change_history`), and rollback / backout plan (Owner/Delta ADRs).
 - **Authority relationships** are explicit and machine-checkable via required keys:
-  - `governed_by@pin` (Owner: REQUIRED; Delta: inherited; Strategy: OPTIONAL).
+  - `governed_by` (Owner: REQUIRED; Delta: inherited; Strategy: OPTIONAL).
 - **Governance constraints** are enforced to prevent drift; missing or invalid bindings are blocking errors.
 - Documents are **human-skim friendly** and **machine-readable** through markdown and HTML comment section markers, fenced YAML for constraints, and RFC-2119 limited to normative sections.
 - The system supports unambiguous **relationship types**:
-  - `extends@pin` / `extended_by` (inheritance, bi-di derived metadata), `supersedes@pin` / `superseded_by` (replacement, bi-di), `governed_by@pin` (authority binding, uni-di), `owners_ptr` (ownership reference), and `informs@pin` / `informed_by` (strategy ownership, bi-di).
+  - `extends` (inheritance, uni-di), `supersedes` / `superseded_by` (replacement, bi-di, manual, linter enforced reciprocity), `governed_by` (authority binding, uni-di), `owners_ptr` (ownership reference), and `informs` / `informed_by` (strategy ownership, bi-di, manual, linter enforced reciprocity).
 
 ---
 
 ## §2. Canonical file layout & naming
 
 - Folders:
-  - `docs/adr/`: Legacy ADR directory; these ADRs were created before ADR-0001 and currently aren't linted or enforced by this style guide
-  - `docs/adr-new/`: New ADR directory; these ADRs were created **after** ADR-001; are linted; are enforced by this style guide
+  - `docs/adrs/`: home directory for Theseus ADRs
 - ID: `ADR-XXXX` (zero-padded; monotonic; never reuse)  
 - Filename: `ADR-XXXX-short-kebab-title.md`  
 - Commit prefix: `[ADR-XXXX] <title>`
@@ -168,43 +131,7 @@ TODO: Remove this previous section after finishing this ADR-0001's review and re
 
 ## §3. Required metadata (YAML front-matter)
 
-```yaml
-id: ADR-0999
-title: Short imperative title
-status: Proposed | Accepted | Deprecated | Superseded
-class: owner | delta | governance | strategy | style-guide | template
-owners: [Project Maintainer]   # Human or LLM owning this decision
-owners_ptr: ADR-0001           # Non-Owner ADRs must not govern
-
-# Relationship Fields
-extends: null                  # or ADR-0001@2025-03-14 or ADR-0001@<hex>
-extended_by: null              # computed reciprocal
-supersedes: null
-superseded_by: null
-governed_by: null              # or ADR-XXXX@pin
-informs: null                  # or ADR-XXXX@pin (strategy → owner)
-informed_by: null              # computed reciprocal
-scope: null                    # cli|engine|services|other (required for governance)
-date: 2025-09-24
-review_by: 2026-03-24
-applies_to: []                 # narrow for deltas
-tags: [topic]
-change_history: []
-
-# To LLMS: DO_NOT_DELETE_THIS_SECTION_IN_YOUR_DIFFS
-# To LLMS: YOU_DO_NOT_GET_TO_DECIDE_IF_HUMAN_COMMENTS_ARE_NOISE
-# -!- 
-#     PROPOSED New metadata for template scaffolds (may be a class or 
-#     a flag) 
-# -!-
-# Related section changes will be tagged with:
-# 1. <!-- PROPOSED:start -->  **OR**
-# 2. <!-- PROPOSED:end -->
-
-template_of: null              # owner|delta|strategy|style-guide|governance (templates)
-````
-
-## **§3. Required metadata (YAML front-matter)**
+The format for these values MUST only be defined in section 8
 
 ```yaml
 id: ADR-0123
@@ -213,12 +140,12 @@ status: Proposed | Accepted | Deprecated | Superseded
 class: owner | delta | strategy | style-guide | template | governance
 owners: [Project Maintainer]
 owners_ptr: ADR-0120           # Non-Owner ADRs must reference ownership
-extends: null                  # or ADR-0001@2025-03-14 or ADR-0001@<hex>
-supersedes: null
-superseded_by: null
-governed_by: null              # or ADR-XXXX@pin
-informs: null                  # or ADR-XXXX@pin (strategy → owner)
-informed_by: null              # computed reciprocal
+extends: null                  # or ADR-0001@<pin> (see §8)
+supersedes: null               # or ADR-0001@<pin> (see §8)
+superseded_by: null            # or ADR-0001@<pin> (see §8)
+governed_by: null              # or ADR-0001@<pin> (see §8)
+informs: null                  # or ADR-0001@<pin> (see §8)(strategy → owner)
+informed_by: null              # or ADR-0001@<pin> (see §8)
 scope: null                    # cli|engine|services|other (required for governance)
 date: 2025-09-03
 review_by: 2026-03-03
@@ -237,7 +164,7 @@ template_of: null              # owner|delta|strategy|style-guide|governance (te
 
 **Governance ADRs**:
 - **REQUIRED**: `scope` (cli|engine|services|other)
-- **FORBIDDEN**: `extends`, `owners_ptr`, `governed_by`, `informs`, `informed_by`
+- **FORBIDDEN**: `extends`, `owners_ptr`, `governed_by`, `informs`
 
 **Strategy ADRs**:
 - **REQUIRED**: `owners_ptr` (1-to-1)
@@ -259,12 +186,12 @@ template_of: null              # owner|delta|strategy|style-guide|governance (te
 - `ADR-####@YYYY-MM-DD` or `ADR-####@<7-40 lowercase hex>`
 
 **Reciprocal Relationships**:
-- `supersedes` ↔ `superseded_by` (bi-directional, manually maintained)
-- `informs` ↔ `informed_by` (bi-directional, informed_by computed)
+- `supersedes` ↔ `superseded_by` (bi-directional, manually maintained, linter enforced reciprocity)
+- `informs` ↔ `informed_by` (bi-directional, manually maintained, linter enforced reciprocity)
 
 **Unidirectional Bindings**:
 - `governed_by` (authority constraint, no reciprocal)
-- `extends` (content inheritance, extended_by computed)
+- `extends` (content inheritance, no reciprocal)
 
 ### **Validation Rules**
 
@@ -302,23 +229,23 @@ Use these **exact keys** (stable for tooling). Headings can be pretty; keys must
 
 All ADR classes **MUST** include these sections in this order:
 
-#### Opening Sections 
+#### Opening Sections (in order)
 
-1. `decision_one_liner`
-2. `context_and_drivers`  
-3. `options_considered`
-4. `decision_details`
+- `decision_one_liner`
+- `context_and_drivers`  
+- `options_considered`
+- `decision_details`
 
 #### Class-Specific Sections
 
-5. **[Class-specific sections inserted here]**
+- **[Class-specific sections inserted here]**
 
-#### Closing Sections 
+#### Closing Sections (in order)
 
-6. `evidence_and_links`
-7. `glossary`
-8. `related_adrs`
-9. `license`
+- `evidence_and_links`
+- `glossary`
+- `related_adrs`
+- `license`
 
 ### Class-Specific Section Insertions
 
@@ -347,7 +274,7 @@ All ADR classes **MUST** include these sections in this order:
 
 #### Delta
 
-Uses base ADR sections (inherited via `extends@pin`)
+Uses base ADR sections (inherited via `extends`)
 
 #### Template
 
@@ -376,18 +303,6 @@ This structure maintains universal LLM navigation while allowing semantic differ
 
 ---
 
-## §5-Previous Writing standards
-
-TODO: Remove this previous section after finishing this ADR-0001's review and rewrite.
-
-- Use **RFC-2119** keywords for normative text. (decision_details, rollout_backout, and overrides.\* in delta ADRs).
-- Prefer **numbers & units** over adjectives (e.g., “p95 ≤ 150 ms”).
-- **Active voice**, short sentences (≤20 words).
-- Define acronyms once; keep a mini-glossary.
-- Avoid unclear pronouns; repeat the noun.
-
----
-
 ## §5 Writing Standards
 
 ### Universal Writing Principles
@@ -401,22 +316,40 @@ TODO: Remove this previous section after finishing this ADR-0001's review and re
 
 #### Owner & Delta ADRs
 
-- Use **RFC-2119** keywords for binding requirements in `decision_details` and `adoption_and_enforcement` sections.
+- Use **RFC-2119** keywords for binding requirements in Owner sections, `decision_details` and `rollout_backout` (and by Delta ADR if inheriting from an ADR with those sections).
 - Include specific thresholds, SLOs, and measurable criteria.
 - Provide concrete implementation guidance with rollback procedures.
 
 #### Governance ADRs
 
-- **RFC-2119 FORBIDDEN** in prose sections - emit ADR-NORM-101 (E) if detected
-- **Machine-readable constraint yaml blocks** provide sole binding authority in `constraint_rules`
-- Prose provides context, rationale, and examples but establishes no binding requirements
-- Authority boundaries defined exclusively through constraint block `OWNED_BY` mappings
+**RFC-2119 FORBIDDEN** in prose sections - emit ADR-NORM-101 (E) if detected  
+**Machine-readable constraint blocks** provide sole binding authority in `constraint_rules`
+Prose provides context, rationale, and examples but establishes no binding requirements
+Authority boundaries defined exclusively through constraint block mappings
 
-  ```yaml
-  constraints:
-    REQUIRED: ["engine.exit_code_mapping"]
-    FORBIDDEN: ["cli.exit_code_mapping"]
-  ```
+**Governance Constraint Schema**:
+
+- `REQUIRED: [list]` - Topics that MUST be handled by this scope
+- `FORBIDDEN: [list]` - Topics that MUST NOT be handled by this scope  
+- `OWNED_BY: [{topic, owner}]` - Explicit topic ownership assignments
+
+**Schema Validation Rules**:
+
+- Topics use dot notation hierarchy (e.g., "engine.exit_code_mapping")
+- Owner values must match valid scope domains: cli|engine|services|other
+- REQUIRED/FORBIDDEN lists cannot contain overlapping topics
+- OWNED_BY topic must not appear in scope's REQUIRED/FORBIDDEN lists
+
+**Example**:
+
+```yaml
+constraint_rules:
+  REQUIRED: [ "cli.argument_parsing", "cli.user_messages" ]
+  FORBIDDEN: [ "engine.orchestration", "services.file_io" ]
+  OWNED_BY:
+    - topic: "shared.exit_code_mapping"  
+      owner: "engine"
+```
 
 #### Strategy ADRs
 
@@ -435,17 +368,6 @@ Anything not clearly identified in this section that requires deterministic bina
 The RFC-2119 keywords provide unambiguous authority signals that enable clear LLM decision-making across all classes.
 
 ---
-
-## §6-Previous Options rubric (table)
-
-TODO: Remove this previous section after finishing this ADR-0001's review and rewrite.
-
-Score 1–5 (higher is better) and explain trade-offs.
-
-| Option | Fit to Drivers | Complexity | Risk | Reversibility | Notes |
-| ------ | -------------- | ---------- | ---- | ------------- | ----- |
-
-Include **"Rejected because …"** bullets for each non-chosen option.
 
 ## §6. Options rubric
 
@@ -501,68 +423,104 @@ Governance options MUST include constraint enforceability assessment:
 
 ---
 
-## §7. ADR classes (what each may/may not contain)
+## **§7. ADR classes (what each may/may not contain)**
 
-Add to front-matter: `class: owner | delta | strategy | style-guide | template`.
+Add to front-matter: `class: owner | delta | strategy | style-guide | template | governance`.
+
+TODO: Once the Linter Rules are reviewed, updated, and consolidated, delete any **Lint** or Linter related
+      lines in the following sessions
 
 ### 7.1 Owner ADR
 
-- **May define**: shapes, enums, canonical orders, validation codes *for its scope*; `owners`.
-- **Must not**: `extends` another ADR (it is the root).
-- **Lint**: `ADR-SCHEMA-012` (E) if an Owner ADR uses `extends`.
+- **May define**: Component boundaries, implementation decisions, technical specifications within declared scope.
+- **Must**: Include `governed_by` (authority constraint binding).
+- **Must not**: Use `extends` (it is the root); use `owners_ptr` (it defines ownership).
+- **Sections**: See §4 for ADR sections specification
+- **Lint**: ADR-SCHEMA-007 (E) if missing `governed_by`; ADR-SCHEMA-011 (E) if uses `extends`.
 
 ### 7.2 Delta ADR
 
-- **Must**: `extends: ADR-XXXX@<pin>`; include `diff_summary`; use `overrides|not_applicable|adds|ptr` blocks.
-- **Should**: set `applies_to.env/services/window`.
-- **Must not**: define `owners` (inherits from base).
+- **Must**: Use `extends@pin` (pin per §8) to reference base ADR; include override blocks (`overrides`, `not_applicable`, `adds`, `ptr`).
+- **Must**: Use `owners_ptr` (inherits ownership from base).
+- **Must not**: Define `owners` or `scope`.
+- **Inheritance**: Inherits `governed_by` from base unless scope is narrowed (then must declare).
+- **Sections**: Inherits base ADR sections; uses override blocks for modifications.
+- **Lint**: ADR-SCHEMA-012 (E) if defines `owners`; ADR-LINK-201 (E) if missing `extends`.
 
 ### 7.3 Strategy ADR
 
-- **May define**: `principles`, `guardrails`, `north_star_metrics`, high-level **options\_considered**.
-- **Must not**: include `rollout_backout` or service-specific `decision_details`.
-- **Ownership**: **Do not** redefine `owners`; optionally use `owners_ptr: ADR-XXXX`.
-- **Lint**: `ADR-SCHEMA-021` (E) if `rollout_backout` is present.
+- **May define**: High-level principles, strategic direction, success metrics.
+- **Must**: Use `owners_ptr` (references ownership).
+- **Must not**: Define `owners`, `scope`, or implementation-specific details.
+- **Optional**: `governed_by`, `informs` (strategy → owner relationship).
+- **Sections**: See §4 for ADR sections specification
+- **Lint**: ADR-SCHEMA-012 (E) if defines `owners`.
 
-<!-- PROPOSED:start -->
 ### 7.4 Style-guide ADR
 
-- **Purpose:** Define repository-wide ADR rules.  
-- **Exemptions**:
-  - Not part of the link graph (**LINK-2xx exempt**).
-  - RFC-2119 usage outside normative sections is allowed (**NORM-101 exempt**).
-- **Linter**:
-  - Exempt from canonical section-order enforcement (**SCHEMA-003 exempt**).
-  - Still requires valid front-matter (**SCHEMA-001/002/005** apply).
+- **Purpose**: Define repository-wide ADR rules and standards.
+- **Exemptions**: 
+  - Not part of link graph (LINK-2xx exempt)
+  - RFC-2119 usage outside normative sections allowed (NORM-101 exempt)
+  - Canonical section-order enforcement exempt (SCHEMA-003 exempt)
+- **Must not**: Use `extends`, `supersedes`, `governed_by`, `scope`.
+- **Sections**: See §4 for ADR sections specification
 
-### 7.5 Template ADRs (scaffolds)
+### 7.5 Template ADR
 
-- Identify with front-matter: `class: template` and `template_of` (→ **TPL-700**).
-- Filenames SHOULD include `-template-` for discoverability. (→ **TPL-702**).
-- Purpose: teaching/scaffolding; not part of the decision link graph (**LINK-2xx exempt**, enforced by **TPL-703**).
-- Must:
-  - Mirror the section keys & order of `template_of` (see §4 → **SCHEMA-003**; advisory **TPL-705**); `status: Proposed` (→ **TPL-701**).
-- May: 
-  - Use `<angle-bracket>` placeholders; RFC-2119 tokens are allowed **only** inside code fences/inline code (→ **TPL-704**).
-- Must not: 
-  - Set `extends` or `supersedes` (keep `null`, → **TPL-703**); must not redefine owners; must not add class-forbidden sections (e.g., `rollout_backout` for strategy → **SCHEMA-021**).
-- Optional pointers: owners_ptr for discoverability (do not embed concrete owners in strategy/delta templates).
-<!-- PROPOSED:end -->
+- **Must**: Include `template_of` (owner|delta|strategy|style-guide|governance); use `status: Proposed`.
+- **Must**: Mirror section keys and order of `template_of` class.
+- **Must not**: Use `extends`, `supersedes`, `governed_by`, `scope`; define `owners`.
+- **May**: Use `<angle-bracket>` placeholders; RFC-2119 keywords only in fenced code examples.
+- **Exemptions**: Link graph participation (LINK-2xx exempt via TPL-703).
+- **Lint**: TPL-700 (E) if missing `template_of`; TPL-703 (E) if participates in link graph.
+
+### 7.6 Governance ADR
+
+- **Must**: Include `scope` (cli|engine|services|other); define authority boundaries within declared scope.
+- **Must**: Use machine-readable constraint blocks as sole binding authority source (see §5 for syntax specification).
+- **Must not**: Use `extends`, `owners_ptr`, `governed_by`, `informs`; use RFC-2119 in prose sections.
+- **May**: Use `informed_by` (receives strategic direction).
+- **Constraint**: Only one active governance ADR per scope (linear supersession required).
+- **Sections**: See §4 for ADR sections specification
+- **Lint**: ADR-SCHEMA-006 (E) if missing `scope`; ADR-NORM-101 (E) if RFC-2119 in prose; ADR-SCHEMA-010 (E) if duplicate scope.
+
+### Cross-Class Validation
+
+- **Relationship consistency**: `informs` requires reciprocal `informed_by` manual entry.
+- **Authority inheritance**: Delta ADRs inherit `governed_by` from base unless scope narrowed.
+- **Scope uniqueness**: Only one active governance ADR per scope domain.
 
 ---
 
-## §8. Pointers & deltas (inheritance rules)
+## §8. Pointers & Deltas (inheritance rules)
 
-- Pin base ADR + version: `extends: ADR-0001@YYYY-MM-DD` or `@<7–40 lowercase hex>`.
+### Pin Format Specification
+
+All relationship fields using `@pin` must follow this format:
+- `ADR-####@YYYY-MM-DD` or `ADR-####@<7-40 lowercase hex>`
+
+**Applies to**: `extends`, `supersedes`, `superseded_by`, `governed_by`, `informs`, `informed_by`
+
+### Delta Inheritance Rules
+
 - **Precedence (child over base)**:
+  1. `overrides.<key>` (replace base content)
+  2. `not_applicable.<key>` (disable with reason)  
+  3. `adds.<key>` (new, child-only content)
+  4. `ptr → ADR-####@pin#<key>` (inherit as-is)
 
-  1. `overrides.<key>` (replace)
-  2. `not_applicable.<key>` (disable with reason)
-  3. `adds.<key>` (new, child-only)
-  4. `ptr → ADR-0001#<key>` (inherit as-is)
-  
-- Each delta must include a **diff summary**.
-- **Strict pin format**: see §10.2.
+### Relationship Inheritance (Delta ADRs)
+
+- **Content inheritance**: `extends` creates content inheritance via delta rules above
+- **Authority inheritance**: `governed_by` inherited from base unless delta narrows scope (then must declare)
+- **Strategic relationships**: `informs`/`informed_by` not inherited (strategy-specific)
+- **Replacement relationships**: `supersedes`/`superseded_by` not inherited (document-specific)
+
+### Requirements
+
+- Each delta must include a **diff summary**
+- Delta ADRs can be a base for other deltas, but can only extend or inherit from that Delta's canonical keys (only explicit inheritance chains)
 
 ---
 
@@ -582,7 +540,7 @@ Add to front-matter: `class: owner | delta | strategy | style-guide | template`.
 | **PROC escalation (pattern neglect)** | ≥3 PROC-241 events for the same file/code in 30 days (tracked in ADR-LOG) | `ADR-PROC-242` (**E**) |
 | **PROC shape pattern matching** | New shape/enum/event names that exact-match or prefix-match entries in owner ADR | `ADR-PROC-242` (**I**) |
 | **PROC telemetry health** | Missing or stale run logs in ADR-LOG (older than 7 days) | `ADR-PROC-250` (**E**) |
-| **SCHEMA (structure/governance; block)** | Canonical key markers missing/out of order; class/status/ID/date format violations; owners redefined where forbidden; invalid/missing `extends@pin`; broken supersede reciprocity | `ADR-SCHEMA-001/002/003/004/005/012/021` (all **E**); `ADR-LINK-200/201/203/204/221` (all **E**) |
+| **SCHEMA (structure/governance; block)** | Canonical key markers missing/out of order; class/status/ID/date format violations; owners redefined where forbidden; invalid/missing `extends`; broken supersede reciprocity | `ADR-SCHEMA-001/002/003/004/005/012/021` (all **E**); `ADR-LINK-200/201/203/204/221` (all **E**) |
 
 > **Note:** Date format errors are **SCHEMA** (`ADR-SCHEMA-005`), not PROC.
 
@@ -932,7 +890,7 @@ Notes:
 - [ ] Rollout & **backout** (Owner/Delta only)  
 - [ ] Evidence links (permalinks)  
 - [ ] `review_by` and revisit triggers  
-- [ ] Deltas: `extends@pin`, `diff_summary`, scoped `applies_to`  
+- [ ] Deltas: `extends`, `diff_summary`, scoped `applies_to`  
 - [ ] Cross-links: `supersedes`/`superseded_by` bi-directional  
 - [ ] Non-normative sections contain **no** RFC-2119 keywords  
 - [ ] Minor tensions auto-resolved & logged (PROC-241/242)  
