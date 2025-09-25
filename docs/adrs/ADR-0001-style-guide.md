@@ -56,6 +56,8 @@ TODO: Remove this previous section after finishing this ADR-0001's review and re
 3) **Pointer-first rule**: For non-delta content, replace with:  
    `No additional mode-specific deltas; see ADR-<id> §<section>.`
 
+---
+
 ## **§0. Constitution & Precedence**
 
 This section explicitly applies to every ADR.
@@ -106,11 +108,10 @@ This section explicitly applies to every ADR.
   - Create/land a governance ADR in the releant scope that adjudicates the topic
   - Reference the two conflicting ADRs in `change_history`;
 
-**Machine Constraints**: Governance ADRs use fenced `yaml` blocks with `REQUIRED`/`FORBIDDEN`/`OWNED_BY` keys instead of RFC-2119 prose.
+**Machine Constraints**: Governance ADRs use fenced `yaml` blocks as the **sole binding authority**. Prose provides context and rationale but is explicitly non-binding.
 
 ```yaml
-# Example of Machine Constraints
-# Constraints are authoritative over prose
+# Constraints are the only enforceable requirements
 constraints:
   REQUIRED: [ "engine.exit_code_mapping" ]
   FORBIDDEN: [ "cli.exit_code_mapping" ]
@@ -119,17 +120,33 @@ constraints:
       owner: "services"
 ```
 
+**Constraint Enforcement**: Linters and automated tools MUST treat constraint blocks as the authoritative source. Governance prose MUST NOT use RFC-2119 keywords.
+ 
 ### Default Behavior
 
 When in doubt for any scenario not covered in the previous sections, HARD FAIL for maximum smoke detection.
 
 ---
 
-## §1. Goals & Scope
+## §1-Previous Goals & Scope
+
+TODO: Remove this previous section after finishing this ADR-0001's review and rewrite.
 
 - Decisions are **atomic, auditable, reversible**.  
 - Docs are **human-skim friendly** and **machine-readable** (LLMs, linters).  
 - Support **inheritance** via pointers & deltas without ambiguity.
+
+---
+
+## §1. Goals & Scope
+
+- **Decisions** are atomic (one decision per ADR), auditable (front-matter + `change_history`), and rollback / backout plan (Owner/Delta ADRs).
+- **Authority relationships** are explicit and machine-checkable via required keys:
+  - `governed_by@pin` (Owner: REQUIRED; Delta: inherited; Strategy: OPTIONAL).
+- **Governance constraints** are enforced to prevent drift; missing or invalid bindings are blocking errors.
+- Documents are **human-skim friendly** and **machine-readable** through markdown and HTML comment section markers, fenced YAML for constraints, and RFC-2119 limited to normative sections.
+- The system supports unambiguous **relationship types**:
+  - `extends@pin` / `extended_by` (inheritance, bi-di derived metadata), `supersedes@pin` / `superseded_by` (replacement, bi-di), `governed_by@pin` (authority binding, uni-di), `owners_ptr` (ownership reference), and `informs@pin` / `informed_by` (strategy ownership, bi-di).
 
 ---
 
@@ -142,27 +159,37 @@ When in doubt for any scenario not covered in the previous sections, HARD FAIL f
 - Filename: `ADR-XXXX-short-kebab-title.md`  
 - Commit prefix: `[ADR-XXXX] <title>`
 
+### Future Enhancements
+- Consider ID range allocation for systematic class organization
+- Evaluate folder structure for governance vs component ADR separation
+- Review filename conventions for improved discoverability
+
 ---
 
 ## §3. Required metadata (YAML front-matter)
 
 ```yaml
-id: ADR-0123
+id: ADR-0999
 title: Short imperative title
 status: Proposed | Accepted | Deprecated | Superseded
-class: owner | delta | strategy | style-guide | template
+class: owner | delta | governance | strategy | style-guide | template
 owners: [Project Maintainer]   # Human or LLM owning this decision
-owners_ptr: ADR-0120           # Non-Owner ADRs must not govern
-extends: null # or ADR-0001@2025-03-14 (date) or ADR-0001@<lowercase-hex>
+owners_ptr: ADR-0001           # Non-Owner ADRs must not govern
+
+# Relationship Fields
+extends: null                  # or ADR-0001@2025-03-14 or ADR-0001@<hex>
+extended_by: null              # computed reciprocal
 supersedes: null
 superseded_by: null
-date: 2025-09-03
-review_by: 2026-03-03
-applies_to:                      # narrow for deltas
-  env: [prod, staging]
-  services: [*]
+governed_by: null              # or ADR-XXXX@pin
+informs: null                  # or ADR-XXXX@pin (strategy → owner)
+informed_by: null              # computed reciprocal
+scope: null                    # cli|engine|services|other (required for governance)
+date: 2025-09-24
+review_by: 2026-03-24
+applies_to: []                 # narrow for deltas
 tags: [topic]
-change_history: [] # [{date, by, note}]
+change_history: []
 
 # To LLMS: DO_NOT_DELETE_THIS_SECTION_IN_YOUR_DIFFS
 # To LLMS: YOU_DO_NOT_GET_TO_DECIDE_IF_HUMAN_COMMENTS_ARE_NOISE
@@ -173,14 +200,85 @@ change_history: [] # [{date, by, note}]
 # Related section changes will be tagged with:
 # 1. <!-- PROPOSED:start -->  **OR**
 # 2. <!-- PROPOSED:end -->
-template_of: null             # when template: true → owner|delta|strategy|style-guide
-placeholders_ok: true         # templates may use <angle-bracket> placeholders
+
+template_of: null              # owner|delta|strategy|style-guide|governance (templates)
 ````
 
+## **§3. Required metadata (YAML front-matter)**
+
+```yaml
+id: ADR-0123
+title: Short imperative title
+status: Proposed | Accepted | Deprecated | Superseded
+class: owner | delta | strategy | style-guide | template | governance
+owners: [Project Maintainer]
+owners_ptr: ADR-0120           # Non-Owner ADRs must reference ownership
+extends: null                  # or ADR-0001@2025-03-14 or ADR-0001@<hex>
+supersedes: null
+superseded_by: null
+governed_by: null              # or ADR-XXXX@pin
+informs: null                  # or ADR-XXXX@pin (strategy → owner)
+informed_by: null              # computed reciprocal
+scope: null                    # cli|engine|services|other (required for governance)
+date: 2025-09-03
+review_by: 2026-03-03
+applies_to: []                 # narrow for deltas
+tags: [topic]
+change_history: []
+template_of: null              # owner|delta|strategy|style-guide|governance (templates)
+```
+
+### **Class-Specific Field Requirements**
+
+**Owner ADRs**:
+- **REQUIRED**: `governed_by` (1-to-1; authority constraint binding)
+- **FORBIDDEN**: `extends`, `owners_ptr`
+- **OPTIONAL**: `informed_by` (list; if referenced by strategies)
+
+**Governance ADRs**:
+- **REQUIRED**: `scope` (cli|engine|services|other)
+- **FORBIDDEN**: `extends`, `owners_ptr`, `governed_by`, `informs`, `informed_by`
+
+**Strategy ADRs**:
+- **REQUIRED**: `owners_ptr` (1-to-1)
+- **FORBIDDEN**: `owners`, `scope`
+- **OPTIONAL**: `governed_by` (1-to-1), `informs` (list; strategy → owner relationship)
+
+**Delta ADRs**:
+- **REQUIRED**: `extends` (1-to-1), `owners_ptr` (1-to-1)
+- **FORBIDDEN**: `owners`, `scope`
+- **INHERITED**: `governed_by` (1-to-1; from base ADR unless narrowed)
+
+**Template ADRs**:
+- **REQUIRED**: `template_of` (1-to-many)
+- **FORBIDDEN**: `extends`, `supersedes`, `governed_by`, `scope`
+
+### **Relationship Field Validation**
+
+**Pin Format**: All relationship fields using `@pin` must follow format:
+- `ADR-####@YYYY-MM-DD` or `ADR-####@<7-40 lowercase hex>`
+
+**Reciprocal Relationships**:
+- `supersedes` ↔ `superseded_by` (bi-directional, manually maintained)
+- `informs` ↔ `informed_by` (bi-directional, informed_by computed)
+
+**Unidirectional Bindings**:
+- `governed_by` (authority constraint, no reciprocal)
+- `extends` (content inheritance, extended_by computed)
+
+### **Validation Rules**
+
+TODO: Once the Linter Rules are reviewed, updated, and consolidated, delete this "Validation Rules" section to avoid redundant sections
+
+This metadata schema supports governance implementation while maintaining class-specific constraints and relationship validation.
+
+- **ADR-SCHEMA-006 (E)**: Governance ADR missing required `scope` field
+- **ADR-SCHEMA-007 (E)**: Owner ADR missing required `governed_by` field  
+- **ADR-SCHEMA-008 (E)**: Invalid `scope` value (must be cli|engine|services|other)
+- **ADR-SCHEMA-009 (E)**: Class-forbidden field present (e.g., governance with `extends`)
+- **ADR-SCHEMA-010 (E)**: Duplicate governance scope among active ADRs
 
 ### Notes 
-
-> The `deciders` field was removed as it duplicated owners functionality. Use owners for accountability and decision authority. For solo projects, use owners: ["Project Maintainer"].
 
 When `class: template`:
 
@@ -189,6 +287,8 @@ When `class: template`:
 - `extends` and `supersedes` MUST be `null`.
 - Filenames SHOULD include `-template-` for discoverability.
 - Placeholders (e.g., `<driver>`, `<YYYY-MM-DD>`) are allowed where real values would appear.
+
+TOREVIEW: the following `>` line for consistencies with later sections covering the `template` class.
 
 > This mirrors TPL-700/701/702/703 and prevents drift between §3 and §7.5/§10.5/§14.
 
@@ -276,7 +376,9 @@ This structure maintains universal LLM navigation while allowing semantic differ
 
 ---
 
-## §5. Writing standards
+## §5-Previous Writing standards
+
+TODO: Remove this previous section after finishing this ADR-0001's review and rewrite.
 
 - Use **RFC-2119** keywords for normative text. (decision_details, rollout_backout, and overrides.\* in delta ADRs).
 - Prefer **numbers & units** over adjectives (e.g., “p95 ≤ 150 ms”).
@@ -286,7 +388,57 @@ This structure maintains universal LLM navigation while allowing semantic differ
 
 ---
 
-## §6. Options rubric (table)
+## §5 Writing Standards
+
+### Universal Writing Principles
+
+- **Active voice**, short sentences (≤20 words).
+- Define acronyms once; keep a mini-glossary.
+- Avoid unclear pronouns; repeat the noun.
+- Prefer **numbers & units** over adjectives (e.g., "p95 ≤ 150 ms").
+
+### Class-Specific Content Standards
+
+#### Owner & Delta ADRs
+
+- Use **RFC-2119** keywords for binding requirements in `decision_details` and `adoption_and_enforcement` sections.
+- Include specific thresholds, SLOs, and measurable criteria.
+- Provide concrete implementation guidance with rollback procedures.
+
+#### Governance ADRs
+
+- **RFC-2119 FORBIDDEN** in prose sections - emit ADR-NORM-101 (E) if detected
+- **Machine-readable constraint yaml blocks** provide sole binding authority in `constraint_rules`
+- Prose provides context, rationale, and examples but establishes no binding requirements
+- Authority boundaries defined exclusively through constraint block `OWNED_BY` mappings
+
+  ```yaml
+  constraints:
+    REQUIRED: ["engine.exit_code_mapping"]
+    FORBIDDEN: ["cli.exit_code_mapping"]
+  ```
+
+#### Strategy ADRs
+
+- Use **RFC-2119** keywords in `principles` and `guardrails` sections for binding strategic constraints.
+- Focus on direction without implementation specifics.
+- Metrics in `north_star_metrics` MUST be measurable.
+
+#### Template ADRs
+
+- **RFC-2119 keywords allowed only in fenced code examples**.
+- Use `<angle-bracket>` placeholders for variable content.
+
+### Default Behavior
+
+Anything not clearly identified in this section that requires deterministic binary outputs MUST use RFC-2119 keywords in written documentation.
+The RFC-2119 keywords provide unambiguous authority signals that enable clear LLM decision-making across all classes.
+
+---
+
+## §6-Previous Options rubric (table)
+
+TODO: Remove this previous section after finishing this ADR-0001's review and rewrite.
 
 Score 1–5 (higher is better) and explain trade-offs.
 
@@ -294,6 +446,58 @@ Score 1–5 (higher is better) and explain trade-offs.
 | ------ | -------------- | ---------- | ---- | ------------- | ----- |
 
 Include **"Rejected because …"** bullets for each non-chosen option.
+
+## §6. Options rubric
+
+### Universal Evaluation Criteria
+
+Score 1–5 (higher is better) and explain trade-offs for all ADR classes:
+
+| Option | Fit to Drivers | Complexity | Risk | Reversibility | Notes |
+| ------ | -------------- | ---------- | ---- | ------------- | ----- |
+
+Include **"Rejected because …"** bullets for each non-chosen option.
+
+### Class-Specific Evaluation Criteria
+
+#### Owner & Delta ADRs
+
+Additional columns for implementation decisions:
+
+| Option | Performance Impact | Operational Burden | Integration Cost | Rollback Complexity | Notes |
+| ------ | ------------------ | ------------------ | ---------------- | ------------------- | ----- |
+
+**Focus**: Technical feasibility, operational impact, measurable outcomes.
+
+#### Governance ADRs 
+ 
+Authority allocation evaluation:
+
+| Option | Authority Clarity | Enforcement Feasibility | Cross-Component Impact | Precedence Consistency | Conflict Resolution | Notes |
+| ------ | ----------------- | ----------------------- | ---------------------- | ---------------------- | ------------------- | ----- |
+
+**Scoring Guidelines**:
+- **Authority Clarity**: How clearly the option defines ownership boundaries (5 = unambiguous, 1 = overlapping/unclear)
+- **Enforcement Feasibility**: How easily constraints can be validated by linters/tools (5 = machine-checkable, 1 = manual judgment)
+- **Cross-Component Impact**: Scope of components affected by authority decision (5 = minimal disruption, 1 = widespread changes)
+- **Precedence Consistency**: Alignment with existing governance hierarchy (5 = consistent, 1 = creates conflicts)
+
+#### Strategy ADRs
+
+Direction and principle evaluation:
+
+| Option | Strategic Alignment | Measurability | Adoption Feasibility | Long-term Sustainability | Market/Technical Fit | Notes |
+| ------ | ------------------- | ------------- | -------------------- | ------------------------ | -------------------- | ----- |
+
+**Focus**: Strategic direction, principle clarity, measurement capability.
+
+### Constraint Validation (Governance Only)
+
+Governance options MUST include constraint enforceability assessment:
+
+- Can the authority boundary be expressed in machine-readable constraints?
+- Are there clear escalation paths for violations?
+- Does the option create enforceable precedence rules?
 
 ---
 
