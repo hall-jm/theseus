@@ -33,7 +33,7 @@ change_history: []
 
 | Version | Date         | Notes                                        |
 | ------- | ------------ | -------------------------------------------- |
-| 0.2.0   | 21 Sept 2025 | Created new `governance` class of ADRs; added new requirements for ADR-SCHEMA-003 to handle, ADR-TEMPLATE-706 to be a catch-all error code for when explicit ADR formatting for a particular section isn't followed; rewrote Section 4 to handle the new `governance` class and create a universal set of keys vs. class-specific set of keys; rewrote Section 0 to handle this ADR's new bootstrap constitution and precedence authority; rewrote sections 0 to 8 in this version; |
+| 0.2.0   | 21 Sept 2025 | Created new `governance` class of ADRs; added new requirements for ADR-SCHEMA-003 to handle, ADR-TEMPLATE-706 to be a catch-all error code for when explicit ADR formatting for a particular section isn't followed; rewrote Section 4 to handle the new `governance` class and create a universal set of keys vs. class-specific set of keys; rewrote Section 0 to handle this ADR's new bootstrap constitution and precedence authority; rewrote sections 0 to 9 in this version; |
 | 0.1.7   | 19 Sept 2025 | Changed ADR-TEMPLT-\* -> ADR-TEMPLATE-\* to improve readability; | 
 | 0.1.6   | 11 Sept 2025 | Rewrite Section 11 to address gaps in the linter's implementation vs. the spirit of what the ADR is trying to capture for deterministic computer processes; |
 | 0.1.5   | 08 Sept 2025 | Created Section 17 to track ADR-0001 enhancements for future development as needed; |
@@ -530,7 +530,7 @@ All relationship fields using `@pin` must follow this format:
 
 **Principle.** If a check fails but does **not** change meaning or safety, tools/reviewers **SHOULD proceed**, emit one structured log line, and **MUST NOT** block.
 
-**ADR Log Location + File Pattern. ("ADR-LOG")** `docs/adr-new/.adr/` + `<YYYY-MM-DD>.jsonl`
+**ADR Log Location + File Pattern. ("ADR-LOG")** `logs/.adr/` + `<YYYY-MM-DD>.jsonl`
 
 ### What belongs where
 
@@ -541,6 +541,7 @@ All relationship fields using `@pin` must follow this format:
 | **PROC shape pattern matching** | New shape/enum/event names that exact-match or prefix-match entries in owner ADR | `ADR-PROC-242` (**I**) |
 | **PROC telemetry health** | Missing or stale run logs in ADR-LOG (older than 7 days) | `ADR-PROC-250` (**E**) |
 | **SCHEMA (structure/governance; block)** | Canonical key markers missing/out of order; class/status/ID/date format violations; owners redefined where forbidden; invalid/missing `extends`; broken supersede reciprocity | `ADR-SCHEMA-001/002/003/004/005/012/021` (all **E**); `ADR-LINK-200/201/203/204/221` (all **E**) |
+| (PROPOSED) **GOV (governance validation; block)** | Constraint syntax violations; scope conflicts; authority mapping errors; governance-specific validation | `ADR-GOV-###` codes (all **E**) |
 
 > **Note:** Date format errors are **SCHEMA** (`ADR-SCHEMA-005`), not PROC.
 
@@ -551,7 +552,7 @@ Treat a change as **PROC-241** if **all** are true:
 1. Diff touches only **non-normative** sections.  
 2. No additions/removals of RFC-2119 tokens.  
 3. No edits to numbers/units adjacent to RFC terms.  
-4. No edits to front-matter schema/link keys (`id,class,status,date,review_by,owners,owners_ptr,extends,supersedes,superseded_by`).  
+4. No edits to front-matter schema/link keys (`id,class,status,date,review_by,owners,owners_ptr,extends,supersedes,superseded_by,governed_by,informs,informed_by,scope`).
 5. No edits to canonical key marker **order**.
 
 If any fail, evaluate under standard **SCHEMA/LINK/NORM** rules.
@@ -571,13 +572,15 @@ If any fail, evaluate under standard **SCHEMA/LINK/NORM** rules.
 
 - **PROC**: Canonicalize formatting (title case, fence languages, link text) **without changing semantics**. **Do not** introduce RFC-2119 language or adjust numbers/units.  
 - **SCHEMA**: Structural/governance issues **MUST** block and **MUST NOT** be auto-resolved by the model.
+- (PROPOSED) **GOV**: Governance constraint and authority issues **MUST** block and **MUST NOT** be auto-resolved by the model.
+
 
 ### Implementation notes (linter)
 
 - Provide a CLI toggle to escalate: `--proc-250-as-error`.  
 - Record `{code,file,violation_type,date}` events in ADR-LOG`; compute rolling 30-day counts for PROC-242.  
 - Classify date-format violations strictly under `ADR-SCHEMA-005` (never PROC).
-
+- (PROPOSED) Governance constraint syntax errors classified under `ADR-GOV-###` codes (never PROC).
 
 ---
 
