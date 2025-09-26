@@ -25,7 +25,7 @@ from adr_linter.policy import (
 )
 
 
-# TOREVIEW: Since policy.py is important constants.py values,
+# TOREVIEW: Since policy.py is importing constants.py values,
 #           is this pytest still needed?
 
 

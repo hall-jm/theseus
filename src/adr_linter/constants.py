@@ -20,8 +20,6 @@ import re
 ADR_LOCATIONS = (
     "docs/adrs/**/*.md",  # New Style Guide Enforced ADR location
     "docs/adrs/*.md",
-    # "docs/adr/**/*.md",      # (optional) legacy tree if present
-    # "docs/adr/*.md",
 )
 
 # --- Lint Code Definitions ---------------------------------------------------
@@ -229,9 +227,12 @@ Enforce YYYY-MM-DD and actual calendar validity
 """
 DATE_KEY_NAMES = ("date", "review_by")
 
+# TOREVIEW: This list needs to be consolidated and centralized in a single
+#           location
 VALID_ADR_CLASSES = {
-    "owner",
     "delta",
+    "governance",
+    "owner",
     "strategy",
     "style-guide",
     "template",
