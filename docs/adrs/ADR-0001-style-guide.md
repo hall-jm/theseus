@@ -49,7 +49,7 @@ change_history: []
 
 This section explicitly applies to every ADR.
 
-### Authority Model
+### 0.1 Authority Model
 
 - **Framework Authority**: Modification of ADR-0001 itself (classes, canonical sections, linter bands); known bootstrap violation as accepted tradeoff to unblock work;  
 - **Governance Authority**: Cross-component boundary definition and conflict resolution within declared scope
@@ -57,7 +57,7 @@ This section explicitly applies to every ADR.
 - **Final Authority**: Project Maintainer(s); definition is outside of scope for this ADR
   - LLMs must accept this ambiguity and tension; no remediation was intentionally created for this section's rewriting
 
-### Scope Taxonomy & Precedence
+### 0.2 Scope Taxonomy & Precedence
 
 **Domain Scopes** (precedence order for cross-scope conflicts):
 
@@ -76,7 +76,7 @@ This section explicitly applies to every ADR.
 - Cross-scope conflicts resolved by Domain Scope mapping above
 - **Transitional**: ADR-0001 §0 acts as default governance **only until** the first scope-specific Governance ADR for that domain is **Accepted**. Upon acceptance, §0 ceases to govern that scope. *(review_by: 2026-03-01)*
 
-### Constraint Binding Semantics
+### 0.3 Constraint Binding Semantics
 
 - `extends`: Content inheritance with delta semantics
 - `governed_by`: Authority constraint binding (single)
@@ -85,7 +85,7 @@ This section explicitly applies to every ADR.
   - Strategy ADRs: warn if missing; error if they assert boundaries
 - `supersedes`: Decision replacement with reciprocal tracking
 
-### Conflict Resolution Protocol
+### 0.4 Conflict Resolution Protocol
 
 1. **Same-scope**: Latest superseded governance ADR in linear chain controls
 2. **Governance mapping**:  If the governance names a specific topic (e.g., “exit codes → CLI”), that mapping overrides the generic order. Then fall back to **Cross-scope** 
@@ -100,10 +100,14 @@ This section explicitly applies to every ADR.
 
 **Constraint Enforcement**: Linters and automated tools MUST treat constraint blocks as the authoritative source. Governance prose MUST NOT use RFC-2119 keywords.
  
-### Default Behavior
+### 0.5 Default Behavior
 
 When in doubt for any governance scenario not covered here, HARD FAIL for maximum smoke detection.
 When in conflict with later sections regarding process behavior, HARD FAIL for maximum smoke detection.
+
+When an LLM gets stuck on wording conflict, default to RULE-OVER-PROSE: the explicit, nearest-scoped rule statement for a specific code (e.g., “ADR-NORM-101: Do X”) takes precedence over any surrounding narrative, examples, or commentary. 
+
+If there’s still ambiguity, fail-closed in smoke-detector mode (first hit) rather than inventing stricter behavior the linter doesn’t implement.
 
 ## §1. Goals & Scope
 
@@ -644,7 +648,6 @@ When **class is `template`**:
   - “Decision Details” → `decision_details`
   - “Rollout & Backout” / “Rollout and Backout” → `rollout_backout`
   - “Requirements (normative)” under “Consequences & Risks” → `consequences_and_risks.requirements`
-- **Report all violations** in a file (no caps) for NORM scanning.
 
 **Class interactions.**
 - `class: governance` — governance **prose is excluded from NORM scans** and enforced instead under **ADR-GOVERN-407 (E)**; only fenced `yaml` `constraint_rules` is binding authority (see §0, §5).  
@@ -1002,6 +1005,8 @@ Description: Template structure and constraints that provide rules which can be 
   - CLI & Engine ADRs own error codes
   - Policy & Constants ADRs own global variables
   - Parser & Constants ADRs own global variables
+- **Support for the dotted key consequences_and_risks.requirements** is deferred until the parser recognizes dotted keys (see parser/structure.py key-marker regex). 
+  - Until then, NORM rules treat only decision_details and rollout_backout as normative.” Is that acceptable?
 
 ### Linter Improvements (Ariadne) (in order)
 
