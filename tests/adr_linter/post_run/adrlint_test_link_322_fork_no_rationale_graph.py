@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python3
-# tests/adr_linter/post_run/adrlint_test_link_222_fork_no_rationale_graph.py
+# tests/adr_linter/post_run/adrlint_test_link_322_fork_no_rationale_graph.py
 
 """
 ADR-0001 · §14 Linter Rules Reference
-ADR-LINK-222 (W): Supersede closure: fork without rationale in
+ADR-LINK-322 (W): Supersede closure: fork without rationale in
                   `change_history`.
-Linting Tests: ADRLINT-030
 """
 
 from __future__ import annotations
@@ -14,8 +13,8 @@ from __future__ import annotations
 from adr_linter.report import Report
 from adr_linter.services.index import load_files, build_index_from_files
 from adr_linter.validators.registry import post_run
-from adr_linter.validators.link.link_222_fork_no_rationale import (
-    validate_link_222_fork_no_rationale_for_meta,
+from adr_linter.validators.link.link_322_fork_no_rationale import (
+    validate_link_322_fork_no_rationale_for_meta,
 )
 
 from ..conftest import (
@@ -26,6 +25,8 @@ from ..conftest import (
     assert_warning_code,
 )
 
+
+_ERROR_CODE = "ADR-LINK-322"
 
 """
 What sometimes looks like “two homes” is actually **two *levels of tests*
@@ -107,7 +108,7 @@ ADR-LINK-222.
 # --- Integration Lens Testing ------------------------------------------------
 
 
-def test_adrlint030_link222_fork_without_rationale_graph(
+def test_adrlint_link322_fork_without_rationale_graph(
     _route_and_reset_workspace,
 ):
     """
@@ -130,13 +131,13 @@ def test_adrlint030_link222_fork_without_rationale_graph(
     idx = build_index_from_files(load_files(_route_and_reset_workspace))
     rpt = Report()
     post_run(idx, rpt)
-    assert _has_code(rpt, "ADR-LINK-222")
+    assert _has_code(rpt, _ERROR_CODE)
 
 
 # --- Unit Lens Testing -------------------------------------------------------
 
 
-def test_adrlint059_link222_fork_validation_consolidated_immediate(
+def test_adrlint_link322_fork_validation_consolidated_immediate(
     _route_and_reset_workspace,
 ):
     """
@@ -159,12 +160,16 @@ def test_adrlint059_link222_fork_validation_consolidated_immediate(
     )
 
     rpt = Report()
-    validate_link_222_fork_no_rationale_for_meta(ctx.meta, ctx.path, rpt)
 
-    assert_warning_code(rpt, "ADR-LINK-222")
+    # TOREVIEW: There has to be a better way to handle this through
+    #           post_run() instead of importing this functionally in an
+    #           abnormal way compared to all other pytests
+    validate_link_322_fork_no_rationale_for_meta(ctx.meta, ctx.path, rpt)
+
+    assert_warning_code(rpt, _ERROR_CODE)
 
 
-def test_adrlint060_link222_fork_validation_with_rationale(
+def test_adrlint_link322_fork_validation_with_rationale(
     _route_and_reset_workspace,
 ):
     """
@@ -193,11 +198,11 @@ def test_adrlint060_link222_fork_validation_with_rationale(
     )
 
     rpt = Report()
-    validate_link_222_fork_no_rationale_for_meta(ctx.meta, ctx.path, rpt)
-    assert not _has_code(rpt, "ADR-LINK-222")
+    validate_link_322_fork_no_rationale_for_meta(ctx.meta, ctx.path, rpt)
+    assert not _has_code(rpt, _ERROR_CODE)
 
 
-def test_adrlint061_link222_fork_validation_single_supersede(
+def test_adrlint_link322_fork_validation_single_supersede(
     _route_and_reset_workspace,
 ):
     """
@@ -220,12 +225,12 @@ def test_adrlint061_link222_fork_validation_single_supersede(
     )
 
     rpt = Report()
-    validate_link_222_fork_no_rationale_for_meta(ctx.meta, ctx.path, rpt)
+    validate_link_322_fork_no_rationale_for_meta(ctx.meta, ctx.path, rpt)
 
-    assert not _has_code(rpt, "ADR-LINK-222")
+    assert not _has_code(rpt, _ERROR_CODE)
 
 
-def test_adrlint062_link222_fork_without_rationale_once(
+def test_adrlint_link322_fork_without_rationale_once(
     _route_and_reset_workspace,
 ):
     """
@@ -250,6 +255,6 @@ def test_adrlint062_link222_fork_without_rationale_once(
     )
 
     rpt = Report()
-    validate_link_222_fork_no_rationale_for_meta(ctx.meta, ctx.path, rpt)
+    validate_link_322_fork_no_rationale_for_meta(ctx.meta, ctx.path, rpt)
 
-    assert_warning_code(rpt, "ADR-LINK-222")
+    assert_warning_code(rpt, _ERROR_CODE)

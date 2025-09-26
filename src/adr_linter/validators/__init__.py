@@ -9,15 +9,18 @@ Execution order and wiring live in `tools.adr_linter.validators.registry`.
 This module intentionally avoids defining a pipeline to prevent duplication.
 """
 
-from __future__ import annotations
+# TODO: Delete this code comment block once the 26 September 2025
+#       round of validator review and refactoring is complete
+
+# from __future__ import annotations
 
 # Re-export commonly used rule entrypoints for convenience (optional)
-from .link.link_205_governance import validate_link_205_governance
-from .link.link_222_fork_no_rationale import (
-    validate_link_222_fork_no_rationale_for_meta,
-)
+# from .link.link_205_governance import validate_link_205_governance
+# from .link.link_222_fork_no_rationale import (
+#     validate_link_222_fork_no_rationale_for_meta,
+# )
 
-__all__ = [
-    "validate_link_205_governance",
-    "validate_link_222_fork_no_rationale_for_meta",
-]
+# __all__ = [
+#     "validate_link_205_governance",
+#     "validate_link_222_fork_no_rationale_for_meta",
+# ]

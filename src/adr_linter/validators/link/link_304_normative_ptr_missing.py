@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python3
-# src/adr_linter/validators/link/link_204_normative_ptr_missing.py
+# src/adr_linter/validators/link/link_304_normative_ptr_missing.py
 
-"""ADR-LINK-204 — Pointer to normative section key missing in base.
+"""ADR-LINK-304 — Pointer to normative section key missing in base.
 
 Ref: ADR-0001 §10.3 Pointers
 Behavior mirrors the legacy implementation for normative-section pointers.
@@ -13,12 +13,24 @@ from ...constants import NORMATIVE_KEYS, EXTENDS_RX
 from ...parser.structure import parse_document_structure
 
 
-def validate_link_204_normative_ptr_missing(ctx, rpt) -> None:
-    """Emit ADR-LINK-204 when ptr→<normative_key> is missing in base ADR."""
+_ERROR_CODE = "ADR-LINK-304"
+
+
+def validate_link_304_normative_ptr_missing(ctx, rpt) -> None:
+    """
+    Emit ADR-LINK-304 when ptr→<normative_key> is missing in base ADR.
+    """
     meta = ctx.meta
     path = ctx.path
     all_idx = ctx.all_idx
     section_info = ctx.section_info
+
+    # TOREVIEW: Pins vs IDs: This code resolves the base by ID only
+    #           (split("@")[0]), ignoring the pin’s version/hash. That
+    #           means it checks against the current indexed body of the
+    #           base ADR, not the pinned snapshot.
+    # This behavior may diverge from strict “at-pin” validation implied by §8
+    # if the base evolved.
 
     ext = meta.get("extends")
     base = None
@@ -46,11 +58,11 @@ def validate_link_204_normative_ptr_missing(ctx, rpt) -> None:
         """
         pass
 
-    # Emit 204 only for normative section pointers missing in base
+    # Emit 304 only for normative section pointers missing in base
     for key in ptr_map.keys():
         if key in NORMATIVE_KEYS and key not in base_keys:
             rpt.add(
-                "ADR-LINK-204",
+                _ERROR_CODE,
                 path,
                 f"ptr→{key} missing normative section in base "
                 f"{base['meta']['id']}",

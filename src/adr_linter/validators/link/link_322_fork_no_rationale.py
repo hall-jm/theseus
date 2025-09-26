@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python3
-# src/adr_linter/validators/link/link_222_fork_no_rationale.py
+# src/adr_linter/validators/link/link_322_fork_no_rationale.py
 
 """
-ADR-LINK-222 — Supersede fork without rationale in `change_history`.
-
+ADR-LINK-322 — Supersede fork without rationale in `change_history`.
 Ref: ADR-0001 §10.4 (Supersede closure map)
-Behavior mirrors the previous `validate_fork_rationale` in legacy.py
 """
 
 from __future__ import annotations
@@ -14,12 +12,14 @@ from __future__ import annotations
 from typing import Dict
 from pathlib import Path
 
+_ERROR_CODE = "ADR-LINK-322"
 
-def validate_link_222_fork_no_rationale_for_meta(
+
+def validate_link_322_fork_no_rationale_for_meta(
     meta: Dict, path: Path, rpt
 ) -> None:
     """
-    Emit ADR-LINK-222 when an ADR supersedes 2+ ADRs without fork rationale.
+    Emit ADR-LINK-322 when an ADR supersedes 2+ ADRs without fork rationale.
     """
     supersedes = meta.get("supersedes")
     if isinstance(supersedes, str):
@@ -52,7 +52,7 @@ def validate_link_222_fork_no_rationale_for_meta(
 
     if not has_rationale:
         rpt.add(
-            "ADR-LINK-222",
+            _ERROR_CODE,
             path,
             f"Fork of {len(supersedes)} ADRs without rationale "
             f"in change_history: {supersedes}",

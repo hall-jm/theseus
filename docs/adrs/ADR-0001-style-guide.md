@@ -44,7 +44,7 @@ change_history: []
 | 0.1.1   | 05 Sept 2025 | New proposed sections for class `template` documentation in the style guide; |
 | 0.1.0   | 03 Sept 2025 | Initial draft of template file               |
 
-## **§0. Constitution & Precedence**
+## §0. Constitution & Precedence
 
 This section explicitly applies to every ADR.
 
@@ -579,24 +579,31 @@ If any fail, evaluate under standard **SCHEMA/LINK/NORM** rules.
 
 ### 10.1 Bi-directional links
 
+Focus: bi-directional links between ADRs: do they exist?
+
 - `supersedes: ADR-<id>@<pin> (see §8)` **requires** reciprocal `superseded_by` on the target.
 - `informs: ADR-<id>@<pin> (see §8)` **requires** reciprocal `informed_by` on the target.
-- **Lint**: `ADR-LINK-200` (E) missing reciprocal link.
+- **Lint**: `ADR-LINK-300` (E) missing reciprocal link.
 
-### 10.2 Pinned `extends` (allowed format)
+### 10.2 Uni-directional links
 
-- See Section 8 for allowed pinned formats
-- **Lint**: `ADR-LINK-201` (E) missing pin; `ADR-LINK-203` (E) bad format.
+Focus: uni-directional links between ADRs: do they exist?
 
-### 10.3 Pointers
+- See §8 for allowed pinned formats
+- **Lint**: `ADR-LINK-301` (E) missing pin; `ADR-LINK-303` (E) bad format.
 
-- **Warn**: `ADR-LINK-202` (W) pointer to missing section key in base (probable rename).
+### 10.3 Pin Formatting
+
+Focus: uni-directional & bi-directional links between ADRs: are they formatted correctly?
+
+- See §8 for allowed pinned formats
+- **Warn**: `ADR-LINK-302` (W) pointer to missing section key in base (probable rename).
 
 ### 10.4 Supersede closure map
 
-- **Info**: `ADR-LINK-220` closure: multiple descendants; add rationale.
-- **Error**: `ADR-LINK-221` cycle detected.
-- **Warn**: `ADR-LINK-222` fork without rationale.
+- **Info**: `ADR-LINK-320` closure: multiple descendants; add rationale.
+- **Error**: `ADR-LINK-321` cycle detected.
+- **Warn**: `ADR-LINK-322` fork without rationale.
 
 ### 10.5 Template exemptions
 

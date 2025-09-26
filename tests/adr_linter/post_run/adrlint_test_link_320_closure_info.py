@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python3
-# tests/adr_linter/post_run/adrlint_test_link_220_closure_info.py
+# tests/adr_linter/post_run/adrlint_test_link_320_closure_info.py
 
 """
 ADR-0001 · §14 Linter Rules Reference
-ADR-LINK-220 (I): Supersede closure: multiple descendants (informational).
-Linting Tests: ADRLINT-059
+ADR-LINK-320 (I): Supersede closure: multiple descendants (informational).
 """
 
 from __future__ import annotations
@@ -20,14 +19,15 @@ from ..conftest import (
     _has_code,
 )
 
+_ERROR_CODE = "ADR-LINK-320"
 
-def test_adrlint031_link220_multiple_descendants_info(
+
+def test_adrlint_link320_multiple_descendants_info(
     _route_and_reset_workspace,
 ):
     """
     Pre-refactored pytest: ADRLINT-031
-    Rule being tested: ADR-LINK-220 — Supersede closure: multiple descendants
-                                      (informational).
+    Rule being tested: ADR-LINK-320 — Supersede closure: multiple descendants.
     """
     # Base ADR
     base_md = _good_meta_front_matter(**{"id": "ADR-0001"}) + "Base"
@@ -59,4 +59,4 @@ def test_adrlint031_link220_multiple_descendants_info(
     idx = build_index_from_files(all_files)
     rpt = Report()
     post_run(idx, rpt)
-    assert _has_code(rpt, "ADR-LINK-220")
+    assert _has_code(rpt, _ERROR_CODE)

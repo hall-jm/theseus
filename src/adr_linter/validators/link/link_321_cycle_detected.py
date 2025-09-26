@@ -1,21 +1,23 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python3
-# src/adr_linter/validators/link/link_221_cycle_detected.py
+# src/adr_linter/validators/link/link_321_cycle_detected.py
 
 """
-ADR-LINK-221 — Supersede closure: cycle detected.
+ADR-LINK-321 — Supersede closure: cycle detected.
 Ref: ADR-0001 §10.4
 """
 
 from __future__ import annotations
 
+_ERROR_CODE = "ADR-LINK-321"
 
-def validate_link_221_cycle_detected(
+
+def validate_link_321_cycle_detected(
     graph: dict[str, list[str]], idx: dict, rpt
 ) -> None:
     """
-    Run DFS on the supersedes graph; emit ADR-LINK-221 once if any cycle
-    exists.
+    Run DFS (<-- ???) on the supersedes graph; emit ADR-LINK-321 once
+    if any cycle exists.
     """
     visited = set()
     rec_stack = set()
@@ -42,7 +44,7 @@ def validate_link_221_cycle_detected(
         for node, edges in graph.items():
             if edges:
                 rpt.add(
-                    "ADR-LINK-221",
+                    _ERROR_CODE,
                     idx[node]["path"],
                     "supersede cycle detected",
                 )

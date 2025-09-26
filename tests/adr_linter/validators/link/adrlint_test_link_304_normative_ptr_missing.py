@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python3
-# tests/adr_linter/link/adrlint_test_link_204_normative_ptr_missing.py
+# tests/adr_linter/link/adrlint_test_link_304_normative_ptr_missing.py
 
 """
 ADR-0001 · §14 Linter Rules Reference
 ADR-LINK-204 (E)**: Pointer to normative section key missing in base.
-Linting Tests: ADRLINT-019b
 """
 
 from __future__ import annotations
@@ -22,7 +21,10 @@ from ...conftest import (
 )
 
 
-def test_adrlint028_link204_normative_pointer_validation(
+_ERROR_CODE = "ADR-LINK-304"
+
+
+def test_adrlint_link304_normative_pointer_validation(
     _route_and_reset_workspace,
 ):
     """
@@ -86,4 +88,4 @@ ptr:
     )
     rpt = Report()
     run_all(ctx, rpt)
-    assert _has_code(rpt, "ADR-LINK-204")
+    assert _has_code(rpt, _ERROR_CODE)

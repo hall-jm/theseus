@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python3
-# tests/adr_linter/post_run/adrlint_test_link_221_cycle_detected.py
+# tests/adr_linter/post_run/adrlint_test_link_321_cycle_detected.py
 
 """
 ADR-0001 · §14 Linter Rules Reference
-ADR-LINK-221 (E): Supersede closure: cycle detected.
-Linting Tests: ADRLINT-029
+ADR-LINK-321 (E): Supersede closure: cycle detected.
 """
 
 from __future__ import annotations
@@ -21,7 +20,10 @@ from ..conftest import (
 )
 
 
-def test_adrlint029_link221_supersede_cycle_detection(
+_ERROR_CODE = "ADR-LINK-321"
+
+
+def test_adrlint_link321_supersede_cycle_detection(
     _route_and_reset_workspace,
 ):
     """
@@ -59,4 +61,4 @@ def test_adrlint029_link221_supersede_cycle_detection(
     idx = build_index_from_files(load_files(_route_and_reset_workspace))
     rpt = Report()
     post_run(idx, rpt)
-    assert _has_code(rpt, "ADR-LINK-221")
+    assert _has_code(rpt, _ERROR_CODE)

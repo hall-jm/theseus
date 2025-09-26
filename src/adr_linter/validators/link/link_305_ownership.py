@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python3
-# src/adr_linter/validators/link/link_205_governance.py
+# src/adr_linter/validators/link/link_305_ownership.py
 
 """
-ADR-LINK-205 — Missing references to governing ADRs.
+ADR-LINK-305 — Missing references to owning ADRs.
                OWNER ADR, not GOVERNANCE ADR (bad wording).
 
 Behavior is copied verbatim from the legacy implementation.
 
-Ref: ADR-0001 §10.5 · ADR-LINK-205
+Ref: ADR-0001 §10.5 · ADR-LINK-305
 """
 
 from __future__ import annotations
@@ -16,9 +16,12 @@ from __future__ import annotations
 from typing import List
 
 
-def validate_link_205_governance(ctx, rpt) -> None:
+_ERROR_CODE = "ADR-LINK-305"
+
+
+def validate_link_305_ownership(ctx, rpt) -> None:
     """
-    ADR-LINK-205: Missing references to governing ADRs
+    ADR-LINK-305: Missing references to governing ADRs
 
     Check if non-owner ADRs reference their governing documents appropriately.
     (Identical behavior to legacy implementation.)
@@ -27,11 +30,19 @@ def validate_link_205_governance(ctx, rpt) -> None:
     # FIXME: Wrong word choice in light of new `governance` ADR class
     #        Needs to be rewritten to clarify this is for ownership of an
     #        ADR, not the cross-ADR governance chain (as of 2025-09-25)
-    #        e.g., ADR-0001 owns ADR-0006 CLI Ownership, but for pieces
+    #        e.g., hypothetical:
+    #              ADR-0001 owns ADR-0006 CLI Ownership, but for pieces
     #              that could touch the same item such as CLI error codes
     #              governance is for handling cli <-> engine <-> services
     #              error code handling or scope of ownership and how to
     #              navigate boundary ambiguities
+
+    # FIXME: This validator partially validates LINK-305 (presence of a
+    #        reference for strategies; existence of referenced IDs) but does
+    #        not implement the core requirement that all non-Owners
+    #        (notably Deltas) must have owners_ptr pointing to an Owner ADR.
+    #        Sources: §3, §7.2, §7.3.
+
     meta = ctx.meta
     path = ctx.path
     all_idx = ctx.all_idx
@@ -40,8 +51,8 @@ def validate_link_205_governance(ctx, rpt) -> None:
     owners_ptr = meta.get("owners_ptr")
     extends = meta.get("extends")
 
-    # Skip owner and style-guide ADRs (they don't need governance references)
-    if adr_class in ("owner", "style-guide"):
+    # Skip owner and style-guide ADRs (they don't need ownership references)
+    if adr_class in ("owner", "style-guide", "governance"):
         return
 
     # Skip templates (they're scaffolds, not real decisions)
@@ -49,46 +60,46 @@ def validate_link_205_governance(ctx, rpt) -> None:
         return
 
     # Check for governance references
-    missing_governance: List[str] = []
+    missing_ownership: List[str] = []
 
-    # For delta ADRs: extends should provide governance
+    # For delta ADRs: extends should provide ownership
     if adr_class == "delta":
         if not extends or extends in ("null", "", None):
-            missing_governance.append("extends (required for delta)")
+            missing_ownership.append("extends (required for delta)")
 
     # For strategy ADRs: should have owners_ptr
     elif adr_class == "strategy":
         if not owners_ptr:
-            missing_governance.append("owners_ptr (required for strategy)")
+            missing_ownership.append("owners_ptr (required for strategy)")
 
-    # Collect referenced governance ADR ids
-    governance_refs: List[str] = []
+    # Collect referenced ownership ADR ids
+    ownership_refs: List[str] = []
     if extends:
         base_id = (
             extends.split("@")[0] if "@" in str(extends) else str(extends)
         )
         if base_id.startswith("ADR-"):
-            governance_refs.append(base_id)
+            ownership_refs.append(base_id)
     if owners_ptr:
-        governance_refs.append(str(owners_ptr))
+        ownership_refs.append(str(owners_ptr))
 
     # Verify referenced ADRs exist
     missing_refs: List[str] = []
-    for ref in governance_refs:
+    for ref in ownership_refs:
         if ref not in all_idx:
             missing_refs.append(ref)
 
     # Report issues
-    if missing_governance:
+    if missing_ownership:
         rpt.add(
-            "ADR-LINK-205",
+            _ERROR_CODE,
             path,
-            f"Missing governance references: {', '.join(missing_governance)}",
+            f"Missing ownership references: {', '.join(missing_ownership)}",
         )
 
     if missing_refs:
         rpt.add(
-            "ADR-LINK-205",
+            _ERROR_CODE,
             path,
             f"References to non-existent ADRs: {', '.join(missing_refs)}",
         )
