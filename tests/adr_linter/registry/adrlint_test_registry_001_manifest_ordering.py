@@ -53,7 +53,7 @@ def test_adrlint954_ordering_sanity_smoke():
     assert idx("ADR-SCHEMA-002") < idx("ADR-LINK-300")
     assert idx("ADR-SCHEMA-005") < idx("ADR-LINK-300")
     assert idx("ADR-SCHEMA-003") < idx("ADR-LINK-300")
-    assert idx("ADR-SCHEMA-021") < idx("ADR-LINK-300")
+    assert idx("ADR-SCHEMA-013") < idx("ADR-LINK-300")
     assert idx("ADR-LINK-305") < idx("ADR-META-150")
     assert idx("ADR-LINK-305") < idx("ADR-NORM-101")
     assert idx("ADR-NORM-102") < idx("ADR-TEMPLATE-700")

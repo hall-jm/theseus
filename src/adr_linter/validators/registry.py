@@ -41,12 +41,13 @@ from ..services.linkgraph import build_supersede_graph
 # 1) SCHEMA (meta/front-matter)
 from .schema.schema_001_required_meta import validate_schema_001_required_meta
 from .schema.schema_002_class_value import validate_schema_002_class_value
+from .schema.schema_003_keys_order import validate_schema_003_keys_order
 from .schema.schema_005_date_format import validate_schema_005_date_format
-from .schema.schema_011_owner_no_extends import (
-    validate_schema_011_owner_no_extends,
-)
 from .schema.schema_004_status_transition import (
     validate_schema_004_status_transition,
+)
+from .schema.schema_011_owner_no_extends import (
+    validate_schema_011_owner_no_extends,
 )
 from .schema.schema_012_non_owner_no_owners import (
     validate_schema_012_non_owner_no_owners,
@@ -55,11 +56,13 @@ from .schema.schema_013_non_owner_identify_ownership import (
     validate_schema_013_non_owner_identify_ownership,
 )
 
+# TODO: Refactor the way structure-specific validation is handled now that
+#       validators have a "core" component and class-specific component
 # 2) SCHEMA (structure)
-from .schema.schema_021_strategy_no_rollout import (
-    validate_schema_021_strategy_no_rollout,
-)
-from .schema.schema_003_keys_order import validate_schema_003_keys_order
+# from .schema.schema_021_strategy_no_rollout import (
+#     validate_schema_021_strategy_no_rollout,
+# )
+# from .schema.schema_003_keys_order import validate_schema_003_keys_order
 
 # 3) LINK (per-file)
 from .link import LINK_RULES_PER_FILE, LINK_RULES_POST_RUN
@@ -179,7 +182,8 @@ ORDERED_RULES_PER_FILE: List[Tuple[str, Callable]] = [
     ("ADR-SCHEMA-011", validate_schema_011_owner_no_extends),
     ("ADR-SCHEMA-012", validate_schema_012_non_owner_no_owners),
     ("ADR-SCHEMA-013", validate_schema_013_non_owner_identify_ownership),
-    ("ADR-SCHEMA-021", validate_schema_021_strategy_no_rollout),
+    # --- schema band (structure) ---
+    # ("ADR-SCHEMA-021", validate_schema_021_strategy_no_rollout),
     # --- link band (per-file) ---
     *LINK_RULES_PER_FILE,
     # ("ADR-LINK-300", validate_link_300_bidi_links),

@@ -97,11 +97,16 @@ CODES = {
     "ADR-SCHEMA-011": ("E", "Owner ADR must not use `extends`."),
     "ADR-SCHEMA-012": ("E", "Non-Owner ADRs must never use `owner`."),
     "ADR-SCHEMA-013": ("E", "Non-Owner ADRs must identify ADR ownership."),
-    "ADR-SCHEMA-021": (
-        "E",
-        "Strategy ADR contains `rollout_backout` (by marker **or** heading "
-        "`Rollout & Backout`).",
-    ),
+    # FIXME: Centralize and consolidate how this information is used across
+    #        the application; changes made in registry.py reflecting a code
+    #        is not in use needs to be duplicated here
+    # TODO: Refactor the way structure-specific validation is handled now that
+    #       validators have a "core" component and class-specific component
+    # "ADR-SCHEMA-021": (
+    #     "E",
+    #     "Strategy ADR contains `rollout_backout` (by marker **or** heading "
+    #     "`Rollout & Backout`).",
+    # ),
     # T
     "ADR-TEMPLATE-700": (
         "E",
