@@ -27,7 +27,7 @@ def validate_norm_101_rfc_outside_normative(ctx, rpt) -> None:
         return
 
     body = ctx.body
-    section_info = ctx.section_data
+    section_data = ctx.section_data
     path = ctx.path
 
     # TODO: Get an estimated line count of how large the front matter
@@ -35,10 +35,10 @@ def validate_norm_101_rfc_outside_normative(ctx, rpt) -> None:
     #       number
 
     # Start with precomputed exclusions (fences, inline code, URLs, comments).
-    normative_exclusions = list(section_info.exclusion_ranges)
+    normative_exclusions = list(section_data.exclusion_ranges)
 
     # Exclude normative sections entirely from scanning.
-    for key, content in section_info.sections_by_key.items():
+    for key, content in section_data.sections_by_key.items():
         if key in NORMATIVE_KEYS:
             start = body.find(content)
             if start != -1:
@@ -60,7 +60,7 @@ def validate_norm_101_rfc_outside_normative(ctx, rpt) -> None:
 
         # Try to capture nearest preceding heading text for context.
         containing_section = None
-        for heading_text, _, h_pos, _ in reversed(section_info.headings):
+        for heading_text, _, h_pos, _ in reversed(section_data.headings):
             if h_pos < pos:
                 containing_section = heading_text
                 break

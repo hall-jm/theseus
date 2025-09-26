@@ -90,7 +90,7 @@ def validate_norm_102_vague_terms_in_normative(ctx, rpt) -> None:
     detection.
 
     Args:
-        ctx: Document context with meta, body, section_info
+        ctx: Document context with meta, body, section_data
         rpt: Report object for collecting validation findings
 
     Behavior:
@@ -110,9 +110,9 @@ def validate_norm_102_vague_terms_in_normative(ctx, rpt) -> None:
 
     body = ctx.body
     path = ctx.path
-    section_info = ctx.section_data
+    section_data = ctx.section_data
 
-    for key, content in section_info.sections_by_key.items():
+    for key, content in section_data.sections_by_key.items():
         if key not in NORMATIVE_KEYS:
             continue
 

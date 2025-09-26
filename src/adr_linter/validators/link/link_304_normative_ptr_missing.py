@@ -23,7 +23,7 @@ def validate_link_304_normative_ptr_missing(ctx, rpt) -> None:
     meta = ctx.meta
     path = ctx.path
     all_idx = ctx.all_idx
-    section_info = ctx.section_data
+    section_data = ctx.section_data
 
     # TOREVIEW: Pins vs IDs: This code resolves the base by ID only
     #           (split("@")[0]), ignoring the pin’s version/hash. That
@@ -42,15 +42,15 @@ def validate_link_304_normative_ptr_missing(ctx, rpt) -> None:
 
     # Collect pointers from fenced YAML blocks: ptr: { key: ... }
     ptr_map = {}
-    for blk in section_info.yaml_blocks:
+    for blk in section_data.yaml_blocks:
         if isinstance(blk.get("ptr"), dict):
             ptr_map.update(blk["ptr"])
     if not ptr_map:
         return
 
     # Determine which keys exist in the base ADR
-    base_section_info = parse_document_structure(base["body"])
-    base_keys = {k for k, _, _ in base_section_info.key_markers}
+    base_section_data = parse_document_structure(base["body"])
+    base_keys = {k for k, _, _ in base_section_data.key_markers}
     if not base_keys:
         """
         Fallback via heading mapping already handled inside legacy parser if

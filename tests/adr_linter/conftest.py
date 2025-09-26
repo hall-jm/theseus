@@ -19,7 +19,7 @@ from adr_linter.parser.front_matter import parse_front_matter
 from adr_linter.parser.structure import (
     parse_document_structure,
 )
-from adr_linter.models import ValidationContext
+from adr_linter.models import ValidationData
 from adr_linter.report import Report  # noqa: F401
 from adr_linter.constants import CODES as K_CODES  # for assert helpers
 
@@ -68,13 +68,13 @@ def _write_text(base: Path, rel: str, text: str) -> Path:
     return p
 
 
-def _ctx_from_path(p: Path) -> ValidationContext:
+def _ctx_from_path(p: Path) -> ValidationData:
     raw = p.read_text(encoding="utf-8")
     meta, end = parse_front_matter(raw)
     body = raw[end:]
     sec = parse_document_structure(body)
-    return ValidationContext(
-        meta=meta, body=body, path=p, section_info=sec, all_idx={}
+    return ValidationData(
+        meta=meta, body=body, path=p, section_data=sec, all_idx={}
     )
 
 

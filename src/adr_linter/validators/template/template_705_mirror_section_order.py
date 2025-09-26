@@ -22,7 +22,7 @@ def validate_template_705_mirror_section_order(ctx, rpt) -> None:
         return
 
     expected = expected_keys_for(template_of)
-    found_keys = [k for k, _, _ in ctx.section_info.key_markers]
+    found_keys = [k for k, _, _ in ctx.section_data.key_markers]
 
     if expected and found_keys:
         expected_present = [k for k in expected if k in found_keys]

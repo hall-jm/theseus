@@ -21,7 +21,7 @@ def validate_delta_300_override_target_missing(ctx, rpt) -> None:
     meta = ctx.meta
     path = ctx.path
     all_idx = ctx.all_idx
-    section_info = ctx.section_info
+    section_data = ctx.section_data
 
     ext = meta.get("extends")
     base = None
@@ -37,7 +37,7 @@ def validate_delta_300_override_target_missing(ctx, rpt) -> None:
         return
 
     overrides = {}
-    for blk in section_info.yaml_blocks:
+    for blk in section_data.yaml_blocks:
         if isinstance(blk.get("overrides"), dict):
             overrides.update(blk["overrides"])
     if not overrides:

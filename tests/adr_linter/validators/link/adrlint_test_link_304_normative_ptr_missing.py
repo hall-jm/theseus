@@ -10,7 +10,7 @@ ADR-LINK-204 (E)**: Pointer to normative section key missing in base.
 from __future__ import annotations
 from adr_linter.validators.registry import run_all
 from adr_linter.report import Report
-from adr_linter.models import ValidationContext
+from adr_linter.models import ValidationData
 from adr_linter.services.index import load_files, build_index_from_files
 from adr_linter.parser.structure import parse_document_structure
 
@@ -75,7 +75,7 @@ ptr:
     all_files = load_files(_route_and_reset_workspace)
     idx = build_index_from_files(all_files)
 
-    ctx = ValidationContext(
+    ctx = ValidationData(
         meta={
             "id": "ADR-0002",
             "class": "delta",
@@ -83,7 +83,7 @@ ptr:
         },
         body=delta_body,
         path=p,
-        section_info=parse_document_structure(delta_body),
+        section_data=parse_document_structure(delta_body),
         all_idx=idx,
     )
     rpt = Report()
