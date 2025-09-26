@@ -33,6 +33,7 @@ change_history: []
 
 | Version | Date         | Notes                                        |
 | ------- | ------------ | -------------------------------------------- |
+| 0.2.2   | 26 Sept 2025 | Revising lines regarding ADR-NORM vs. ADR-GOVERN to address tension between entries on how to handle RFC-2119 in different ADR classes and sections; added more notes and descriptions to help contextualize what this document is handles and governs; looking likely that a parent style-guide ADR needs sub-ADRs for tracking class-specific rules and governance to reduce the size of this file; |
 | 0.2.1   | 25 Sept 2025 | Rewrote sections 14 to 17 in this version to finish initial review; removed entries in **Related** field due to new `governance` class and its related changes;  |
 | 0.2.0   | 24 Sept 2025 | Created new `governance` class of ADRs; added new requirements for ADR-SCHEMA-003 to handle, ADR-TEMPLATE-706 to be a catch-all error code for when explicit ADR formatting for a particular section isn't followed; rewrote Section 4 to handle the new `governance` class and create a universal set of keys vs. class-specific set of keys; rewrote Section 0 to handle this ADR's new bootstrap constitution and precedence authority; rewrote sections 0 to 13 in this version; |
 | 0.1.7   | 19 Sept 2025 | Changed ADR-TEMPLT-\* -> ADR-TEMPLATE-\* to improve readability; | 
@@ -295,14 +296,21 @@ This structure maintains universal LLM navigation while allowing semantic differ
 
 ## §5 Writing Standards
 
-### Universal Writing Principles
+### 5.1 Universal Writing Principles
 
 - **Active voice**, short sentences (≤20 words).
 - Define acronyms once; keep a mini-glossary.
 - Avoid unclear pronouns; repeat the noun.
 - Prefer **numbers & units** over adjectives (e.g., "p95 ≤ 150 ms").
 
-### Class-Specific Content Standards
+### 5.2 RFC-2119 Section List (by class)
+
+General Rule of Thumb: unless a class section has explicit guidance on RFC-2119 usage, use **RFC-2119** keywords for binding requirements or strategic constraints.
+
+- Owner & Delta ADRs: `decision_details`, `rollout_backout`
+- Strategy ADRs: `principles`, `guardrails`
+
+### 5.3 Class-Specific Content Standards
 
 #### Owner & Delta ADRs
 
@@ -312,8 +320,9 @@ This structure maintains universal LLM navigation while allowing semantic differ
 
 #### Governance ADRs
 
-**RFC-2119 FORBIDDEN** in prose sections (e.g., `adoption_and_enforcement`) - emit ADR-NORM-101 (E) if detected  
-**Machine-readable constraint blocks** provide sole binding authority in `constraint_rules`
+**RFC-2119 FORBIDDEN** in prose sections (e.g., `adoption_and_enforcement`) — enforced as **ADR-GOVERN-407 (E)**.  
+**Machine-readable constraint blocks** provide sole binding authority in `constraint_rules` (see §0 “Machine Constraints” and §11 “Class interactions”).
+
 Prose provides context, rationale, and examples but establishes no binding requirements
 Authority boundaries defined exclusively through constraint block mappings
 
@@ -352,10 +361,9 @@ constraint_rules:
 - **RFC-2119 keywords allowed only in fenced code examples**.
 - Use `<angle-bracket>` placeholders for variable content.
 
-### Default Behavior
+### 5.4 Default Behavior
 
-Anything not clearly identified in this section that requires deterministic binary outputs MUST use RFC-2119 keywords in written documentation.
-The RFC-2119 keywords provide unambiguous authority signals that enable clear LLM decision-making across all classes.
+Anything that requires deterministic binary outputs--but not clearly identified in §5--MUST use RFC-2119 keywords in written documentation (e.g., source code comments, markdown files). The RFC-2119 keywords provide unambiguous authority signals that enable clear LLM decision-making across all classes.
 
 ---
 
@@ -469,7 +477,7 @@ TODO: Once the Linter Rules are reviewed, updated, and consolidated, delete any 
 
 - **Must**: Include `scope` (cli|engine|services|other); define authority boundaries within declared scope.
 - **Must**: Use machine-readable constraint blocks as sole binding authority source (see §5 for syntax specification).
-- **Must not**: Use `extends`, `owners_ptr`, `governed_by`, `informs`; use RFC-2119 in prose sections.
+- **Must not**: Use `extends`, `owners_ptr`, `governed_by`, `informs`; use RFC-2119 in prose sections (violations are **ADR-GOVERN-407 (E)**).
 - **May**: Use `informed_by` (receives strategic direction).
 - **Constraint**: Only one active governance ADR per scope (linear supersession required).
 - **Sections**: See §4 for ADR sections specification
@@ -636,12 +644,12 @@ When **class is `template`**:
   - “Decision Details” → `decision_details`
   - “Rollout & Backout” / “Rollout and Backout” → `rollout_backout`
   - “Requirements (normative)” under “Consequences & Risks” → `consequences_and_risks.requirements`
-- **Report all violations** in a file (no caps).
+- **Report all violations** in a file (no caps) for NORM scanning.
 
 **Class interactions.**
-- `class: governance` — exempt from RFC-2119 scanning in prose (constraint blocks provide binding authority).
+- `class: governance` — governance **prose is excluded from NORM scans** and enforced instead under **ADR-GOVERN-407 (E)**; only fenced `yaml` `constraint_rules` is binding authority (see §0, §5).  
 - `class: style-guide` — exempt from RFC-2119 scanning (examples permitted).
-- `class: template` — RFC terms allowed **only** inside fenced code or inline code; otherwise this section applies.
+- `class: template` — RFC terms allowed **only** inside fenced code or inline code; otherwise NORM applies.
 
 **Lint codes.**
 - `ADR-NORM-101` (E): RFC-2119 keyword outside allowed locations.
@@ -727,14 +735,14 @@ Notes to LLMs: this section is dated and inaccurate compared to the `### Rules (
 **Blocks CI**: 
 
 - `ADR-DELTA-300`
-- `ADR-LINK-200/201/203/204/221`
+- `ADR-LINK-300/301/303/304/305/221`
 - `ADR-NORM-101`
 - `ADR-SCHEMA-001/002/003/004/005/011/012/021`
 - `ADR-TEMPLATE-700/703`
 
 **Warns**: 
 
-- `ADR-LINK-202/222`
+- `ADR-LINK-302/322`
 - `ADR-META-151`  
 - `ADR-NORM-102`
 - `ADR-PROC-242`
@@ -749,6 +757,8 @@ Notes to LLMs: this section is dated and inaccurate compared to the `### Rules (
 ### Rules (abbrev.)
 
 #### ADR-DELTA
+
+TODO: Relabel code in registry.py, policy.py, validators/delta/\*.py, tests/adr_linter/validators/delta/\*.py
 
 Description: Inheritance and override semantics for class: `delta` (targets exist, not_applicable/overrides/adds sanity).
 
@@ -803,19 +813,19 @@ TOADD:
 
 Description: Cross-ADR graph properties (pins, reciprocity, cycles).
 
-TODO: Relabel code in registry.py, policy.py, validators/link/\*.py, tests/adr_linter/validators/link/\*.py
-
 - **ADR-LINK-300 (E)**: Handle all bi-directional keys missing the reciprocal (e.g., `supersedes` <-> `superseded_by`, `informs` <-> `informed_by`)
 - **ADR-LINK-301 (E)**: Handle all uni-directional keys (e.g., `extends`, `governed_by`)
 - **ADR-LINK-202 (W)**: Pointer to section key missing in base.
 - **ADR-LINK-303 (E)**: Invalid pin format for any relationship field (e.g., `extends`, `supersedes`; see Section 8 for details).
-- **ADR-LINK-204 (E)**: Pointer to normative section key missing in base.
-- **ADR-LINK-205 (E)**: Missing references to owner ADRs.
-- **ADR-LINK-220 (I)**: Supersede closure: multiple descendants (informational).
-- **ADR-LINK-221 (E)**: Supersede closure: cycle detected.
-- **ADR-LINK-222 (W)**: Supersede closure: fork without rationale in `change_history`.
+- **ADR-LINK-304 (E)**: Pointer to normative section key missing in base.
+- **ADR-LINK-305 (E)**: Missing references to owner ADRs.
+- **ADR-LINK-320 (I)**: Supersede closure: multiple descendants (informational).
+- **ADR-LINK-321 (E)**: Supersede closure: cycle detected.
+- **ADR-LINK-322 (W)**: Supersede closure: fork without rationale in `change_history`.
 
 #### ADR-META
+
+TODO: Relabel code in registry.py, policy.py, validators/meta/\*.py, tests/adr_linter/validators/meta/\*.py
 
 - **ADR-META-150 (I)**: `llm_tail` missing (optional).
 - TOUPDATE: **ADR-META-151 (W)**: `llm_tail` disagrees with front-matter on required keys.
@@ -830,12 +840,16 @@ TODO: Relabel code in registry.py, policy.py, validators/link/\*.py, tests/adr_l
 
 #### ADR-NORM
 
-Description: Language-level misuse (RFC-2119 outside normative sections; vague terms in normative text); cross-class normative language rules, not class-specific violations.
+TODO: Relabel code in registry.py, policy.py, validators/norm/\*.py, tests/adr_linter/validators/norm/\*.py
 
-- **ADR-NORM-101 (E)**: RFC-2119 keyword outside normative sections.
+Description: Language-level misuse (RFC-2119 outside normative sections; vague terms in normative text) for **non-governance** classes; governance prose is handled by ADR-GOVERN.
+
+- **ADR-NORM-101 (E)**: RFC-2119 keyword outside normative sections (**excludes** governance prose; see Class interactions).
 - **ADR-NORM-102 (W)**: Vague term in normative section.
 
 #### ADR-PROC
+
+TODO: Does ADR-PROC-\* validation rules exist?  What about the pytests?
 
 Description: Process/telemetry/auto-resolve.
 
@@ -845,6 +859,8 @@ Description: Process/telemetry/auto-resolve.
 - **ADR-PROC-250 (E)**: Linter run logs stale/missing in ADR linter logs directory.
 
 #### ADR-SCHEMA
+
+TODO: Relabel code in registry.py, policy.py, validators/schema/\*.py, tests/adr_linter/validators/schema/\*.py
 
 Description: Front-matter and class structure constraints that don’t require link graph or prose analysis (e.g., required keys, date formats, class-specific allows/forbids).
 
@@ -879,6 +895,8 @@ TOADD:
 - TOREMOVE: **ADR-SCHEMA-021 (E)**: Strategy ADR contains `rollout_backout` (by marker **or** heading `Rollout & Backout`).
 
 #### ADR-TEMPLATE
+
+TODO: Relabel code in registry.py, policy.py, validators/template/\*.py, tests/adr_linter/validators/template/\*.py
 
 Description: Template structure and constraints that provide rules which can be validated via regex; not validating semantic content or judgment.
 
