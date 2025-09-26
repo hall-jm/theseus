@@ -43,9 +43,8 @@ from adr_linter.validators.registry import (
     ORDERED_RULES_POST_RUN_PER_FILE,
 )
 
-import adr_linter.validators.registry as reg
-
-print("Registry dir:", dir(reg))
+# import adr_linter.validators.registry as reg
+# print("Registry dir:", dir(reg))
 
 # Known intentional gaps (keep small!).
 # TOREVIEW: Before refactoring, ADR-LINK-202 was the only identified (known?)

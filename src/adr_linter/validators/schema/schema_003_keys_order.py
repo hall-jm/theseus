@@ -45,6 +45,8 @@ def validate_schema_003_keys_order(ctx, rpt) -> None:
                     path,
                     "template canonical keys issue for "
                     f"{template_of}: {issue}",
+                    # f"{template_of}: {issue} - expected vs. found_keys: "
+                    # f"{expected}\n  vs. \n{found_keys}",
                 )
             else:
                 rpt.add(

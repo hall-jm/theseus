@@ -182,11 +182,11 @@ def test_adrlint049_schema003_template_correct_order_passes(
 <!-- key: consequences_and_risks -->
 <risks>
 
-<!-- key: rollout_backout -->
-<deployment>
-
 <!-- key: implementation_notes -->
 <notes>
+
+<!-- key: rollout_backout -->
+<deployment>
 
 <!-- key: evidence_and_links -->
 <links>
@@ -196,6 +196,9 @@ def test_adrlint049_schema003_template_correct_order_passes(
 
 <!-- key: related_adrs -->
 <related>
+
+<!-- key: license -->
+<related>
 """
     )
     p, ctx = _write_and_ctx(
@@ -203,6 +206,9 @@ def test_adrlint049_schema003_template_correct_order_passes(
     )
     rpt = Report()
     run_all(ctx, rpt)
+
+    print(f"- [D]: Error is: {rpt.print()}")
+
     assert not _has_code(rpt, "ADR-SCHEMA-003")
 
 

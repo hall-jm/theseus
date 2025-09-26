@@ -89,7 +89,7 @@ class Report:
         for file_path, group in groupby(
             sorted_items, key=lambda t: _split_loc(t[2])[0]
         ):
-            print(file_path)
+            print(f"report.py: [file_path] {file_path}")
             for sev, code, location, msg in group:
-                print(f"[{sev}] {code}: {msg}")
+                print(f"report.py: [{sev}] {code}: {msg}")
             print()  # blank line between files
