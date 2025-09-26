@@ -62,27 +62,29 @@ from .schema.schema_021_strategy_no_rollout import (
 from .schema.schema_003_keys_order import validate_schema_003_keys_order
 
 # 3) LINK (per-file)
-from .link.link_300_bidi_links import validate_link_300_bidi_links
-from .link.link_301_unidi_required_pin import (
-    validate_link_301_unidi_required_pin,
-)
-from .link.link_302_pointer_section_missing import (
-    validate_link_302_pointer_section_missing,
-)
-from .link.link_303_pin_format_any_field import (
-    validate_link_303_pin_format_any_field,
-)
-from .link.link_304_normative_ptr_missing import (
-    validate_link_304_normative_ptr_missing,
-)
-from .link.link_305_ownership import validate_link_305_ownership
-from .link.link_320_closure_info import validate_link_320_closure_info
-from .link.link_321_cycle_detected import (
-    validate_link_321_cycle_detected,
-)
-from .link.link_322_fork_no_rationale import (
-    validate_link_322_fork_no_rationale_for_meta,
-)
+from .link import LINK_RULES_PER_FILE, LINK_RULES_POST_RUN
+
+# from .link.link_300_bidi_links import validate_link_300_bidi_links
+# from .link.link_301_unidi_required_pin import (
+#     validate_link_301_unidi_required_pin,
+# )
+# from .link.link_302_pointer_section_missing import (
+#     validate_link_302_pointer_section_missing,
+# )
+# from .link.link_303_pin_format_any_field import (
+#     validate_link_303_pin_format_any_field,
+# )
+# from .link.link_304_normative_ptr_missing import (
+#     validate_link_304_normative_ptr_missing,
+# )
+# from .link.link_305_ownership import validate_link_305_ownership
+# from .link.link_320_closure_info import validate_link_320_closure_info
+# from .link.link_321_cycle_detected import (
+#     validate_link_321_cycle_detected,
+# )
+# from .link.link_322_fork_no_rationale import (
+#     validate_link_322_fork_no_rationale_for_meta,
+# )
 
 # 4) DELTA (per-file)
 from .delta.delta_300_override_target_missing import (
@@ -179,12 +181,13 @@ ORDERED_RULES_PER_FILE: List[Tuple[str, Callable]] = [
     ("ADR-SCHEMA-013", validate_schema_013_non_owner_identify_ownership),
     ("ADR-SCHEMA-021", validate_schema_021_strategy_no_rollout),
     # --- link band (per-file) ---
-    ("ADR-LINK-300", validate_link_300_bidi_links),
-    ("ADR-LINK-301", validate_link_301_unidi_required_pin),
-    ("ADR-LINK-302", validate_link_302_pointer_section_missing),
-    ("ADR-LINK-303", validate_link_303_pin_format_any_field),
-    ("ADR-LINK-304", validate_link_304_normative_ptr_missing),
-    ("ADR-LINK-305", validate_link_305_ownership),
+    *LINK_RULES_PER_FILE,
+    # ("ADR-LINK-300", validate_link_300_bidi_links),
+    # ("ADR-LINK-301", validate_link_301_unidi_required_pin),
+    # ("ADR-LINK-302", validate_link_302_pointer_section_missing),
+    # ("ADR-LINK-303", validate_link_303_pin_format_any_field),
+    # ("ADR-LINK-304", validate_link_304_normative_ptr_missing),
+    # ("ADR-LINK-305", validate_link_305_ownership),
     # --- delta band (per-file) ---
     ("ADR-DELTA-300", validate_delta_300_override_target_missing),
     # --- meta band (per-file) ---
@@ -205,9 +208,10 @@ ORDERED_RULES_PER_FILE: List[Tuple[str, Callable]] = [
 # Order documentation for post-run. Execution still builds graphs below.
 
 ORDERED_RULES_POST_RUN_PER_FILE: List[Tuple[str, Callable]] = [
-    ("ADR-LINK-320", validate_link_320_closure_info),
-    ("ADR-LINK-321", validate_link_321_cycle_detected),
-    ("ADR-LINK-322", validate_link_322_fork_no_rationale_for_meta),
+    # ("ADR-LINK-320", validate_link_320_closure_info),
+    # ("ADR-LINK-321", validate_link_321_cycle_detected),
+    # ("ADR-LINK-322", validate_link_322_fork_no_rationale_for_meta),
+    *LINK_RULES_POST_RUN,
 ]
 
 
@@ -274,9 +278,7 @@ def post_run(idx, rpt) -> None:
         elif _code == "ADR-LINK-322":
             # ADR-0001 §10.4, §14
             for _sid, info in idx.items():
-                validate_link_322_fork_no_rationale_for_meta(
-                    info["meta"], info["path"], rpt
-                )
+                fn(info["meta"], info["path"], rpt)
 
 
 # --------- Manifest accessors (for tests / tooling) --------------------------

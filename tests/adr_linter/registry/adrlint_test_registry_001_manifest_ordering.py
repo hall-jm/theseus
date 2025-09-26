@@ -5,7 +5,6 @@
 """
 ADR-0001 · §<XXX> Linter Rules Reference
 ADR-XXXX-YYYY (E? W? I?): Manifest ordering & phase separation checks.
-Linting Tests: ADRLINT-951/952/953/954
 """
 
 from __future__ import annotations
@@ -40,7 +39,7 @@ def test_adrlint952_norm_precedes_template_band():
 
 def test_adrlint953_post_run_order_is_stable():
     post_codes = [code for code, _ in R_ORDERED_RULES_POST_RUN_PER_FILE]
-    assert post_codes == ["ADR-LINK-220", "ADR-LINK-221", "ADR-LINK-222"]
+    assert post_codes == ["ADR-LINK-320", "ADR-LINK-321", "ADR-LINK-322"]
 
 
 def test_adrlint954_ordering_sanity_smoke():
@@ -55,7 +54,7 @@ def test_adrlint954_ordering_sanity_smoke():
     assert idx("ADR-SCHEMA-005") < idx("ADR-LINK-300")
     assert idx("ADR-SCHEMA-003") < idx("ADR-LINK-300")
     assert idx("ADR-SCHEMA-021") < idx("ADR-LINK-300")
-    assert idx("ADR-LINK-205") < idx("ADR-META-150")
-    assert idx("ADR-LINK-205") < idx("ADR-NORM-101")
+    assert idx("ADR-LINK-305") < idx("ADR-META-150")
+    assert idx("ADR-LINK-305") < idx("ADR-NORM-101")
     assert idx("ADR-NORM-102") < idx("ADR-TEMPLATE-700")
     assert idx("ADR-META-151") < idx("ADR-TEMPLATE-705")
