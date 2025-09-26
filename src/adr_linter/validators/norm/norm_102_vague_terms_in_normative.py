@@ -110,7 +110,7 @@ def validate_norm_102_vague_terms_in_normative(ctx, rpt) -> None:
 
     body = ctx.body
     path = ctx.path
-    section_info = ctx.section_info
+    section_info = ctx.section_data
 
     for key, content in section_info.sections_by_key.items():
         if key not in NORMATIVE_KEYS:

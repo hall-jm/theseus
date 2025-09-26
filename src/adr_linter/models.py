@@ -13,7 +13,7 @@ from typing import Dict, List, Optional, Tuple
 
 
 @dataclass
-class SectionInfo:
+class SectionData:
     """
     Consolidated section information extracted from one parse pass.
     """
@@ -28,10 +28,13 @@ class SectionInfo:
     exclusion_ranges: List[Tuple[int, int]]
     # key -> raw content of that section (post-marker)
     sections_by_key: Dict[str, str]
+    # Enhanced fields for governance validation
+    alias_hits: Dict[str, str]  # alias_heading -> canonical_key
+    class_hint: Optional[str]  # ADR class from front-matter
 
 
 @dataclass
-class ValidationContext:
+class ValidationData:
     """
     Context handed to validators (single unit of review).
     """
@@ -39,6 +42,6 @@ class ValidationContext:
     meta: Dict
     body: str
     path: Path
-    section_info: SectionInfo
+    section_data: SectionData
     # Index for cross-file validation
     all_idx: Dict

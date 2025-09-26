@@ -21,7 +21,7 @@ from ...parser.structure import expected_keys_for
 def validate_schema_003_keys_order(ctx, rpt) -> None:
     meta = ctx.meta
     path = ctx.path
-    si = ctx.section_info
+    si = ctx.section_data
 
     cls = meta.get("class", "")
     template_of = meta.get("template_of")

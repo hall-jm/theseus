@@ -12,5 +12,5 @@ from __future__ import annotations
 
 
 def validate_meta_150_tail_missing(ctx, rpt) -> None:
-    if ctx.section_info.llm_tail is None:
+    if ctx.section_data.llm_tail is None:
         rpt.add("ADR-META-150", ctx.path, "llm_tail missing (optional)")

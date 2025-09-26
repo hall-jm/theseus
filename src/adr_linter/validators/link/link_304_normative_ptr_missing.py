@@ -23,7 +23,7 @@ def validate_link_304_normative_ptr_missing(ctx, rpt) -> None:
     meta = ctx.meta
     path = ctx.path
     all_idx = ctx.all_idx
-    section_info = ctx.section_info
+    section_info = ctx.section_data
 
     # TOREVIEW: Pins vs IDs: This code resolves the base by ID only
     #           (split("@")[0]), ignoring the pin’s version/hash. That

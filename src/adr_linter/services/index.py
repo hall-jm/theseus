@@ -3,10 +3,9 @@
 # src/adr_linter/services/index.py
 
 """
-Pure index construction helpers (no file IO).
+ADR file discovery and index construction (impure I/O layer).
 
-Index construction helpers.
-Pure path:  build_index_from_texts(...)
+Pure path:  parser.structure.build_index_from_texts(...)
 Impure path: load_files(...), build_index_from_files(...), read_text(...)
 
 Ref: ADR-0001 §(Missing) · (If needed, ADR-*-* is missing)
@@ -17,8 +16,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Iterable, Tuple
 
 from ..constants import ADR_LOCATIONS
-from ..parser.front_matter import parse_front_matter
-from ..parser.structure import parse_document_structure
+from ..parser.structure import build_index_from_texts
 
 
 # ------------------------- Impure helpers (IO) -------------------------
@@ -57,8 +55,8 @@ def build_index_from_files(
     encoding: str = "utf-8",
 ) -> Dict[str, Dict[str, Any]]:
     """
-    Impure wrapper: read each file and delegate to build_index_from_texts.
-    Mirrors previous io.build_index behavior.
+    Impure wrapper: read each file and delegate to pure build_index_from_texts.
+    Maintains clean separation between I/O and parsing logic.
     """
     pairs: list[Tuple[Path, str]] = []
     for p in files:
@@ -72,38 +70,3 @@ def read_text(path: Path, *, encoding: str = "utf-8") -> str:
     Tiny reader wrapper to keep engine free of direct filesystem calls.
     """
     return path.read_text(encoding=encoding)
-
-
-# TOREVIEW: Legacy holdover; will not delete until it is determined that
-#           this version of build_index_*() is not needed
-def build_index_from_texts(
-    pairs: Iterable[Tuple[Path, str]],
-) -> Dict[str, Dict[str, Any]]:
-    """
-    Given (path, raw text) pairs, parse front-matter and structure.
-    Returns the same index shape used elsewhere:
-    {
-        adr_id:
-        {
-            "path": Path,
-            "meta": dict,
-            "body": str,
-            "raw": str,
-            "section_info": SectionInfo
-        }
-    }
-    """
-    idx: Dict[str, Dict[str, Any]] = {}
-    for p, text in pairs:
-        meta, end = parse_front_matter(text)
-        body = text[end:]
-        section_info = parse_document_structure(body)
-        if meta.get("id"):
-            idx[meta["id"]] = {
-                "path": p,
-                "meta": meta,
-                "body": body,
-                "raw": text,
-                "section_info": section_info,
-            }
-    return idx

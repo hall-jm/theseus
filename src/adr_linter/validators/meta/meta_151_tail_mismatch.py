@@ -12,7 +12,7 @@ from __future__ import annotations
 
 
 def validate_meta_151_tail_mismatch(ctx, rpt) -> None:
-    tail = ctx.section_info.llm_tail
+    tail = ctx.section_data.llm_tail
     if not tail:
         return
 

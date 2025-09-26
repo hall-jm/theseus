@@ -27,7 +27,7 @@ def validate_norm_101_rfc_outside_normative(ctx, rpt) -> None:
         return
 
     body = ctx.body
-    section_info = ctx.section_info
+    section_info = ctx.section_data
     path = ctx.path
 
     # TODO: Get an estimated line count of how large the front matter

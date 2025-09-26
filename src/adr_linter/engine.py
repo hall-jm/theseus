@@ -21,7 +21,7 @@ from .constants import (
 
 from .filters import compile_k
 
-from .models import ValidationContext
+from .models import ValidationData
 
 from .parser.front_matter import parse_front_matter
 
@@ -98,13 +98,13 @@ def run(
         text = service_read_text(p, encoding="utf-8")
         meta, end = parse_front_matter(text)
         body = text[end:]
-        section_info = parse_document_structure(body)
+        section_data = parse_document_structure(body)
 
-        ctx = ValidationContext(
+        ctx = ValidationData(
             meta=meta,
             body=body,
             path=p,
-            section_info=section_info,
+            section_data=section_data,
             all_idx=idx,
         )
 

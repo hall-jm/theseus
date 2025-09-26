@@ -30,7 +30,7 @@ _ERROR_CODE = "ADR-LINK-302"
 def validate_link_302_pointer_section_missing(ctx, rpt) -> None:
     meta = ctx.meta
     path = ctx.path
-    si = ctx.section_info
+    si = ctx.section_data
     idx = ctx.all_idx
 
     # Resolve base ADR from extends@pin

@@ -15,51 +15,22 @@ try:
 except Exception:
     yaml = None
 
-from ..models import SectionInfo
+from ..models import SectionData
 from ..constants import (
-    VALID_ADR_CLASSES,
-    CANONICAL_KEYS_OWNER,
-    CANONICAL_KEYS_DELTA,
-    CANONICAL_KEYS_STRATEGY,
+    HEADING_ALIASES,
+    get_canonical_keys,
 )
 
 
-# TOREVIEW: HEADINGS_TO_KEYS and CANONICAL_KEYS_* must stay in sync
-# TODO: Verify any changes to canonical keys include corresponding regex
-#       patterns
-# TOREVIEW: Ref: ADR-0001 §(Missing) · (If needed, ADR-*-* is missing)
-HEADINGS_TO_KEYS = [
-    (re.compile(r"^decision\s*\(one-?liner\)$", re.I), "decision_one_liner"),
-    (re.compile(r"^context\s*&?\s*drivers?$", re.I), "context_and_drivers"),
-    (re.compile(r"^options?\s+considered$", re.I), "options_considered"),
-    (re.compile(r"^decision\s+details?$", re.I), "decision_details"),
-    (
-        re.compile(r"^consequences\s*&\s*risks?$", re.I),
-        "consequences_and_risks",
-    ),
-    (re.compile(r"^rollout\s*(?:&|and)\s*backout$", re.I), "rollout_backout"),
-    (re.compile(r"^implementation\s+notes?$", re.I), "implementation_notes"),
-    (re.compile(r"^evidence\s*&\s*links?$", re.I), "evidence_and_links"),
-    (re.compile(r"^glossary$", re.I), "glossary"),
-    (re.compile(r"^related\s+adrs?$", re.I), "related_adrs"),
-    (re.compile(r"^principles$", re.I), "principles"),
-    (re.compile(r"^guardrails$", re.I), "guardrails"),
-    (re.compile(r"^north\s*star\s*metrics?$", re.I), "north_star_metrics"),
-]
-
-
-# CRITICAL: Must add regex patterns to HEADINGS_TO_KEYS when canonical keys
-#           change
-# TODO: Check sync between HEADINGS_TO_KEYS and CANONICAL_KEYS_* during
-#       refactor
-#
-# Maps markdown headings to canonical section keys.
-# TOREVIEW: Ref: ADR-0001 §(Missing) · (If needed, ADR-*-* is missing)
 def map_heading_to_key(heading_text: str) -> str | None:
-    for rx, key in HEADINGS_TO_KEYS:
-        if rx.match(heading_text):
-            return key
-    return None
+    """
+    Map markdown headings to canonical section keys using aliases.
+
+    Primary: HTML markers <!-- key: ... --> (handled in
+             parse_document_structure)
+    Fallback: Heading aliases for human-friendly headings
+    """
+    return HEADING_ALIASES.get(heading_text.strip())
 
 
 def line_from_pos(text: str, pos: int) -> int:
@@ -70,34 +41,71 @@ def _line_from_pos(text: str, pos: int) -> int:
     return text.count("\n", 0, pos) + 1
 
 
-def parse_document_structure(body: str) -> SectionInfo:
-    """Single-pass extraction of document structure (behavior preserved)."""
-    # Key markers
+def parse_document_structure(
+    body: str, *, class_hint: Optional[str] = None
+) -> SectionData:
+    """
+    Single-pass extraction of document structure with enhanced parser contract.
+
+    Args:
+        body: ADR document body (after front-matter)
+        class_hint: ADR class from front-matter to help with governance parsing
+
+    Returns:
+        SectionInfo with enhanced metadata for governance validation
+    """
+    # Key markers (primary section detection)
     key_markers: List[Tuple[str, int, int]] = []
-    for m in re.finditer(r"<!--\s*key:\s*([a-z0-9_]+)\s*-->", body):
+    for m in re.finditer(
+        r"<!--\s*key:\s*([a-z0-9_]+(?:\.[a-z0-9_]+)?)\s*-->", body
+    ):
         key = m.group(1)
         start = m.start()
         key_markers.append((key, start, _line_from_pos(body, start)))
 
-    # Headings
+    # Headings (fallback section detection)
     headings: List[Tuple[str, int, int, int]] = []
+    alias_hits: Dict[str, str] = {}
+
     for m in re.finditer(r"^(#{1,6})\s+([^\n#]+?)\s*$", body, flags=re.M):
         level = len(m.group(1))
         text = m.group(2).strip()
         start = m.start()
         headings.append((text, level, start, _line_from_pos(body, start)))
 
-    # YAML blocks
+        # Check for heading aliases
+        canonical_key = map_heading_to_key(text)
+        if canonical_key:
+            alias_hits[text] = canonical_key
+
+    # Duplicate section detection
+    _detect_duplicate_sections(key_markers, alias_hits)
+
+    # Enhanced YAML blocks with metadata
     yaml_blocks: List[Dict] = []
     for m in re.finditer(r"```yaml\n(.*?)\n```", body, flags=re.S | re.I):
         y = m.group(1)
+        start, end = m.span()
+
         if yaml:
             try:
-                d = yaml.safe_load(y)
-                if isinstance(d, dict):
-                    yaml_blocks.append(d)
+                data = yaml.safe_load(y)
+                if isinstance(data, dict):
+                    # Determine YAML block kind for governance validation
+                    kind = _classify_yaml_block(data, class_hint)
+                    yaml_blocks.append(
+                        {"kind": kind, "data": data, "span": (start, end)}
+                    )
             except Exception:
-                pass
+                # Malformed YAML - include for error reporting
+                yaml_blocks.append(
+                    {
+                        "kind": "malformed",
+                        "data": None,
+                        "span": (start, end),
+                        "raw": y,
+                    }
+                )
 
     # LLM tail (prefer last)
     llm_tail: Optional[Dict] = None
@@ -137,65 +145,117 @@ def parse_document_structure(body: str) -> SectionInfo:
 
     # Sections by key
     sections_by_key: Dict[str, str] = {}
-    parts = re.split(r"<!--\s*key:\s*([a-z0-9_]+)\s*-->", body)
+    parts = re.split(
+        r"<!--\s*key:\s*([a-z0-9_]+(?:\.[a-z0-9_]+)?)\s*-->", body
+    )
     for i in range(1, len(parts), 2):
         key = parts[i]
         content = parts[i + 1] if i + 1 < len(parts) else ""
         sections_by_key[key] = content
 
-    return SectionInfo(
+    return SectionData(
         key_markers=key_markers,
         headings=headings,
         yaml_blocks=yaml_blocks,
         llm_tail=llm_tail,
         exclusion_ranges=exclusion_ranges,
         sections_by_key=sections_by_key,
+        # Enhanced fields (need to update SectionInfo model)
+        alias_hits=alias_hits,
+        class_hint=class_hint,
+    )
+
+
+def _detect_duplicate_sections(
+    key_markers: List[Tuple[str, int, int]], alias_hits: Dict[str, str]
+) -> None:
+    """
+    Detect actual duplicates: multiple HTML markers for same key, or
+    conflicting aliases. Having HTML marker + matching heading is NOT a
+    duplicate - it's the preferred pattern.
+    """
+    # Check for duplicate HTML markers (same key multiple times)
+    marker_keys = [key for key, _, _ in key_markers]
+    duplicate_markers = [
+        key for key in set(marker_keys) if marker_keys.count(key) > 1
+    ]
+
+    if duplicate_markers:
+        for dup_key in duplicate_markers:
+            raise ValueError(
+                f"HTML marker '<!-- key: {dup_key} -->' appears multiple times"
+            )
+
+    # Check for conflicting aliases (multiple headings mapping to same key,
+    # but only if that key doesn't have an HTML marker)
+    canonical_keys = {key for key, _, _ in key_markers}
+    alias_key_counts = {}
+    for alias, key in alias_hits.items():
+        if (
+            key not in canonical_keys
+        ):  # Only care about conflicts for keys without HTML markers
+            alias_key_counts[key] = alias_key_counts.get(key, 0) + 1
+
+    conflicting_aliases = {
+        key: count for key, count in alias_key_counts.items() if count > 1
+    }
+    if conflicting_aliases:
+        for key in conflicting_aliases:
+            aliases = [alias for alias, k in alias_hits.items() if k == key]
+            raise ValueError(f"Multiple headings map to '{key}': {aliases}")
+
+
+def _classify_yaml_block(data: Dict, class_hint: Optional[str]) -> str:
+    """
+    Classify YAML blocks for governance validation seam.
+
+    Returns:
+        "constraint_rules" - Governance constraint blocks
+        "overrides" - Delta override blocks
+        "ptr" - Delta pointer blocks
+        "unknown" - Other YAML blocks
+    """
+    if "constraint_rules" in data:
+        return "constraint_rules"
+    elif "overrides" in data:
+        return "overrides"
+    elif "ptr" in data:
+        return "ptr"
+    else:
+        return "unknown"
+
+
+# -----------------------------------------------------------------------------
+# Canonical section order helper (updated to use new API)
+# -----------------------------------------------------------------------------
+
+
+def expected_keys_for(
+    cls: str, template_of: Optional[str] = None, relaxed_delta: bool = False
+) -> List[str]:
+    """
+    Return canonical section keys for a given ADR class.
+
+    Updated to use get_canonical_keys() API from constants.sections.
+    Maintains backward compatibility for existing callers.
+
+    Args:
+        cls: ADR class name
+        template_of: For template class, the target class to mirror
+        relaxed_delta: For delta class, use relaxed validation
+
+    Returns:
+        List of canonical section keys in order
+
+    Ref: ADR-0001 §4 Canonical section keys & order
+    """
+    return get_canonical_keys(
+        cls, template_of=template_of, relaxed_delta=relaxed_delta
     )
 
 
 # -----------------------------------------------------------------------------
-# Canonical section order helper (structure semantics)
-# -----------------------------------------------------------------------------
-
-
-# FIXME: Template validation was broken - previously returned [] for all
-#        templates
-# BUG: Fixed 2025-09-08 - templates now correctly inherit keys from
-#      template_of class
-# CRITICAL: This implements ADR-0001 §7.5 requirement that templates mirror
-#           canonical section order
-# REVIEW: Verify template tests validate section order enforcement correctly
-# BLOCKER: Changes here must include HEADINGS_TO_KEYS updates
-# TODO: Test that heading mapping works for any new keys added
-def expected_keys_for(
-    cls: str, template_of: Optional[str] = None
-) -> List[str]:
-    """
-    Return canonical section keys for a given ADR class.
-    For templates, return the keys of the class they template (`template_of`).
-    Mirrors legacy behavior; used by SCHEMA-003 and TEMPLT-705.
-
-    Ref: ADR-0001 §(Missing) · (If needed, ADR-*-* is missing)
-    """
-    if cls == "template":
-        if template_of and template_of in VALID_ADR_CLASSES:
-            return expected_keys_for(template_of)
-        # Invalid/missing template_of → empty list to trigger validator error
-        return []
-    if cls == "owner":
-        return CANONICAL_KEYS_OWNER
-    if cls == "delta":
-        return CANONICAL_KEYS_DELTA
-    if cls == "strategy":
-        return CANONICAL_KEYS_STRATEGY
-    if cls == "style-guide":
-        # Style-guides do not require canonical ADR keys
-        return []
-    return []
-
-
-# -----------------------------------------------------------------------------
-# Index building
+# Index building (updated to pass class hint)
 # -----------------------------------------------------------------------------
 
 
@@ -205,15 +265,15 @@ def build_index_from_texts(
     """
     Pure index builder: given (path, raw text) pairs, parse front-matter and
     structure and return the same index shape legacy/io.build_index produces.
-    ZERO behavior change: field names and values are identical.
 
-    Ref: ADR-0001 §(Missing) · (If needed, ADR-*-* is missing)
+    Updated to pass class hint to parser for enhanced governance support.
     """
     idx: Dict[str, Dict[str, Any]] = {}
     for p, text in pairs:
         meta, end = parse_front_matter(text)
         body = text[end:]
-        section_info = parse_document_structure(body)
+        class_hint = meta.get("class")
+        section_data = parse_document_structure(body, class_hint=class_hint)
 
         if meta.get("id"):
             idx[meta["id"]] = {
@@ -221,7 +281,7 @@ def build_index_from_texts(
                 "meta": meta,
                 "body": body,
                 "raw": text,
-                "section_info": section_info,
+                "section_data": section_data,
             }
     return idx
 
