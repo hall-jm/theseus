@@ -13,6 +13,10 @@ from __future__ import annotations
 
 from adr_linter.validators.registry import run_all
 from adr_linter.report import Report
+from adr_linter.validators.schema.schema_003_keys_order import (
+    _ERROR_CODE as _ADR_ERROR_CODE,
+)
+
 
 from ...conftest import (
     _write_text,
@@ -24,7 +28,24 @@ from ...conftest import (
 )
 
 
-def test_adrlint009_schema003_canonical_keys_out_of_order_emits(
+# BLOCKER: expected_keys_for() may not support governance class - silent
+#          validation failure
+# FIXME: No governance template validation - could allow malformed governance
+#        templates
+# TODO: Verify get_canonical_keys() supports all 6 classes from
+#       VALID_ADR_CLASSES
+# CRITICAL: Tests assume only legacy classes (owner/strategy/template) -
+#           missing governance coverage
+# BLOCKER: Zero test coverage for governance class canonical keys validation
+# FIXME: No governance template tests - template_of=governance completely
+#        untested
+# TODO: Add governance class test cases to match existing owner/strategy
+#       coverage
+# REVIEW: Tests hardcode class assumptions instead of testing all
+#         VALID_ADR_CLASSES
+
+
+def test_adrlint_schema003_canonical_keys_out_of_order_emits(
     _route_and_reset_workspace,
 ):
     """
@@ -46,10 +67,10 @@ def test_adrlint009_schema003_canonical_keys_out_of_order_emits(
     ctx = _ctx_from_path(p)
     rpt = Report()
     run_all(ctx, rpt)
-    assert _has_code(rpt, "ADR-SCHEMA-003")
+    assert _has_code(rpt, _ADR_ERROR_CODE)
 
 
-def test_adrlint015_schema003_template_incomplete_triggers_schema(
+def test_adrlint_schema003_template_incomplete_triggers_schema(
     _route_and_reset_workspace,
 ):
     """
@@ -68,10 +89,10 @@ def test_adrlint015_schema003_template_incomplete_triggers_schema(
     )
     rpt = Report()
     run_all(ctx, rpt)
-    assert_error_code(rpt, "ADR-SCHEMA-003")
+    assert_error_code(rpt, _ADR_ERROR_CODE)
 
 
-def test_adrlint046_schema003_debug_template_validation(
+def test_adrlint_schema003_debug_template_validation(
     _route_and_reset_workspace,
 ):
     """
@@ -93,10 +114,10 @@ Should be first
     p, ctx = _write_and_ctx(_route_and_reset_workspace, "debug.md", md)
     rpt = Report()
     run_all(ctx, rpt)
-    assert _has_code(rpt, "ADR-SCHEMA-003")
+    assert _has_code(rpt, _ADR_ERROR_CODE)
 
 
-def test_adrlint047_schema003_template_missing_keys_triggers(
+def test_adrlint_schema003_template_missing_keys_triggers(
     _route_and_reset_workspace,
 ):
     """
@@ -122,10 +143,10 @@ Missing 8 other required owner keys
     )
     rpt = Report()
     run_all(ctx, rpt)
-    assert _has_code(rpt, "ADR-SCHEMA-003")
+    assert _has_code(rpt, _ADR_ERROR_CODE)
 
 
-def test_adrlint048_schema003_template_wrong_section_order_fails(
+def test_adrlint_schema003_template_wrong_section_order_fails(
     _route_and_reset_workspace,
 ):
     """
@@ -152,10 +173,10 @@ Context third (should be second)
     )
     rpt = Report()
     run_all(ctx, rpt)
-    assert_error_code(rpt, "ADR-SCHEMA-003")
+    assert_error_code(rpt, _ADR_ERROR_CODE)
 
 
-def test_adrlint049_schema003_template_correct_order_passes(
+def test_adrlint_schema003_template_correct_order_passes(
     _route_and_reset_workspace,
 ):
     """
@@ -207,12 +228,12 @@ def test_adrlint049_schema003_template_correct_order_passes(
     rpt = Report()
     run_all(ctx, rpt)
 
-    print(f"- [D]: Error is: {rpt.print()}")
+    # print(f"- [D]: Error is: {rpt.print()}")
 
-    assert not _has_code(rpt, "ADR-SCHEMA-003")
+    assert not _has_code(rpt, _ADR_ERROR_CODE)
 
 
-def test_adrlint051_schema003_strategy_template_inherits_strategy_keys(
+def test_adrlint_schema003_strategy_template_inherits_strategy_keys(
     _route_and_reset_workspace,
 ):
     """
@@ -237,10 +258,10 @@ One-liner
     )
     rpt = Report()
     run_all(ctx, rpt)
-    assert_error_code(rpt, "ADR-SCHEMA-003")
+    assert_error_code(rpt, _ADR_ERROR_CODE)
     # Verify error mentions strategy template context
     error_messages = [
-        item[3] for item in rpt.items if item[1] == "ADR-SCHEMA-003"
+        item[3] for item in rpt.items if item[1] == _ADR_ERROR_CODE
     ]
     assert any(
         "template canonical keys issue for strategy" in m

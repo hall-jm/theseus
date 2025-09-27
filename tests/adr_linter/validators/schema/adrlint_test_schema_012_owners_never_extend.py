@@ -4,14 +4,19 @@
 
 """
 ADR-0001 · §14 Linter Rules Reference
-ADR-SCHEMA-012 (E): Non-Owner ADRs must never use `owner`.
-Linting Tests: ADRLINT-023a
+ADR-SCHEMA-012 (E): Non-Owner ADRs must never use `owners`.
+                 e.g., Templates forbidden from defining owners
+                       (human authority)
 """
 
 from __future__ import annotations
 
 from adr_linter.validators.registry import run_all
 from adr_linter.report import Report
+
+from adr_linter.validators.schema.schema_012_non_owner_no_owners import (
+    _ERROR_CODE as _ADR_ERROR_CODE,
+)
 
 from ...conftest import (
     _write_text,
@@ -21,7 +26,15 @@ from ...conftest import (
 )
 
 
-def test_adrlint023a_schema012_strategy_redefining_owners_is_invalid(
+# BLOCKER: Test docstring says "must never use `owner`" but validator checks
+#          "owners" field
+# FIXME: Test filename suggests "owners_never_extend" but validates ownership
+#        definition
+# REVIEW: Test only covers strategy class - missing delta, governance, template
+#         classes
+
+
+def test_adrlint_schema012_strategy_redefining_owners_is_invalid(
     _route_and_reset_workspace,
 ):
     """
@@ -46,4 +59,4 @@ def test_adrlint023a_schema012_strategy_redefining_owners_is_invalid(
     ctx = _ctx_from_path(p)
     rpt = Report()
     run_all(ctx, rpt)
-    assert _has_code(rpt, "ADR-SCHEMA-012")
+    assert _has_code(rpt, _ADR_ERROR_CODE)

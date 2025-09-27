@@ -5,13 +5,17 @@
 """
 ADR-0001 · §14 Linter Rules Reference
 ADR-SCHEMA-013 (E): Non-Owner ADRs must identify ADR ownership
-Linting Tests: ADRLINT-020/023b
+                    e.g, Templates required to have owners_ptr
+                         (governance authority chain)
 """
 
 from __future__ import annotations
 
 from adr_linter.validators.registry import run_all
 from adr_linter.report import Report
+from adr_linter.validators.schema.schema_013_non_owner_identify_ownership import (  # noqa: E501
+    _ERROR_CODE as _ADR_ERROR_CODE,
+)
 
 from ...conftest import (
     _write_text,
@@ -19,6 +23,15 @@ from ...conftest import (
     _good_meta_front_matter,
     _has_code,
 )
+
+
+# BLOCKER: No template class test coverage - missing from test suite entirely
+# FIXME: Test names misleading - "nonowners_never_own" suggests SCHEMA-012
+#        behavior
+# REVIEW: Only tests delta and strategy classes - missing governance and
+#         template
+# TODO: Tests check wrong scenario - test ADRs have owners field, not missing
+#       owners_ptr
 
 
 def test_adrlint020_schema013_delta_defines_owners_triggers(
@@ -45,7 +58,7 @@ def test_adrlint020_schema013_delta_defines_owners_triggers(
     ctx = _ctx_from_path(p)
     rpt = Report()
     run_all(ctx, rpt)
-    assert _has_code(rpt, "ADR-SCHEMA-013")
+    assert _has_code(rpt, _ADR_ERROR_CODE)
 
 
 def test_adrlint023b_schema013_strategy_requires_owners_ptr(
@@ -70,4 +83,4 @@ def test_adrlint023b_schema013_strategy_requires_owners_ptr(
     ctx = _ctx_from_path(p)
     rpt = Report()
     run_all(ctx, rpt)
-    assert _has_code(rpt, "ADR-SCHEMA-013")
+    assert _has_code(rpt, _ADR_ERROR_CODE)

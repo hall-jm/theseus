@@ -10,6 +10,9 @@ import datetime
 from ...constants import DATE_RX, DATE_KEY_NAMES
 
 
+_ERROR_CODE = "ADR-SCHEMA-005"
+
+
 def _is_valid_iso_date_like(v) -> bool:
     """Accept:
     - datetime.date/datetime.datetime
@@ -29,6 +32,11 @@ def _is_valid_iso_date_like(v) -> bool:
         return False
 
 
+# BLOCKER: Validator has duplicate validation passes - inefficient and
+#          confusing
+# FIXME: Two different error message formats for same validation
+
+
 def validate_schema_005_date_format(ctx, rpt) -> None:
     """ADR-SCHEMA-005 — Invalid date format for `date` or `review_by`.
     Behavior mirrors the previous checks in legacy.validate_meta.
@@ -40,15 +48,13 @@ def validate_schema_005_date_format(ctx, rpt) -> None:
     for k in DATE_KEY_NAMES:
         v = meta.get(k)
         if v and not _is_valid_iso_date_like(v):
-            rpt.add(
-                "ADR-SCHEMA-005", path, f"{k} must be YYYY-MM-DD (got: {v})"
-            )
+            rpt.add(_ERROR_CODE, path, f"{k} must be YYYY-MM-DD (got: {v})")
 
     # Second pass (plain message; retained for parity with legacy)
-    for k in ("date", "review_by"):
+    for k in DATE_KEY_NAMES:
         v = meta.get(k)
         if v:
             try:
                 datetime.date.fromisoformat(str(v))
             except Exception:
-                rpt.add("ADR-SCHEMA-005", path, f"{k} must be YYYY-MM-DD")
+                rpt.add(_ERROR_CODE, path, f"{k} must be YYYY-MM-DD")

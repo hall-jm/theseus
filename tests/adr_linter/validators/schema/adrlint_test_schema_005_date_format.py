@@ -21,8 +21,12 @@ from ...conftest import (
     _has_code,
 )
 
+from adr_linter.validators.schema.schema_005_date_format import (
+    _ERROR_CODE as _ADR_ERROR_CODE,
+)
 
-def test_adrlint004_schema005_date_format_enforced(_route_and_reset_workspace):
+
+def test_adrlint_schema005_date_format_enforced(_route_and_reset_workspace):
     """
     Pre-refactored pytest: ADRLINT-004
     Rule being tested: ADR-SCHEMA-005 — invalid date formats emit error.
@@ -39,10 +43,10 @@ def test_adrlint004_schema005_date_format_enforced(_route_and_reset_workspace):
     ctx = _ctx_from_path(p)
     rpt = Report()
     run_all(ctx, rpt)
-    assert _has_code(rpt, "ADR-SCHEMA-005")
+    assert _has_code(rpt, _ADR_ERROR_CODE)
 
 
-def test_adrlint017_schema005_invalid_date_formats_comprehensive(
+def test_adrlint_schema005_invalid_date_formats_comprehensive(
     _route_and_reset_workspace,
 ):
     """
@@ -69,5 +73,5 @@ def test_adrlint017_schema005_invalid_date_formats_comprehensive(
         rpt = Report()
         run_all(ctx, rpt)
         assert _has_code(
-            rpt, "ADR-SCHEMA-005"
+            rpt, _ADR_ERROR_CODE
         ), f"Failed to catch invalid date: {bad}"

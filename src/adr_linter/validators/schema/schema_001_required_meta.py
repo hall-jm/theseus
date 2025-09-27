@@ -11,6 +11,8 @@ from __future__ import annotations
 
 from ...constants import REQUIRED_META, ID_RX
 
+_ERROR_CODE = "ADR-SCHEMA-001"
+
 
 def validate_schema_001_required_meta(ctx, rpt) -> None:
     meta = ctx.meta
@@ -19,8 +21,8 @@ def validate_schema_001_required_meta(ctx, rpt) -> None:
     # Missing required keys
     missing = [k for k in REQUIRED_META if not meta.get(k)]
     if missing:
-        rpt.add("ADR-SCHEMA-001", path, f"missing: {', '.join(missing)}")
+        rpt.add(_ERROR_CODE, path, f"missing: {', '.join(missing)}")
 
     # ID must match ADR-XXXX
     if not ID_RX.match(str(meta.get("id", ""))):
-        rpt.add("ADR-SCHEMA-001", path, "id must be ADR-XXXX")
+        rpt.add(_ERROR_CODE, path, "id must be ADR-XXXX")

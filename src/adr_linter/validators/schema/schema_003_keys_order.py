@@ -16,8 +16,19 @@ from __future__ import annotations
 from ...parser.structure import expected_keys_for
 
 
+_ERROR_CODE = "ADR-SCHEMA-003"
+
 # REVIEW: This validation depends on HEADINGS_TO_KEYS being complete
 # TODO: Verify all expected keys have corresponding heading patterns
+
+# BLOCKER: Tests missing governance class validation entirely
+# FIXME: No test coverage for governance template validation
+# TODO: Verify expected_keys_for() supports all 6 classes from
+#       VALID_ADR_CLASSES
+# REVIEW: Test hardcodes owner keys count - should derive from canonical
+#         structure
+
+
 def validate_schema_003_keys_order(ctx, rpt) -> None:
     meta = ctx.meta
     path = ctx.path
@@ -41,7 +52,7 @@ def validate_schema_003_keys_order(ctx, rpt) -> None:
             issue = ", ".join(missing) if missing else "order mismatch"
             if cls == "template" and template_of:
                 rpt.add(
-                    "ADR-SCHEMA-003",
+                    _ERROR_CODE,
                     path,
                     "template canonical keys issue for "
                     f"{template_of}: {issue}",
@@ -50,7 +61,7 @@ def validate_schema_003_keys_order(ctx, rpt) -> None:
                 )
             else:
                 rpt.add(
-                    "ADR-SCHEMA-003",
+                    _ERROR_CODE,
                     path,
                     f"canonical keys issue: {issue}",
                 )
@@ -63,4 +74,4 @@ def validate_schema_003_keys_order(ctx, rpt) -> None:
                 "key markers found",
             )
         else:
-            rpt.add("ADR-SCHEMA-003", path, "no canonical key markers found")
+            rpt.add(_ERROR_CODE, path, "no canonical key markers found")

@@ -23,9 +23,9 @@ change_history: []
 
 | Field                  | Value                                   |
 | ---------------------- | --------------------------------------- |
-| **Version**:           | 0.2.1                                   |
+| **Version**:           | 0.2.2                                   |
 | **Status**:            | Proposed                                |
-| **Date**:              | 2025-09-25                              |
+| **Date**:              | 2025-09-26                              |
 | **Applies to Schema**: | 0.1.0                                   |
 | **Related**:           |                                         |
 
@@ -33,7 +33,7 @@ change_history: []
 
 | Version | Date         | Notes                                        |
 | ------- | ------------ | -------------------------------------------- |
-| 0.2.2   | 26 Sept 2025 | Revising lines regarding ADR-NORM vs. ADR-GOVERN to address tension between entries on how to handle RFC-2119 in different ADR classes and sections; added more notes and descriptions to help contextualize what this document is handles and governs; looking likely that a parent style-guide ADR needs sub-ADRs for tracking class-specific rules and governance to reduce the size of this file; |
+| 0.2.2   | 26 Sept 2025 | Revising lines regarding ADR-NORM vs. ADR-GOVERN to address tension between entries on how to handle RFC-2119 in different ADR classes and sections; added more notes and descriptions to help contextualize what this document is handles and governs; looking likely that a parent style-guide ADR needs sub-ADRs for tracking class-specific rules and governance to reduce the size of this file; updated Section 3 for Templates to require use of `owners_ptr` (i.e., Project Maintainer may be the human owner of a template, but an owner ADR can own a series of templates to control scope and clarify what ADRs drive that template's updates and revisions; |
 | 0.2.1   | 25 Sept 2025 | Rewrote sections 14 to 17 in this version to finish initial review; removed entries in **Related** field due to new `governance` class and its related changes;  |
 | 0.2.0   | 24 Sept 2025 | Created new `governance` class of ADRs; added new requirements for ADR-SCHEMA-003 to handle, ADR-TEMPLATE-706 to be a catch-all error code for when explicit ADR formatting for a particular section isn't followed; rewrote Section 4 to handle the new `governance` class and create a universal set of keys vs. class-specific set of keys; rewrote Section 0 to handle this ADR's new bootstrap constitution and precedence authority; rewrote sections 0 to 13 in this version; |
 | 0.1.7   | 19 Sept 2025 | Changed ADR-TEMPLT-\* -> ADR-TEMPLATE-\* to improve readability; | 
@@ -84,6 +84,8 @@ This section explicitly applies to every ADR.
   - Delta ADRs inherit governed_by from base unless they narrow scope (then must declare)
   - Strategy ADRs: warn if missing; error if they assert boundaries
 - `supersedes`: Decision replacement with reciprocal tracking
+- `owners`: Human/team authority (who decides)
+- `owners_ptr`: Governance authority chain (which component family/domain)
 
 ### 0.4 Conflict Resolution Protocol
 
@@ -184,7 +186,7 @@ template_of: null              # owner|delta|strategy|style-guide|governance (te
 - **INHERITED**: `governed_by` (1-to-1; from base ADR unless narrowed)
 
 **Template ADRs**:
-- **REQUIRED**: `template_of` (1-to-many)
+- **REQUIRED**: `template_of`, `owners_ptr` (1-to-many)
 - **FORBIDDEN**: `extends`, `supersedes`, `governed_by`, `scope`
 
 ### **Relationship Field Validation**
@@ -425,7 +427,7 @@ Governance options MUST include constraint enforceability assessment:
 
 ---
 
-## **§7. ADR classes (what each may/may not contain)**
+## §7. ADR classes (what each may/may not contain)
 
 Add to front-matter: `class: owner | delta | strategy | style-guide | template | governance`.
 
@@ -863,14 +865,14 @@ Description: Process/telemetry/auto-resolve.
 
 #### ADR-SCHEMA
 
-TODO: Relabel code in registry.py, policy.py, validators/schema/\*.py, tests/adr_linter/validators/schema/\*.py
+TODO: Relabel code in registry.py, policy.py, validators/schema/\*.py, tests/adr_linter/validators/schema/\*.py where needed
 
 Description: Front-matter and class structure constraints that don’t require link graph or prose analysis (e.g., required keys, date formats, class-specific allows/forbids).
 
 - **ADR-SCHEMA-001 (E)**: Missing required metadata (`id,title,status,class,date,review_by`) or bad `id`.
-- TOUPDATE: **ADR-SCHEMA-002 (E)**: Invalid class (`owner|delta|governance|strategy|style-guide|template`).
-- TOUPDATE: **ADR-SCHEMA-003 (E)**: Canonical section keys missing or out of order.
-  - TOADD: Must have corresponding markdown headers which would cover (2025-09-21)
+- TOVERIFY: **ADR-SCHEMA-002 (E)**: Invalid class (`owner|delta|governance|strategy|style-guide|template`).
+- TOVERIFY: **ADR-SCHEMA-003 (E)**: Canonical section keys missing or out of order.
+  - ADDED: Must have corresponding markdown headers which would cover (2025-09-21)
     - Missing sections entirely
     - Wrong section order
     - Present sections with missing headers
