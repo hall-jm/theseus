@@ -42,6 +42,9 @@ from .validation import (
     RFC_2119_RX,
     VAGUE_TERMS_RX,
     VALID_STATUS_TRANSITIONS,
+    LLM_TAIL_CORE_FIELDS,
+    LLM_TAIL_OWNERSHIP_FIELDS,
+    LLM_TAIL_ALL_FIELDS,
 )
 
 from .sections import (
@@ -102,6 +105,10 @@ __all__ = [
     "CLASS_INSERTIONS",
     "HEADING_ALIASES",
     "get_canonical_keys",
+    # LLM Tail
+    "LLM_TAIL_CORE_FIELDS",
+    "LLM_TAIL_OWNERSHIP_FIELDS",
+    "LLM_TAIL_ALL_FIELDS",
     # Legacy
     "CANONICAL_KEYS_OWNER",
     "CANONICAL_KEYS_DELTA",

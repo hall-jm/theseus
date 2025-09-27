@@ -39,39 +39,89 @@ def validate_schema_003_keys_order(ctx, rpt) -> None:
     found_keys = [k for k, _, _ in si.key_markers]
     expected = expected_keys_for(cls, template_of)
 
-    if expected and si.key_markers:
-        # Order check (single pass through found markers)
-        expected_idx = 0
-        for key, _pos, _ln in si.key_markers:
-            if expected_idx < len(expected) and key == expected[expected_idx]:
-                expected_idx += 1
-        correct_order = expected_idx == len(expected)
-        missing = [k for k in expected if k not in found_keys]
+    # Early exit if no validation needed
+    if not expected:
+        return
 
-        if missing or not correct_order:
-            issue = ", ".join(missing) if missing else "order mismatch"
+    # 1. Check for duplicate sections (highest priority)
+    seen_keys = {}
+    duplicates = []
+    for key, pos, line in si.key_markers:
+        if key in seen_keys:
+            duplicates.append((key, seen_keys[key], line))
+        else:
+            seen_keys[key] = line
+
+    # Report duplicates
+    for key, first_line, second_line in duplicates:
+        if cls == "template" and template_of:
+            rpt.add(
+                _ERROR_CODE,
+                path,
+                f"template for {template_of}: duplicate section '{key}' "
+                f"at lines {first_line} and {second_line}",
+            )
+        else:
+            rpt.add(
+                _ERROR_CODE,
+                path,
+                f"duplicate section '{key}' at lines {first_line} and "
+                f"{second_line}",
+            )
+
+    # 2. Check for missing sections
+    missing = [k for k in expected if k not in found_keys]
+    if missing:
+        if cls == "template" and template_of:
+            rpt.add(
+                _ERROR_CODE,
+                path,
+                f"template for {template_of}: missing sections: "
+                f"{', '.join(missing)}",
+            )
+        else:
+            rpt.add(
+                _ERROR_CODE, path, f"missing sections: {', '.join(missing)}"
+            )
+
+    # 3. Check order (only if no missing sections and no duplicates)
+    if not missing and not duplicates and si.key_markers:
+        # Remove duplicates for order checking while preserving sequence
+        unique_found_keys = []
+        seen_for_order = set()
+        for key in found_keys:
+            if key not in seen_for_order:
+                unique_found_keys.append(key)
+                seen_for_order.add(key)
+
+        # Check if order matches expected
+        order_correct = unique_found_keys == expected
+
+        if not order_correct:
             if cls == "template" and template_of:
                 rpt.add(
                     _ERROR_CODE,
                     path,
-                    "template canonical keys issue for "
-                    f"{template_of}: {issue}",
-                    # f"{template_of}: {issue} - expected vs. found_keys: "
-                    # f"{expected}\n  vs. \n{found_keys}",
+                    f"template for {template_of}: sections out of order. "
+                    f"Found: [{', '.join(unique_found_keys)}], "
+                    f"Expected: [{', '.join(expected)}]",
                 )
             else:
                 rpt.add(
                     _ERROR_CODE,
                     path,
-                    f"canonical keys issue: {issue}",
+                    f"sections out of order. "
+                    f"Found: [{', '.join(unique_found_keys)}], "
+                    f"Expected: [{', '.join(expected)}]",
                 )
-    elif expected:
+
+    # 4. Handle case where no key markers found at all
+    elif not si.key_markers:
         if cls == "template" and template_of:
             rpt.add(
-                "ADR-SCHEMA-003",
+                _ERROR_CODE,
                 path,
-                f"template for {template_of}: no canonical "
-                "key markers found",
+                f"template for {template_of}: no canonical key markers found",
             )
         else:
             rpt.add(_ERROR_CODE, path, "no canonical key markers found")

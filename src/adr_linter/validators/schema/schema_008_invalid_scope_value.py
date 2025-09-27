@@ -66,7 +66,7 @@ def validate_schema_008_invalid_scope_value(ctx, rpt) -> None:
 
         # Only validate if scope is present (SCHEMA-006 handles missing)
         if scope:
-            print(f"- [D VAL: SCHEMA-008] scope: _{scope}_")
+            # print(f"- [D VAL: SCHEMA-008] scope: _{scope}_")
             # Normalize whitespace for validation
             normalized_scope = str(scope).strip()
 

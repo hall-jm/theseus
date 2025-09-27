@@ -56,8 +56,7 @@ from .norm.norm_101_rfc_outside_normative import (
 from .norm.norm_102_vague_terms_in_normative import (
     validate_norm_102_vague_terms_in_normative,
 )
-from .meta.meta_150_tail_missing import validate_meta_150_tail_missing
-from .meta.meta_151_tail_mismatch import validate_meta_151_tail_mismatch
+from .meta import META_RULES_PER_FILE  # , LINK_RULES_POST_RUN
 
 # 6) TEMPLATE
 from .template.template_700_template_of_required import (
@@ -141,8 +140,7 @@ ORDERED_RULES_PER_FILE: List[Tuple[str, Callable]] = [
     # --- delta band (per-file) ---
     ("ADR-DELTA-300", validate_delta_300_override_target_missing),
     # --- meta band (per-file) ---
-    ("ADR-META-150", validate_meta_150_tail_missing),
-    ("ADR-META-151", validate_meta_151_tail_mismatch),
+    *META_RULES_PER_FILE,
     # --- norm band (per-file) ---
     ("ADR-NORM-101", validate_norm_101_rfc_outside_normative),
     ("ADR-NORM-102", validate_norm_102_vague_terms_in_normative),

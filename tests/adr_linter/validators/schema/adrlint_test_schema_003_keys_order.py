@@ -263,7 +263,13 @@ One-liner
     error_messages = [
         item[3] for item in rpt.items if item[1] == _ADR_ERROR_CODE
     ]
+    print(f"- [D VAL: SCHEMA-003] error messages: {error_messages}")
+    print(
+        f"- [D VAL: SCHEMA-003] first message: "
+        f"{error_messages[0] if error_messages else 'NONE'}"
+    )
+
     assert any(
-        "template canonical keys issue for strategy" in m
+        "template for strategy" in m and "missing sections" in m
         for m in error_messages
     )

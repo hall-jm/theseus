@@ -35,11 +35,12 @@ CODES = {
         "Supersede closure: fork without rationale in `change_history`",
     ),
     # M
-    "ADR-META-150": ("I", "`llm_tail` missing (optional)."),
-    "ADR-META-151": (
+    "ADR-META-200": ("I", "llm_tail missing (optional)"),
+    "ADR-META-201": (
         "W",
         "`llm_tail` disagrees with front-matter on " "required keys.",
     ),
+    "ADR-META-202": ("W", "llm_tail has malformed JSON syntax"),
     # N
     "ADR-NORM-101": ("E", "RFC-2119 keyword outside normative sections."),
     "ADR-NORM-102": (

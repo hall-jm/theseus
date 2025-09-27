@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python3
-# tests/adr_linter/meta/adrlint_test_meta_150_tail_missing.py
+# tests/adr_linter/meta/adrlint_test_meta_200_tail_missing.py
 
 """
 ADR-0001 · §14 Linter Rules Reference
@@ -13,14 +13,19 @@ from __future__ import annotations
 from adr_linter.validators.registry import run_all
 from adr_linter.report import Report
 
+from adr_linter.validators.meta.meta_200_tail_missing import (
+    _ERROR_CODE as _ADR_ERROR_CODE,
+)
+
 from ...conftest import (
     _write_and_ctx,
     _good_meta_front_matter,
-    _has_code,
+    # _has_code,
+    assert_info_code,
 )
 
 
-def test_adrlint044_meta150_llm_tail_missing(_route_and_reset_workspace):
+def test_adrlint_meta200_llm_tail_missing(_route_and_reset_workspace):
     """
     Pre-refactored pytest: ADRLINT-044
     Rule being tested: ADR-META-150 — Missing llm_tail → error
@@ -31,4 +36,6 @@ def test_adrlint044_meta150_llm_tail_missing(_route_and_reset_workspace):
     )
     rpt = Report()
     run_all(ctx, rpt)
-    assert _has_code(rpt, "ADR-META-150")
+
+    # assert _has_code(rpt, _ADR_ERROR_CODE)
+    assert_info_code(rpt, _ADR_ERROR_CODE)

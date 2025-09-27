@@ -87,6 +87,26 @@ CLASS_FORBIDDEN_RELATIONSHIPS = {
     "style-guide": {"extends", "supersedes", "governed_by", "scope"},
 }
 
+# --- LLM Tail ----------------------------------------------------------------
+
+# LLM tail validation field sets
+LLM_TAIL_CORE_FIELDS = [
+    "id",
+    "class",
+    "status",
+    "extends",
+    "governed_by",
+    "scope",
+    "informs",
+    "informed_by",
+]
+
+LLM_TAIL_OWNERSHIP_FIELDS = ["owners", "owners_ptr"]
+
+# All fields that should be validated in llm_tail
+LLM_TAIL_ALL_FIELDS = LLM_TAIL_CORE_FIELDS + LLM_TAIL_OWNERSHIP_FIELDS
+
+
 # --- RFC-2119 and Validation Patterns ----------------------------------------
 
 RFC_2119_TERMS = [

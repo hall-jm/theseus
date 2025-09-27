@@ -107,6 +107,12 @@ Because the CLI is the user-facing contract and error boundary, we assign it exp
 - **Trade-offs:** Slight duplication (arg shape validation in CLI, deeper checks in engine); stricter boundaries could require minor refactors.
 - **Risks:** Teams could attempt to “just add this check” to the CLI—this ADR forbids content-level validation in the CLI.
 
+## Implementation Notes
+<!-- key: implementation_notes -->
+- CLI lives in `src/adr_linter/cli.py`; engine entry point in `src/adr_linter/engine.py`.
+- The CLI prints/exports results; engine produces structured results and severities.
+- Discovery/IO errors are raised from services → engine → returned to CLI as operational failures (mapped to exit code `3`).
+
 ## Rollout & Backout
 <!-- key: rollout_backout -->
 - **Phases**
@@ -116,12 +122,6 @@ Because the CLI is the user-facing contract and error boundary, we assign it exp
   4. Document flags and exit-code contract in README.
 - **Backout**
   - Revert to prior CLI shim; engine API remains intact. No data migration required.
-
-## Implementation Notes
-<!-- key: implementation_notes -->
-- CLI lives in `src/adr_linter/cli.py`; engine entry point in `src/adr_linter/engine.py`.
-- The CLI prints/exports results; engine produces structured results and severities.
-- Discovery/IO errors are raised from services → engine → returned to CLI as operational failures (mapped to exit code `3`).
 
 ## Evidence & Links
 <!-- key: evidence_and_links -->
@@ -153,6 +153,7 @@ Because the CLI is the user-facing contract and error boundary, we assign it exp
 <!-- llm_tail:end -->
 
 ## License
+<!-- key: license -->
 
 Architecture Decision Records ("ADRs") are covered by the 
 Creative Commons Attribution-NonCommercial 4.0 International License.

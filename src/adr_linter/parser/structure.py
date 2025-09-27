@@ -79,7 +79,12 @@ def parse_document_structure(
             alias_hits[text] = canonical_key
 
     # Duplicate section detection
-    _detect_duplicate_sections(key_markers, alias_hits)
+    # HACK: Commented out call for now because the parser should be doing
+    #       nothing like raising ValueError and hard exits.  That should be
+    #       more of a CLI or Engine boundary.  It should also not be handling
+    #       clear validation issues like malformed or duplicated ADR sections.
+    #       That is a clear validator boundary.
+    # _detect_duplicate_sections(key_markers, alias_hits)
 
     # Enhanced YAML blocks with metadata
     yaml_blocks: List[Dict] = []
