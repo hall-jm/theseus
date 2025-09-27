@@ -79,9 +79,28 @@ CODES = {
         "Invalid date format (must be `YYYY-MM-DD`) for `date` or "
         "`review_by`.",
     ),
+    "ADR-SCHEMA-006": ("E", "Governance ADR missing required 'scope' field"),
+    "ADR-SCHEMA-007": ("E", "Owner ADR missing required 'governed_by' field"),
+    "ADR-SCHEMA-008": (
+        "E",
+        "Invalid scope value - must be cli|engine|services|other",
+    ),
+    "ADR-SCHEMA-009": ("E", "Class-forbidden field present"),
+    "ADR-SCHEMA-010": (
+        "E",
+        "Governance ADR missing required 'constraint_rules' section",
+    ),
     "ADR-SCHEMA-011": ("E", "Owner ADR must not use `extends`."),
     "ADR-SCHEMA-012": ("E", "Non-Owner ADRs must never use `owner`."),
     "ADR-SCHEMA-013": ("E", "Non-Owner ADRs must identify ADR ownership."),
+    "ADR-SCHEMA-014": (
+        "E",
+        "Invalid relationship field combination for ADR class",
+    ),
+    "ADR-SCHEMA-015": (
+        "E",
+        "ADR metadata violates its declared governance constraints",
+    ),
     # T
     "ADR-TEMPLATE-700": (
         "E",

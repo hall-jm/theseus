@@ -18,6 +18,18 @@ NORMATIVE_KEYS = {"decision_details", "rollout_backout"}
 
 DATE_KEY_NAMES = ("date", "review_by")
 
+# All relationship fields in the system
+ALL_RELATIONSHIP_FIELDS = {
+    "extends",
+    "supersedes",
+    "superseded_by",
+    "governed_by",
+    "informs",
+    "informed_by",
+    "owners_ptr",
+}
+
+# Class validation constraints
 VALID_ADR_CLASSES = {
     "delta",
     "governance",
@@ -25,6 +37,54 @@ VALID_ADR_CLASSES = {
     "strategy",
     "style-guide",
     "template",
+}
+
+VALID_SCOPE_VALUES = {"cli", "engine", "services", "other"}
+VALID_GOVERNED_CLASSES = {"owner", "delta", "strategy"}
+
+# Class-specific allowed relationship fields
+CLASS_ALLOWED_RELATIONSHIPS = {
+    "owner": {"supersedes", "superseded_by", "governed_by", "informed_by"},
+    "governance": {"supersedes", "superseded_by", "informed_by"},
+    "strategy": {
+        "supersedes",
+        "superseded_by",
+        "owners_ptr",
+        "governed_by",
+        "informs",
+    },
+    "delta": {"extends", "supersedes", "superseded_by", "owners_ptr"},
+    "template": {
+        "extends",
+        "supersedes",
+        "superseded_by",
+        "governed_by",
+        "informs",
+        "informed_by",
+    },
+    # "template": set(),  # No relationship fields allowed
+    "style-guide": {"supersedes", "superseded_by"},
+}
+
+# Class-specific field restrictions per ADR-0001 §3
+# TOREVIEW: also includes `scope` which isn't a relationship: confirm?
+# TOREVIEW: If `scope` should not be in this list, then do we need to
+#           create "master" lists for all items, all forbidden items, etc.
+CLASS_FORBIDDEN_RELATIONSHIPS = {
+    "owner": {"extends", "owners_ptr"},
+    "governance": {"extends", "owners_ptr", "governed_by", "informs"},
+    "strategy": {"owners", "scope"},
+    "delta": {"owners", "scope"},
+    "template": {
+        "extends",
+        "supersedes",
+        "governed_by",
+        "scope",
+        "owners",
+        "informs",
+        "informed_by",
+    },
+    "style-guide": {"extends", "supersedes", "governed_by", "scope"},
 }
 
 # --- RFC-2119 and Validation Patterns ----------------------------------------

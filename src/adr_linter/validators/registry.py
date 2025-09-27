@@ -39,55 +39,10 @@ from ..services.linkgraph import build_supersede_graph
 # -------------------- Top-level imports for validators -----------------------
 
 # 1) SCHEMA (meta/front-matter)
-from .schema.schema_001_required_meta import validate_schema_001_required_meta
-from .schema.schema_002_class_value import validate_schema_002_class_value
-from .schema.schema_003_keys_order import validate_schema_003_keys_order
-from .schema.schema_005_date_format import validate_schema_005_date_format
-from .schema.schema_004_status_transition import (
-    validate_schema_004_status_transition,
-)
-from .schema.schema_011_owner_no_extends import (
-    validate_schema_011_owner_no_extends,
-)
-from .schema.schema_012_non_owner_no_owners import (
-    validate_schema_012_non_owner_no_owners,
-)
-from .schema.schema_013_non_owner_identify_ownership import (
-    validate_schema_013_non_owner_identify_ownership,
-)
-
-# TODO: Refactor the way structure-specific validation is handled now that
-#       validators have a "core" component and class-specific component
-# 2) SCHEMA (structure)
-# from .schema.schema_021_strategy_no_rollout import (
-#     validate_schema_021_strategy_no_rollout,
-# )
-# from .schema.schema_003_keys_order import validate_schema_003_keys_order
+from .schema import SCHEMA_RULES_PER_FILE  # , SCHEMA_RULES_POST_RUN
 
 # 3) LINK (per-file)
 from .link import LINK_RULES_PER_FILE, LINK_RULES_POST_RUN
-
-# from .link.link_300_bidi_links import validate_link_300_bidi_links
-# from .link.link_301_unidi_required_pin import (
-#     validate_link_301_unidi_required_pin,
-# )
-# from .link.link_302_pointer_section_missing import (
-#     validate_link_302_pointer_section_missing,
-# )
-# from .link.link_303_pin_format_any_field import (
-#     validate_link_303_pin_format_any_field,
-# )
-# from .link.link_304_normative_ptr_missing import (
-#     validate_link_304_normative_ptr_missing,
-# )
-# from .link.link_305_ownership import validate_link_305_ownership
-# from .link.link_320_closure_info import validate_link_320_closure_info
-# from .link.link_321_cycle_detected import (
-#     validate_link_321_cycle_detected,
-# )
-# from .link.link_322_fork_no_rationale import (
-#     validate_link_322_fork_no_rationale_for_meta,
-# )
 
 # 4) DELTA (per-file)
 from .delta.delta_300_override_target_missing import (
@@ -137,6 +92,8 @@ avoid calling inapplicable rules for the current document class.
 Bootstrapping: these schema rules must run even if 'class' is missing/invalid,
                 so we force-run them before relying on policy applicability.
 """
+
+# TOREVIEW: Once ADR-GOVERN-* rules are active, what needs to _ALWAYS_RUN_?
 _ALWAYS_RUN_CODES: Set[str] = {
     "ADR-SCHEMA-001",  # required meta
     "ADR-SCHEMA-002",  # class value
@@ -174,24 +131,13 @@ def _post_should_run(idx, code: str) -> bool:
 # Each entry is (ADR code, callable). Order is authoritative.
 ORDERED_RULES_PER_FILE: List[Tuple[str, Callable]] = [
     # --- schema band (meta/front-matter) ---
-    ("ADR-SCHEMA-001", validate_schema_001_required_meta),
-    ("ADR-SCHEMA-002", validate_schema_002_class_value),
-    ("ADR-SCHEMA-003", validate_schema_003_keys_order),
-    ("ADR-SCHEMA-004", validate_schema_004_status_transition),
-    ("ADR-SCHEMA-005", validate_schema_005_date_format),
-    ("ADR-SCHEMA-011", validate_schema_011_owner_no_extends),
-    ("ADR-SCHEMA-012", validate_schema_012_non_owner_no_owners),
-    ("ADR-SCHEMA-013", validate_schema_013_non_owner_identify_ownership),
+    *SCHEMA_RULES_PER_FILE,
     # --- schema band (structure) ---
+    # TOREVIEW: Removing this rule due to the new governance controls
+    #           through new SCHEMA, GOVERN rules
     # ("ADR-SCHEMA-021", validate_schema_021_strategy_no_rollout),
     # --- link band (per-file) ---
     *LINK_RULES_PER_FILE,
-    # ("ADR-LINK-300", validate_link_300_bidi_links),
-    # ("ADR-LINK-301", validate_link_301_unidi_required_pin),
-    # ("ADR-LINK-302", validate_link_302_pointer_section_missing),
-    # ("ADR-LINK-303", validate_link_303_pin_format_any_field),
-    # ("ADR-LINK-304", validate_link_304_normative_ptr_missing),
-    # ("ADR-LINK-305", validate_link_305_ownership),
     # --- delta band (per-file) ---
     ("ADR-DELTA-300", validate_delta_300_override_target_missing),
     # --- meta band (per-file) ---

@@ -116,19 +116,27 @@ def _has_code(rpt, code: str) -> bool:
 
 
 def assert_error_code(rpt, code: str):
-    assert code in K_CODES, f"Test references unknown code: {code}"
-    assert K_CODES[code][0] == "E", f"Code {code} is not an error"
+    assert (
+        code in K_CODES
+    ), f"[conftest.py] Test references unknown code: {code}"
+    assert (
+        K_CODES[code][0] == "E"
+    ), f"[conftest.py] Code {code} is not an error"
     assert _has_code(
         rpt, code
-    ), f"Expected error code {code} not found in report"
+    ), f"[conftest.py] Expected error code {code} not found in report"
 
 
 def assert_warning_code(rpt, code: str):
-    assert code in K_CODES, f"Test references unknown code: {code}"
-    assert K_CODES[code][0] == "W", f"Code {code} is not a warning"
+    assert (
+        code in K_CODES
+    ), f"[conftest.py] Test references unknown code: {code}"
+    assert (
+        K_CODES[code][0] == "W"
+    ), f"[conftest.py] Code {code} is not a warning"
     assert _has_code(
         rpt, code
-    ), f"Expected warning code {code} not found in report"
+    ), f"[conftest.py] Expected warning code {code} not found in report"
 
 
 # -----------------------------
