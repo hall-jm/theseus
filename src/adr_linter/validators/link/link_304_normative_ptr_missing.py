@@ -42,9 +42,21 @@ def validate_link_304_normative_ptr_missing(ctx, rpt) -> None:
 
     # Collect pointers from fenced YAML blocks: ptr: { key: ... }
     ptr_map = {}
+
+    # Old way:
+    """
     for blk in section_data.yaml_blocks:
         if isinstance(blk.get("ptr"), dict):
             ptr_map.update(blk["ptr"])
+    """
+
+    # New way (what it should be):
+    # Governance documentation rewrite and refactoring changed how
+    # YAML blocks are structured
+    for blk in section_data.yaml_blocks:
+        if blk.get("kind") == "ptr" and isinstance(blk.get("data"), dict):
+            ptr_map.update(blk["data"]["ptr"])
+
     if not ptr_map:
         return
 

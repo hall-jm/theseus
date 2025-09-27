@@ -26,22 +26,42 @@ def validate_delta_300_override_target_missing(ctx, rpt) -> None:
     ext = meta.get("extends")
     base = None
 
-    # print(f"\n\n- [VAL D]: ext = {ext}")
-    # print(f"\n\n- [VAL D]: base = {None}")
+    # print(f"\n- [VAL DELTA-300]: ext = {ext}")
+    # print(f"\n- [VAL DELTA-300]: base = {base}")
 
     if ext and isinstance(ext, str) and EXTENDS_RX.match(ext):
         base_id = ext.split("@")[0]
         base = all_idx.get(base_id)
 
     if not base:
+        # print("\n- [VAL DELTA-300]: if not base -> returning")
         return
 
     overrides = {}
+
+    # Old way:
+    """
     for blk in section_data.yaml_blocks:
         if isinstance(blk.get("overrides"), dict):
             overrides.update(blk["overrides"])
+    """
+
+    # New way (what it should be):
+    # Governance documentation rewrite and refactoring changed how
+    # YAML blocks are structured
+    for blk in section_data.yaml_blocks:
+        if blk.get("kind") == "overrides" and isinstance(
+            blk.get("data"), dict
+        ):
+            if "overrides" in blk["data"]:
+                overrides.update(blk["data"]["overrides"])
+
     if not overrides:
+        # print(f"\n- [VAL DELTA-300]: if not overrides -> returning")
+        # print(f"\n- [VAL DELTA-300]: ctx.section_data - {section_data}")
         return
+
+    # print(f"\n- [VAL DELTA-300]: overrides = {overrides}")
 
     base_si = parse_document_structure(base["body"])
     base_keys = {k for k, _, _ in base_si.key_markers}

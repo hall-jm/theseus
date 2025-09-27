@@ -24,6 +24,7 @@ from adr_linter.constants import (
 )
 from adr_linter.report import Report
 from adr_linter.validators.registry import run_all
+from adr_linter.parser.structure import get_canonical_keys
 
 from ...conftest import (  # type: ignore
     _write_text,
@@ -71,7 +72,7 @@ def _write_base_and_delta(
     delta_text = (
         delta_meta
         + "\n"
-        + _canonical_body(CANONICAL_KEYS_DELTA)
+        + _canonical_body(get_canonical_keys("delta"))
         + "\n"
         + delta_body
     )
@@ -88,7 +89,9 @@ def test_adrlint300_override_nonexistent_key_emits_error(
     Base omits 'glossary'; delta overrides 'glossary'
     → MUST emit ADR-DELTA-300.
     """
-    base_keys = [k for k in CANONICAL_KEYS_DELTA if k != "glossary"]
+    # base_keys = [k for k in CANONICAL_KEYS_DELTA if k != "glossary"]
+
+    base_keys = [k for k in get_canonical_keys("delta") if k != "glossary"]
 
     override_block = """```yaml
 overrides:
@@ -112,6 +115,7 @@ overrides:
         "meta": base_ctx.meta,
         "body": base_ctx.body,
         "path": str(base_path),
+        "section_data": base_ctx.section_data,  # Add the missing section_data
     }
 
     rpt = Report()

@@ -52,7 +52,7 @@ def parse_document_structure(
         class_hint: ADR class from front-matter to help with governance parsing
 
     Returns:
-        SectionInfo with enhanced metadata for governance validation
+        SectionData with enhanced metadata for governance validation
     """
     # Key markers (primary section detection)
     key_markers: List[Tuple[str, int, int]] = []
@@ -175,33 +175,31 @@ def _detect_duplicate_sections(
     duplicate - it's the preferred pattern.
     """
     # Check for duplicate HTML markers (same key multiple times)
-    marker_keys = [key for key, _, _ in key_markers]
-    duplicate_markers = [
-        key for key in set(marker_keys) if marker_keys.count(key) > 1
-    ]
-
-    if duplicate_markers:
-        for dup_key in duplicate_markers:
+    # Check for duplicate HTML markers in document order
+    seen_keys = set()
+    for key, start_pos, line_num in key_markers:
+        if key in seen_keys:
             raise ValueError(
-                f"HTML marker '<!-- key: {dup_key} -->' appears multiple times"
+                f"Section '{key}' appears multiple times (line {line_num})"
             )
+        seen_keys.add(key)
 
-    # Check for conflicting aliases (multiple headings mapping to same key,
-    # but only if that key doesn't have an HTML marker)
+    # Check for alias conflicts (multiple headings mapping to same key
+    # without HTML marker)
     canonical_keys = {key for key, _, _ in key_markers}
-    alias_key_counts = {}
+    alias_conflicts = {}
+
     for alias, key in alias_hits.items():
         if (
             key not in canonical_keys
-        ):  # Only care about conflicts for keys without HTML markers
-            alias_key_counts[key] = alias_key_counts.get(key, 0) + 1
+        ):  # Only check aliases without HTML markers
+            if key in alias_conflicts:
+                alias_conflicts[key].append(alias)
+            else:
+                alias_conflicts[key] = [alias]
 
-    conflicting_aliases = {
-        key: count for key, count in alias_key_counts.items() if count > 1
-    }
-    if conflicting_aliases:
-        for key in conflicting_aliases:
-            aliases = [alias for alias, k in alias_hits.items() if k == key]
+    for key, aliases in alias_conflicts.items():
+        if len(aliases) > 1:
             raise ValueError(f"Multiple headings map to '{key}': {aliases}")
 
 

@@ -30,7 +30,7 @@ _ERROR_CODE = "ADR-LINK-302"
 def validate_link_302_pointer_section_missing(ctx, rpt) -> None:
     meta = ctx.meta
     path = ctx.path
-    si = ctx.section_data
+    section_data = ctx.section_data
     idx = ctx.all_idx
 
     # Resolve base ADR from extends@pin
@@ -44,9 +44,21 @@ def validate_link_302_pointer_section_missing(ctx, rpt) -> None:
 
     # Collect ptr map from fenced yaml blocks
     ptr_map = {}
-    for blk in si.yaml_blocks:
+
+    # Old way:
+    """
+    for blk in section_data.yaml_blocks:
         if isinstance(blk.get("ptr"), dict):
             ptr_map.update(blk["ptr"])
+    """
+
+    # New way (what it should be):
+    # Governance documentation rewrite and refactoring changed how
+    # YAML blocks are structured
+    for blk in section_data.yaml_blocks:
+        if blk.get("kind") == "ptr" and isinstance(blk.get("data"), dict):
+            ptr_map.update(blk["data"]["ptr"])
+
     if not ptr_map:
         return
 
