@@ -119,6 +119,26 @@ def get_canonical_keys(
         are not implemented and require parser extensions for RFC-2119
         validation.
     """
+
+    # print(
+    #    f"-[D constants.section.py] template_of: "
+    #    f"{str(template_of)}, {type(template_of)}"
+    # )
+
+    if not isinstance(template_of, str):
+        # HACK: identifying missing input validation through new pytests
+        #       not sure yet how to address this issue as either a new
+        #       undocumented error band and what boundary is supposed
+        #       to govern this kind of error (e.g., engine? cli? validation?
+
+        # e.g.,:
+        # raise ValueError(
+        #     f"Invalid template_of: expected string, "
+        #     f"got {type(template_of).__name__}"
+        # )
+
+        return []
+
     # Style-guide exempt from canonical sections per ADR-0001 §7.4
     if class_name == "style-guide":
         return []

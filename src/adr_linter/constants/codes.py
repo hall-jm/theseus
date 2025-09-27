@@ -103,12 +103,15 @@ CODES = {
         "ADR metadata violates its declared governance constraints",
     ),
     # T
-    "ADR-TEMPLATE-700": (
+    "ADR-TEMPLATE-600": (
         "E",
         "`template_of` missing or invalid "
         "(`owner|delta|governance|strategy|style-guide|template`).",
     ),
-    "ADR-TEMPLATE-701": ("W", "`status` not `Proposed` in a template ADR."),
+    "ADR-TEMPLATE-601": (
+        "W",
+        "`status` MUST USE `Proposed` in a template ADR.",
+    ),
     "ADR-TEMPLATE-702": (
         "W",
         "filename does not include `-template-` (discoverability).",

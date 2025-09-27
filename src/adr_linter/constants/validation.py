@@ -41,6 +41,7 @@ VALID_ADR_CLASSES = {
 
 VALID_SCOPE_VALUES = {"cli", "engine", "services", "other"}
 VALID_GOVERNED_CLASSES = {"owner", "delta", "strategy"}
+VALID_TEMPLATED_CLASSES = VALID_ADR_CLASSES - {"template"}
 
 # Class-specific allowed relationship fields
 CLASS_ALLOWED_RELATIONSHIPS = {
