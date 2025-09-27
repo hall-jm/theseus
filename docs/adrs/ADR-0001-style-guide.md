@@ -33,7 +33,7 @@ change_history: []
 
 | Version | Date         | Notes                                        |
 | ------- | ------------ | -------------------------------------------- |
-| 0.2.2   | 26 Sept 2025 | Revising lines regarding ADR-NORM vs. ADR-GOVERN to address tension between entries on how to handle RFC-2119 in different ADR classes and sections; added more notes and descriptions to help contextualize what this document is handles and governs; looking likely that a parent style-guide ADR needs sub-ADRs for tracking class-specific rules and governance to reduce the size of this file; updated Section 3 for Templates to require use of `owners_ptr` (i.e., Project Maintainer may be the human owner of a template, but an owner ADR can own a series of templates to control scope and clarify what ADRs drive that template's updates and revisions; |
+| 0.2.2   | 26 Sept 2025 | Revising lines regarding ADR-NORM vs. ADR-GOVERN to address tension between entries on how to handle RFC-2119 in different ADR classes and sections; added more notes and descriptions to help contextualize what this document is handles and governs; looking likely that a parent style-guide ADR needs sub-ADRs for tracking class-specific rules and governance to reduce the size of this file; updated Section 3 for Templates to require use of `owners_ptr` (i.e., Project Maintainer may be the human owner of a template, but an owner ADR can own a series of templates to control scope and clarify what ADRs drive that template's updates and revisions; updated Section 14 for ADR-SCHEMA to reflect to creation of new rules, review of pre-existing rules and updated notes accordingly; |
 | 0.2.1   | 25 Sept 2025 | Rewrote sections 14 to 17 in this version to finish initial review; removed entries in **Related** field due to new `governance` class and its related changes;  |
 | 0.2.0   | 24 Sept 2025 | Created new `governance` class of ADRs; added new requirements for ADR-SCHEMA-003 to handle, ADR-TEMPLATE-706 to be a catch-all error code for when explicit ADR formatting for a particular section isn't followed; rewrote Section 4 to handle the new `governance` class and create a universal set of keys vs. class-specific set of keys; rewrote Section 0 to handle this ADR's new bootstrap constitution and precedence authority; rewrote sections 0 to 13 in this version; |
 | 0.1.7   | 19 Sept 2025 | Changed ADR-TEMPLT-\* -> ADR-TEMPLATE-\* to improve readability; | 
@@ -870,34 +870,26 @@ TODO: Relabel code in registry.py, policy.py, validators/schema/\*.py, tests/adr
 Description: Front-matter and class structure constraints that don’t require link graph or prose analysis (e.g., required keys, date formats, class-specific allows/forbids).
 
 - **ADR-SCHEMA-001 (E)**: Missing required metadata (`id,title,status,class,date,review_by`) or bad `id`.
-- TOVERIFY: **ADR-SCHEMA-002 (E)**: Invalid class (`owner|delta|governance|strategy|style-guide|template`).
+- **ADR-SCHEMA-002 (E)**: Invalid class (`owner|delta|governance|strategy|style-guide|template`).
 - TOVERIFY: **ADR-SCHEMA-003 (E)**: Canonical section keys missing or out of order.
   - ADDED: Must have corresponding markdown headers which would cover (2025-09-21)
     - Missing sections entirely
     - Wrong section order
     - Present sections with missing headers
     - Present sections with mismatched headers
-- **ADR-SCHEMA-004 (E)**: Invalid status transition or illegal class change.
+- TOFIX: **ADR-SCHEMA-004 (E)**: Invalid status transition or illegal class change.
+  - See SCHEMA-004 source code files for details
 - **ADR-SCHEMA-005 (E)**: Invalid date format (must be `YYYY-MM-DD`) for `date` or `review_by`.
-
-TOADD:
-
-  - **ADR-SCHEMA-006 (E)**: Governance ADR missing required `scope` field
-  - **ADR-SCHEMA-007 (E)**: Owner ADR missing required `governed_by` field  
-  - **ADR-SCHEMA-008 (E)**: Invalid `scope` value
-  - **ADR-SCHEMA-009 (E)**: Class-forbidden field present (e.g., governance with `extends`)
-  - **ADR-SCHEMA-010 (E)**: Governance ADR missing required `constraint_rules` section
-
+- **ADR-SCHEMA-006 (E)**: Governance ADR missing required `scope` field
+- **ADR-SCHEMA-007 (E)**: Owner ADR missing required `governed_by` field  
+- **ADR-SCHEMA-008 (E)**: Invalid `scope` value
+- **ADR-SCHEMA-009 (E)**: Class-forbidden field present (e.g., governance with `extends`)
+- **ADR-SCHEMA-010 (E)**: Governance ADR missing required `constraint_rules` section
 - **ADR-SCHEMA-011 (E)**: Owner ADR must not use `extends`.
 - **ADR-SCHEMA-012 (E)**: Non-Owner ADRs must never use `owner`.
 - **ADR-SCHEMA-013 (E)**: Non-Owner ADRs must identify ADR ownership
-
-TOADD:
-
-  - **ADR-SCHEMA-014 (E)**: Invalid relationship field combination for ADR class
-  - **ADR-SCHEMA-015 (E)**: ADR metadata violates its declared governance constraints
-
-- TOREMOVE: **ADR-SCHEMA-021 (E)**: Strategy ADR contains `rollout_backout` (by marker **or** heading `Rollout & Backout`).
+- **ADR-SCHEMA-014 (E)**: Invalid relationship field combination for ADR class
+- **ADR-SCHEMA-015 (E)**: ADR metadata violates its declared governance constraints (basic stub validator)
 
 #### ADR-TEMPLATE
 
