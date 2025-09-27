@@ -82,7 +82,7 @@ for code in CODES.keys():
     APPLICABILITY[code] = set(CLASSES)
 
     # Template-only codes
-    if code.startswith("ADR-TEMPLATE-7"):
+    if code.startswith("ADR-TEMPLATE-"):
         APPLICABILITY[code] = {"template"}
 
     # Template-only codes

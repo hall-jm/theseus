@@ -893,7 +893,7 @@ Description: Template structure and constraints that provide rules which can be 
 - **ADR-TEMPLATE-702 (W)**: filename does not include `-template-` (discoverability).
 - TOUPDATE: **ADR-TEMPLATE-703 (E)**: template participates in link graph (`extends`, `supersedes` non-null).
   - Update to include new keys:   `governed_by`, `informs`, `informed_by` where non-null)
-- **ADR-TEMPLATE-704 (W)**: RFC-2119 keyword outside code fences/inline code in template.
+- TOREVIEW: **ADR-TEMPLATE-704 (W)**: RFC-2119 keyword outside code fences/inline code in template.
 - **ADR-TEMPLATE-705 (W)**: template does not mirror canonical section order of `template_of` (same keys, same order).
 - TOADD: **ADR-TEMPLATE-706 (W)**: content formatting matches documented format. (2025-09-21)
   - Example: ## Decision is explicitly a one-liner following the format of: "Because <long-range driver>, we choose <strategic direction> so that <north star>."
@@ -906,8 +906,7 @@ Description: Template structure and constraints that provide rules which can be 
 
 ##### Notes
 
-> TPL-704 gives you a gentle guardrail for examples that accidentally leak MUST/SHOULD outside code fences in templates (consistent with your §7.5 and §10.5 language).
-> TPL-705 is a soft wrapper around SCHEMA-003 so reviewers can see “it failed because it’s a template not mirroring the base,” while SCHEMA-003 remains the hard rule that enforces order. You can omit 705 if you prefer only the hard fail.
+> The expectation for TEMPLATE-705 is as a soft wrapper around SCHEMA-003 so reviewers can see “it failed because it’s a template not mirroring the base,” while SCHEMA-003 remains the hard rule that enforces order.
 
 ### STRICT-PROCEED (Auto-resolve) Policy
 

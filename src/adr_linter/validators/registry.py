@@ -59,12 +59,14 @@ from .norm.norm_102_vague_terms_in_normative import (
 from .meta import META_RULES_PER_FILE  # , LINK_RULES_POST_RUN
 
 # 6) TEMPLATE
-from .template.template_700_template_of_required import (
-    validate_template_700_template_of_required,
-)
-from .template.template_701_status_proposed import (
-    validate_template_701_status_proposed,
-)
+from .template import TEMPLATE_RULES_PER_FILE  # , TEMPLATE_RULES_POST_RUN
+
+# from .template.template_700_template_of_required import (
+#     validate_template_700_template_of_required,
+# )
+# from .template.template_701_status_proposed import (
+#     validate_template_701_status_proposed,
+# )
 from .template.template_702_filename_template import (
     validate_template_702_filename_template,
 )
@@ -145,8 +147,9 @@ ORDERED_RULES_PER_FILE: List[Tuple[str, Callable]] = [
     ("ADR-NORM-101", validate_norm_101_rfc_outside_normative),
     ("ADR-NORM-102", validate_norm_102_vague_terms_in_normative),
     # --- template band (per-file) ---
-    ("ADR-TEMPLATE-700", validate_template_700_template_of_required),
-    ("ADR-TEMPLATE-701", validate_template_701_status_proposed),
+    *TEMPLATE_RULES_PER_FILE,
+    # ("ADR-TEMPLATE-700", validate_template_700_template_of_required),
+    # ("ADR-TEMPLATE-701", validate_template_701_status_proposed),
     ("ADR-TEMPLATE-702", validate_template_702_filename_template),
     ("ADR-TEMPLATE-703", validate_template_703_no_link_graph),
     ("ADR-TEMPLATE-704", validate_template_704_rfc_only_in_examples),

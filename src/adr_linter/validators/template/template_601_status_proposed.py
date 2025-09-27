@@ -1,22 +1,27 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python3
-# src/adr_linter/validators/template/template_701_status_proposed.py
+# src/adr_linter/validators/template/template_601_status_proposed.py
 
 from __future__ import annotations
 
+_ERROR_CODE = "ADR-TEMPLATE-601"
 
-def validate_template_701_status_proposed(ctx, rpt) -> None:
+
+def validate_template_601_status_proposed(ctx, rpt) -> None:
     """
-    ADR-TEMPLATE-701 — status SHOULD be Proposed (ADR-0001 §7.5).
+    ADR-TEMPLATE-601 — status MUST USE Proposed (ADR-0001 §3).
 
-    Ref: ADR-0001 §7.5/§10.5 · ADR-TEMPLATE-701
+    Ref: ADR-0001 §3/§7.5/§10.5 · ADR-TEMPLATE-601
     """
     meta = ctx.meta
+
+    print(f"[D VAL: TEMPLATE-601] status: _{meta.get("status")}_")
+
     if meta.get("class") != "template":
         return
     if meta.get("status") != "Proposed":
         rpt.add(
-            "ADR-TEMPLATE-701",
+            _ERROR_CODE,
             ctx.path,
             f"status={meta.get('status')} in template",
         )
