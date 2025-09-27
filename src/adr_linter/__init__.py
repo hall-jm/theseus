@@ -2,6 +2,7 @@
 # !/usr/bin/env python3
 # src/adr_linter/__init__.py
 
+# Governance Tension
 """
 Theseus ADR Linter - Governance tools for architectural decision records.
 
@@ -79,6 +80,7 @@ CURRENT ARGUMENTS
 theseus --path PATH --fail-on E|W|I -k KEYWORD --emit-metrics --format md|jsonl
 """
 
+# Refactoring Tension
 """
 ## Strategic Analysis of the Refactoring Tension
 
@@ -155,7 +157,7 @@ cycles.
 
 **Phase 1**: Create governance constants
              (VALID_SCOPE_VALUES, CANONICAL_KEYS_GOVERNANCE)
-**Phase 2**: Extend SectionInfo to parse governance constraint blocks
+**Phase 2**: Extend SectionData to parse governance constraint blocks
 **Phase 3**: Implement basic governance validators (006-008)
 **Phase 4**: Build governance-dependent delta validators (501-503, 508, 510)
 
@@ -163,4 +165,54 @@ The core tension is that governance is foundational to the entire validation
 system, but implementing it requires touching every major component. The
 conservative approach is to build governance foundations incrementally rather
 than attempting a big-bang refactor.
+"""
+
+# Delta ADR Class Validation Constraints and Tension
+"""
+## Strategic Analysis: Delta ADR Validation Constraints
+
+### **Decision One-Liner**
+Because delta inheritance requires cross-file context but our architecture
+enforces single-file validation, we choose universal-section-only delta
+validation so that we maintain architectural simplicity while accepting
+reduced validation coverage.
+
+### **Context and Drivers**
+
+- ADR-0001 §4 specifies deltas "inherit base ADR sections" but doesn't define
+  validation scope
+- Single-file validation constraint prevents resolving `extends` chains at
+  validation time
+- Delta inheritance can create recursive chains (delta extending delta
+  extending strategy)
+- Current failing tests expect full inheritance validation that architecture
+  cannot support
+
+### **Options Considered**
+
+1. **Cross-file validation** - Resolve inheritance chains during validation
+                               (high complexity)
+2. **Metadata hints** - Add `base_class` field to delta front-matter
+                        (spec pollution)
+3. **Universal-only validation** - Validate universal sections, document
+                                   limitation (constrained but simple)
+4. **Two-pass validation** - Build index then resolve inheritance
+                             (architectural change)
+
+### **Decision Details**
+**MUST** validate only universal sections for delta ADRs in single-file mode
+**SHOULD** document this as known limitation in delta validation
+**MAY** enhance with cross-file validation in future architecture iteration
+
+### **Consequences and Risks**
+**Trade-offs**: Reduced delta validation coverage for architectural
+                simplicity and predictable behavior
+**Risk**: Delta ADRs with incorrect inheritance structure may pass validation
+**Mitigation**: Universal section validation catches structural problems;
+                inheritance validation can be added later
+
+### **Implementation Notes**
+Update `get_canonical_keys("delta")` to return universal sections only. Add
+clear docstring explaining single-file constraint. Update failing tests to
+expect universal sections rather than full inheritance validation.
 """
