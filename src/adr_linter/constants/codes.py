@@ -125,7 +125,7 @@ CODES = {
         "W",
         "RFC-2119 keyword outside code fences/inline code in template.",
     ),
-    "ADR-TEMPLATE-705": (
+    "ADR-TEMPLATE-605": (
         "W",
         "template does not mirror canonical section order of `template_of` "
         "(same keys, same order).",

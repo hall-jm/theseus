@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python3
-# tests/adr_linter/validators/template/adrlint_test_templt_705_mirror_section_order.py
+# tests/adr_linter/validators/template/adrlint_test_templt_605_mirror_section_order.py
 
 """
 ADR-0001 · §14 Linter Rules Reference
-ADR-TEMPLT-705 (W): template does not mirror canonical section order of
+ADR-TEMPLT-605 (W): template does not mirror canonical section order of
                     `template_of` (same keys, same order).
 Linting Tests: ADRLINT-034
 """
@@ -14,6 +14,11 @@ from __future__ import annotations
 from adr_linter.validators.registry import run_all
 from adr_linter.report import Report
 
+from adr_linter.validators.template.template_605_mirror_section_order import (
+    _ERROR_CODE as _ADR_ERROR_CODE,
+)
+
+
 from ...conftest import (
     _write_and_ctx,
     _good_meta_front_matter,
@@ -21,7 +26,7 @@ from ...conftest import (
 )
 
 
-def test_adrlint034_templt705_section_order_mismatch(
+def test_adrlint_template605_section_order_mismatch(
     _route_and_reset_workspace,
 ):
     """
@@ -45,4 +50,4 @@ One-liner second (should be first)
     )
     rpt = Report()
     run_all(ctx, rpt)
-    assert _has_code(rpt, "ADR-TEMPLATE-705")
+    assert _has_code(rpt, _ADR_ERROR_CODE)

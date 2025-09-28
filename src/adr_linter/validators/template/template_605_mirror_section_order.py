@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python3
-# src/adr_linter/validators/template/template_705_mirror_section_order.py
+# src/adr_linter/validators/template/template_605_mirror_section_order.py
 
 from __future__ import annotations
 
@@ -10,9 +10,9 @@ from ...parser.structure import expected_keys_for
 _ERROR_CODE = "ADR-TEMPLATE-605"
 
 
-def validate_template_705_mirror_section_order(ctx, rpt) -> None:
+def validate_template_605_mirror_section_order(ctx, rpt) -> None:
     """
-    ADR-TEMPLATE-705 — mirror canonical section order of template_of.
+    ADR-TEMPLATE-605 — mirror canonical section order of template_of.
 
     Ref: ADR-0001 §7.5/§10.5 · ADR-TEMPLATE-705
     """

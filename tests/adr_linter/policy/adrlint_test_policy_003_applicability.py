@@ -45,12 +45,12 @@ def test_adrlint912_policy_applicability_is_well_formed():
 
 def test_adrlint913_policy_applicability_template_only_for_templt():
     for code in P_CODES.keys():
-        if code.startswith("ADR-TEMPLATE-7"):
+        if code.startswith("ADR-TEMPLATE-"):
             assert P_APPLICABILITY[code] == {"template"}
 
 
 def test_adrlint914_policy_applies_to_helper_consistent_with_matrix_examples():
     assert not policy_applies_to("style-guide", "ADR-NORM-101")
     assert not policy_applies_to("style-guide", "ADR-SCHEMA-003")
-    assert policy_applies_to("template", "ADR-TEMPLATE-700")
-    assert not policy_applies_to("owner", "ADR-TEMPLATE-700")
+    assert policy_applies_to("template", "ADR-TEMPLATE-600")
+    assert not policy_applies_to("owner", "ADR-TEMPLATE-600")

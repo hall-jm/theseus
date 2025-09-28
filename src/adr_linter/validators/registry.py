@@ -76,9 +76,10 @@ from .template.template_703_no_link_graph import (
 from .template.template_704_rfc_only_in_examples import (
     validate_template_704_rfc_only_in_examples,
 )
-from .template.template_705_mirror_section_order import (
-    validate_template_705_mirror_section_order,
-)
+
+# from .template.template_705_mirror_section_order import (
+#     validate_template_705_mirror_section_order,
+# )
 
 # -------------------- R2 diagnostics toggle (optional, no behavior change) ---
 
@@ -153,7 +154,7 @@ ORDERED_RULES_PER_FILE: List[Tuple[str, Callable]] = [
     ("ADR-TEMPLATE-702", validate_template_702_filename_template),
     ("ADR-TEMPLATE-703", validate_template_703_no_link_graph),
     ("ADR-TEMPLATE-704", validate_template_704_rfc_only_in_examples),
-    ("ADR-TEMPLATE-705", validate_template_705_mirror_section_order),
+    # ("ADR-TEMPLATE-705", validate_template_705_mirror_section_order),
 ]
 
 # Order documentation for post-run. Execution still builds graphs below.

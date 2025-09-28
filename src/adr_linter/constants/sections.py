@@ -120,33 +120,35 @@ def get_canonical_keys(
         validation.
     """
 
-    # print(
-    #    f"-[D constants.section.py] template_of: "
-    #    f"{str(template_of)}, {type(template_of)}"
-    # )
-
-    if not isinstance(template_of, str):
-        # HACK: identifying missing input validation through new pytests
-        #       not sure yet how to address this issue as either a new
-        #       undocumented error band and what boundary is supposed
-        #       to govern this kind of error (e.g., engine? cli? validation?
-
-        # e.g.,:
-        # raise ValueError(
-        #     f"Invalid template_of: expected string, "
-        #     f"got {type(template_of).__name__}"
-        # )
-
-        return []
-
     # Style-guide exempt from canonical sections per ADR-0001 §7.4
     if class_name == "style-guide":
         return []
 
     # Template mirrors template_of class per ADR-0001 §7.5
     if class_name == "template":
+        if not isinstance(template_of, str) and class_name == "template":
+            # print(
+            #    f"-[D constants.section.py] template_of: "
+            #    f"{str(template_of)}, {type(template_of)}"
+            # )
+
+            # HACK: identifying missing input validation through new pytests
+            #       not sure yet how to address this issue as either a new
+            #       undocumented error band and what boundary is supposed
+            #       to govern this kind of error (e.g., engine? cli?
+            #       validation? )
+
+            # e.g.,:
+            # raise ValueError(
+            #     f"Invalid template_of: expected string, "
+            #     f"got {type(template_of).__name__}"
+            # )
+
+            return []
+
         if not template_of or template_of not in VALID_ADR_CLASSES:
             return []  # Let TEMPLATE-700/705 handle the error
+
         return get_canonical_keys(template_of)
 
     # Delta relaxed mode: universal sections required in order, base extras
