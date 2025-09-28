@@ -33,7 +33,7 @@ def test_adrlint901_registry_each_rule_has_a_module_file_for_supported_bands():
         "NORM": "norm",
         "META": "meta",
         "SCHEMA": "schema",
-        "TEMPLT": "template",
+        "TEMPLATE": "template",
     }
     supported = set(band_dir.keys())
     root = _validators_root()

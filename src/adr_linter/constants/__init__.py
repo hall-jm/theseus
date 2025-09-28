@@ -32,6 +32,8 @@ from .validation import (
     VALID_GOVERNED_CLASSES,
     VALID_TEMPLATED_CLASSES,
     VALID_SCOPE_VALUES,
+    VALID_SCOPE_TOPIC_VALUES,
+    VALID_SCOPE_YAML_KEYS,
     CLASS_ALLOWED_RELATIONSHIPS,
     CLASS_FORBIDDEN_RELATIONSHIPS,
     RFC_2119_TERMS,
@@ -50,14 +52,18 @@ from .validation import (
     VAGUE_TERMS_RX,
     DECISION_ONE_LINER_PATTERN_RX,
     DECISION_ONE_LINER_KEY_PATTERN_RX,
+    CONSTRAINT_RULES_KEY_PATTERN_RX,
     # - Patterns: Lists of RegEx
     PLACEHOLDER_PATTERNS,
     REAL_VALUE_INDICATORS,
     # - Patterns: Lists of Compiled RegEx
     PLACEHOLDER_BRACKET_PATTERNS_RXL,
+    # VALID_SCOPE_TOPIC_PATTERNS_RXL,
     # defs
     has_placeholder_content,
     is_single_statement,
+    get_scope_topic_patterns,
+    detect_real_governance_values,
 )
 
 from .sections import (
@@ -101,6 +107,8 @@ __all__ = [
     "DATE_KEY_NAMES",
     "VALID_ADR_CLASSES",
     "VALID_SCOPE_VALUES",
+    "VALID_SCOPE_TOPIC_VALUES",
+    "VALID_SCOPE_YAML_KEYS",
     "VALID_TEMPLATED_CLASSES",
     "CLASS_ALLOWED_RELATIONSHIPS",
     "CLASS_FORBIDDEN_RELATIONSHIPS",
@@ -116,15 +124,19 @@ __all__ = [
     "VAGUE_TERMS_RX",
     "DECISION_ONE_LINER_PATTERN_RX",
     "DECISION_ONE_LINER_KEY_PATTERN_RX",
+    "CONSTRAINT_RULES_KEY_PATTERN_RX",
     # - Patterns: Lists of RegEx
     "PLACEHOLDER_PATTERNS",
     "REAL_VALUE_INDICATORS",
     "VALID_STATUS_TRANSITIONS",
     # - Patterns: Lists of Compiled RegEx
     "PLACEHOLDER_BRACKET_PATTERNS_RXL",
+    # "VALID_SCOPE_TOPIC_PATTERNS_RXL",
     # - defs
     "has_placeholder_content",
     "is_single_statement",
+    "get_scope_topic_patterns",
+    "detect_real_governance_values",
     # Sections
     "SECTIONS_UNIVERSAL_OPENING",
     "SECTIONS_UNIVERSAL_CLOSING",

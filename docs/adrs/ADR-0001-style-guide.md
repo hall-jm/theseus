@@ -23,9 +23,9 @@ change_history: []
 
 | Field                  | Value                                   |
 | ---------------------- | --------------------------------------- |
-| **Version**:           | 0.2.2                                   |
+| **Version**:           | 0.2.3                                   |
 | **Status**:            | Proposed                                |
-| **Date**:              | 2025-09-26                              |
+| **Date**:              | 2025-09-28                              |
 | **Applies to Schema**: | 0.1.0                                   |
 | **Related**:           |                                         |
 
@@ -33,6 +33,7 @@ change_history: []
 
 | Version | Date         | Notes                                        |
 | ------- | ------------ | -------------------------------------------- |
+| 0.2.3   | 28 Sept 2025 | Updated ADR-TEMPLATE section to reflect the renumbering from 7xx -> 6xx and the review and refactoring of pre-existing unit tests; created SCHEMA-016 entry to be the 'production' version of TEMPLATE-606 to enforce content rigidity for certain sections to ensure LLMs are drafting copy in a more consistent manner; created documentation for TEMPLATE-609 to handle `class: governance` explicit placeholders; added 4.1.1 section to explicitly list which sections are covered by TEMPLATE-606; added template YAML example to 5.3.2 Governance ADRs to document how `constraint_rules` should be formatted; |
 | 0.2.2   | 26 Sept 2025 | Revising lines regarding ADR-NORM vs. ADR-GOVERN to address tension between entries on how to handle RFC-2119 in different ADR classes and sections; added more notes and descriptions to help contextualize what this document is handles and governs; looking likely that a parent style-guide ADR needs sub-ADRs for tracking class-specific rules and governance to reduce the size of this file; updated Section 3 for Templates to require use of `owners_ptr` (i.e., Project Maintainer may be the human owner of a template, but an owner ADR can own a series of templates to control scope and clarify what ADRs drive that template's updates and revisions; updated Section 14 for ADR-SCHEMA to reflect to creation of new rules, review of pre-existing rules and updated notes accordingly; relabeled ADR-META-\* from 150+ => 200+;  cleaned up the ADR-META section now that those rules have been reviewed and refactored; |
 | 0.2.1   | 25 Sept 2025 | Rewrote sections 14 to 17 in this version to finish initial review; removed entries in **Related** field due to new `governance` class and its related changes;  |
 | 0.2.0   | 24 Sept 2025 | Created new `governance` class of ADRs; added new requirements for ADR-SCHEMA-003 to handle, ADR-TEMPLATE-706 to be a catch-all error code for when explicit ADR formatting for a particular section isn't followed; rewrote Section 4 to handle the new `governance` class and create a universal set of keys vs. class-specific set of keys; rewrote Section 0 to handle this ADR's new bootstrap constitution and precedence authority; rewrote sections 0 to 13 in this version; |
@@ -214,7 +215,7 @@ When `class: template`:
 
 TOREVIEW: the following `>` line for consistencies with later sections covering the `template` class.
 
-> This mirrors TPL-700/701/702/703 and prevents drift between §3 and §7.5/§10.5/§14.
+> This mirrors TPL-600/601/602/603 and prevents drift between §3 and §7.5/§10.5/§14.
 
 ---
 
@@ -222,69 +223,77 @@ TOREVIEW: the following `>` line for consistencies with later sections covering 
 
 Use these **exact keys** (stable for tooling). Headings can be pretty; keys must map 1:1.
 
-### Universal Sections (all classes)
+### 4.1 Universal Sections (all classes)
 
 All ADR classes **MUST** include these sections in this order:
 
-#### Opening Sections (in order)
+#### 4.1.1 TEMPLATE-606 Inclusion
+
+Sections that must be structured into a consistent pattern-matching value will be enforced by TEMPLATE-606.
+
+This include policy applies to:
+
+- `decision_one_liner`
+
+#### 4.1.2 Opening Sections (in order)
 
 - `decision_one_liner`: one statement - explicit `Because <driver>, we choose <option> so that <benefit>.`
 - `context_and_drivers`: bullet list - goals, non-goals, constraints, assumptions
 - `options_considered`: see Section 6 for details
 - `decision_details`: bullet list - normative scope decision definitions with MUST/SHOULD/MAY requirements
 
-#### Class-Specific Sections
+#### 4.1.3 Class-Specific Sections
 
 - **[Class-specific sections inserted here]**
 
-#### Closing Sections (in order)
+#### 4.1.4 Closing Sections (in order)
 
 - `evidence_and_links`: bullet list - benchmarks, supporting web links, research, or evidence supporting this ADR
 - `glossary`: see Section 5 for details (i.e., define acronyms once; keep a mini-glossary)
 - `related_adrs`: bread crumb documentation for related ADRs (e.g., base ADR if not owner, previous superseded ADRs) 
 - `license`: boilerplate copy - usage terms for this ADR's content
 
-### Class-Specific Section Insertions
+### 4.2 Class-Specific Section Insertions
 
 **After `decision_details`, insert the following sections based on class:**
 
-#### Owner
+#### 4.2.1 Owner
 
 - `consequences_and_risks`: bullet list - trade-offs and implementation impacts
 - `implementation_notes`: bullet list - technical details and system boundaries
 - `rollout_backout`: bullet lists (`phases`, `backout`) - phased implementation plan with explicit rollback procedure
 
-#### Governance
+#### 4.2.2 Governance
 
 - `authority_scope`: bullet list - which domains/topics are in scope for this governance ADR (e.g., "CLI UX")
 - `constraint_rules`: yaml block - what is required, forbidden, owned by for this governance ADR (e.g., "Engine FORBIDDEN from direct user messaging")
 - `precedence_mappings`: bullet list - explicit rules for conflict resolution between multiple components claiming authority over the same concern (e.g., "When CLI and Engine both user messaging, CLI precedence wins")
 - `adoption_and_enforcement`: bullet list - how are these constraints applied in practice and what are the results when components violate boundaries (e.g., LLM writes code that creates CLI error code which bypasses engine trigger escalation)
 
-#### Strategy  
+#### 4.2.3 Strategy  
 
 - `principles`: bullet list - foundational beliefs about what the system or a feature is trying to achieve, what are the larger overall goals we are trying to achieve
 - `guardrails`: bullet list - flexibility constraints that prevent strategy from becoming too rigid or brittle (e.g., "Governance rules should provide clear guidance but allow for exceptional cases with explicit justification")
-- `consequences_and_risks`: compare and contrast - strategic trade-offs and potential failure modes (e.g., "Stricter governance may slow initial development but prevents costly refactoring cycles")
+- `consequences_and_risks`: bullet list - compare and contrast for strategic trade-offs and potential failure modes (e.g., "Pro: Stricter governance prevents costly refactoring cycles; Cons: May slow initial development;")
 - `implementation_notes`: bullet list - high-level guidance on applying this strategic direction across multiple components (e.g., "Prioritize governance tooling over manual enforcement")
 - `north_star_metrics`: KPI - directional success indicators that show if the strategy is working (could be measurable or qualitative goals; e.g., "Reduce architectural drift incidents")
 
-#### Delta
+#### 4.2.4 Delta
 
 Uses base ADR sections (inherited via `extends`)
 
-#### Template
+#### 4.2.5 Template
 
 - Templates inherit the skeleton of the class they scaffold (template_of).
 - They MUST contain placeholders (e.g., <driver>, <YYYY-MM-DD>) instead of real values.
 
 > Strategy templates MUST NOT introduce rollout_backout (see §7.3).
 
-#### Style-Guide
+#### 4.2.6 Style-Guide
 
 Based on its nature as a bootstrapping class, style guides are exempt from canonical section keys and ordering.
 
-### Complete Section Orders by Class
+### 4.3 Complete Section Orders by Class
 
 **Owner**: `decision_one_liner`, `context_and_drivers`, `options_considered`, `decision_details`, `consequences_and_risks`, `implementation_notes`, `rollout_backout`, `evidence_and_links`, `glossary`, `related_adrs`, `license`
 
@@ -294,9 +303,9 @@ Based on its nature as a bootstrapping class, style guides are exempt from canon
 
 This structure maintains universal LLM navigation while allowing semantic differentiation where classes need distinct content types. The governance class gets its constraint-specific sections without forcing inappropriate sections like `rollout_backout`.
 
-### Reminders
+### 4.4 Reminders
 
-> Some classes restrict which keys may appear—see §7 (class rules).
+- Some classes restrict which keys may appear—see §7 (class rules).
 
 ---
 
@@ -305,7 +314,9 @@ This structure maintains universal LLM navigation while allowing semantic differ
 ### 5.1 Universal Writing Principles
 
 - **Active voice**, short sentences (≤20 words).
-- Define acronyms once; keep a mini-glossary.
+- Make decisions **atomic, auditable, and reversible**.
+- Keep documentation **human-skim friendly** and **machine-readable** (LLMs, linters)
+- Define acronyms once; keep a glossary (i.e., see section 4.1.4 "Closing Sections")
 - Avoid unclear pronouns; repeat the noun.
 - Prefer **numbers & units** over adjectives (e.g., "p95 ≤ 150 ms").
 
@@ -318,13 +329,13 @@ General Rule of Thumb: unless a class section has explicit guidance on RFC-2119 
 
 ### 5.3 Class-Specific Content Standards
 
-#### Owner & Delta ADRs
+#### 5.3.1 Owner & Delta ADRs
 
 - Use **RFC-2119** keywords for binding requirements in Owner sections, `decision_details` and `rollout_backout` (and by Delta ADR if inheriting from an ADR with those sections).
 - Include specific thresholds, SLOs, and measurable criteria.
 - Provide concrete implementation guidance with rollback procedures.
 
-#### Governance ADRs
+#### 5.3.2 Governance ADRs
 
 **RFC-2119 FORBIDDEN** in prose sections (e.g., `adoption_and_enforcement`) — enforced as **ADR-GOVERN-407 (E)**.  
 **Machine-readable constraint blocks** provide sole binding authority in `constraint_rules` (see §0 “Machine Constraints” and §11 “Class interactions”).
@@ -345,24 +356,39 @@ Authority boundaries defined exclusively through constraint block mappings
 - REQUIRED/FORBIDDEN lists cannot contain overlapping topics
 - OWNED_BY topic must not appear in scope's REQUIRED/FORBIDDEN lists
 
-**Example**:
+**ADR Example**
 
 ```yaml
+---
 constraint_rules:
-  REQUIRED: [ "cli.argument_parsing", "cli.user_messages" ]
-  FORBIDDEN: [ "engine.orchestration", "services.file_io" ]
+  REQUIRED: ["cli.user_authentication", "cli.session_management"]
+  FORBIDDEN: ["engine.user_interface", "services.authentication_logic"]
   OWNED_BY:
-    - topic: "shared.exit_code_mapping"  
+    - topic: "shared.error_code_standards"
       owner: "engine"
+
 ```
 
-#### Strategy ADRs
+**Template Example**
+
+```yaml
+---
+constraint_rules:
+  REQUIRED: ["<scope>.<topic>", "<scope>.<topic>"]
+  FORBIDDEN: ["<other-scope>.<topic>", "<different-scope>.<topic>"]
+  OWNED_BY:
+    - topic: "<scope-topic>.<shared-concern>"
+      owner: "<responsible-scope>
+
+```
+
+#### 5.3.3 Strategy ADRs
 
 - Use **RFC-2119** keywords in `principles` and `guardrails` sections for binding strategic constraints.
 - Focus on direction without implementation specifics.
 - Metrics in `north_star_metrics` MUST be measurable.
 
-#### Template ADRs
+#### 5.3.4 Template ADRs
 
 - **RFC-2119 keywords allowed only in fenced code examples**.
 - Use `<angle-bracket>` placeholders for variable content.
@@ -476,8 +502,8 @@ TODO: Once the Linter Rules are reviewed, updated, and consolidated, delete any 
 - **Must**: Mirror section keys and order of `template_of` class.
 - **Must not**: Use `extends`, `supersedes`, `governed_by`, `scope`; define `owners`.
 - **May**: Use `<angle-bracket>` placeholders; RFC-2119 keywords only in fenced code examples.
-- **Exemptions**: Link graph participation (LINK-2xx exempt via TPL-703).
-- **Lint**: TPL-700 (E) if missing `template_of`; TPL-703 (E) if participates in link graph.
+- **Exemptions**: Link graph participation (LINK-2xx exempt via TPL-603).
+- **Lint**: TPL-600 (E) if missing `template_of`; TPL-603 (E) if participates in link graph.
 
 ### 7.6 Governance ADR
 
@@ -881,6 +907,14 @@ Description: Front-matter and class structure constraints that don’t require l
 - **ADR-SCHEMA-013 (E)**: Non-Owner ADRs must identify ADR ownership
 - **ADR-SCHEMA-014 (E)**: Invalid relationship field combination for ADR class
 - **ADR-SCHEMA-015 (E)**: ADR metadata violates its declared governance constraints (basic stub validator)
+- TOADD: **ADR-SCHEMA-016 (E)**: content formatting matches documented format. (2025-09-28)
+  - Example: ## Decision is explicitly a one-liner following the format of: "Because <long-range driver>, we choose <strategic direction> so that <north star>."
+  - In the validator and/or pytest for this rule, we can capture additional insights as to what this rule will cover **OR** which sections are explicitly ignored for now.
+  - Expectation for this rule is: 
+    - Make decisions **atomic, auditable, and reversible**.
+    - Keep docs **human-skim friendly** and **machine-readable** (LLMs, linters).
+    - TEMPLATE-606: Ensures templates demonstrate correct format to users
+    - SCHEMA-016 equivalent: Enforces the same format requirements on actual ADRs
 
 #### ADR-TEMPLATE
 
@@ -888,25 +922,45 @@ TODO: Relabel code in registry.py, policy.py, validators/template/\*.py, tests/a
 
 Description: Template structure and constraints that provide rules which can be validated via regex; not validating semantic content or judgment.
 
-- TOUPDATE: **ADR-TEMPLATE-700 (E)**: `template_of` missing or invalid (`owner|delta|governance|strategy|style-guide|template`).
-- **ADR-TEMPLATE-701 (W)**: `status` not `Proposed` in a template ADR.
-- **ADR-TEMPLATE-702 (W)**: filename does not include `-template-` (discoverability).
-- TOUPDATE: **ADR-TEMPLATE-703 (E)**: template participates in link graph (`extends`, `supersedes` non-null).
-  - Update to include new keys:   `governed_by`, `informs`, `informed_by` where non-null)
-- TOREVIEW: **ADR-TEMPLATE-704 (W)**: RFC-2119 keyword outside code fences/inline code in template.
-- **ADR-TEMPLATE-705 (W)**: template does not mirror canonical section order of `template_of` (same keys, same order).
-- TOADD: **ADR-TEMPLATE-706 (W)**: content formatting matches documented format. (2025-09-21)
+- **ADR-TEMPLATE-600 (E)**: `template_of` missing or invalid (`owner|delta|governance|strategy|style-guide|template`).
+- **ADR-TEMPLATE-601 (W)**: `status` not `Proposed` in a template ADR.
+- **ADR-TEMPLATE-602 (W)**: filename does not include `-template-` (discoverability).
+- **ADR-TEMPLATE-603 (E)**: template participates in link graph (`extends`, `supersedes` non-null).
+- **ADR-TEMPLATE-604 (W)**: RFC-2119 keyword outside code fences/inline code in template.
+- **ADR-TEMPLATE-605 (W)**: template does not mirror canonical section order of `template_of` (same keys, same order).
+- **ADR-TEMPLATE-606 (W)**: content formatting matches documented format.
   - Example: ## Decision is explicitly a one-liner following the format of: "Because <long-range driver>, we choose <strategic direction> so that <north star>."
   - In the validator and/or pytest for this rule, we can capture additional insights as to what this rule will cover **OR** which sections are explicitly ignored for now.
-  - Expectation for this rule is: 
-    - Make decisions **atomic, auditable, and reversible**.
-    - Keep docs **human-skim friendly** and **machine-readable** (LLMs, linters).
-- TOADD: **TEMPLATE-708 (E)**: Governance template missing `constraint_rules` block placeholder
-- TOADD: **TEMPLATE-709 (W)**: Template contains real governance values instead of placeholders
+- **TEMPLATE-607 (E)**: Governance template missing `constraint_rules` block placeholder.
+- **TEMPLATE-608 (W)**: Template contains real values instead of placeholders.
+- TOADD: **ADR-TEMPLATE-609 (W)**: Template contains real governance (i.e., ADR-GOVERN-\*) constraints instead of placeholders.
+   - Purpose: Prevent governance templates from containing actual constraint values that could be accidentally creating unintended authority boundaries or conflicts.
+   - Description: 
+     - Templates with `template_of: governance` must use placeholder patterns in governance-specific sections rather than real constraint values. 
+	 - Real governance constraints should only appear in actual governance ADRs after deliberate authority design.
+   - **Validates against:**
+     - Real YAML constraint blocks: `REQUIRED: [specific.values]` vs `REQUIRED: [<topic-list>]`
+     - Specific component topics: `cli.argument_parsing` vs `<scope>.<topic>`
+     - Actual scope assignments: `OWNED_BY: engine` vs `OWNED_BY: <scope>`
+     - Hard-coded authority mappings vs placeholder patterns
+   - **Rationale:** 
+     - Governance templates that contain real constraint values risk:
+     - Accidental authority conflicts when copied
+     - Outdated constraint logic being propagated
+     - Users not thinking through proper authority boundaries
+     - Cross-component boundary violations from template inheritance
+   - **Example violations:**
+     ```yaml
+     # BAD - real constraint
+     REQUIRED: ["cli.user_messages", "cli.exit_codes"]
+
+     # GOOD - placeholder  
+     REQUIRED: ["<scope>.<topic>", "<scope>.<topic>"]
+     ```
 
 ##### Notes
 
-> The expectation for TEMPLATE-705 is as a soft wrapper around SCHEMA-003 so reviewers can see “it failed because it’s a template not mirroring the base,” while SCHEMA-003 remains the hard rule that enforces order.
+> The expectation for TEMPLATE-605 should serve as a soft wrapper around SCHEMA-003 so reviewers can see “it failed because it’s a template not mirroring the base,” while SCHEMA-003 remains the hard rule that enforces order.
 
 ### STRICT-PROCEED (Auto-resolve) Policy
 

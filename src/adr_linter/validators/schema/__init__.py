@@ -35,6 +35,9 @@ from .schema_014_invalid_relationship_combination import (
 from .schema_015_governance_constraint_violation import (
     validate_schema_015_governance_constraint_violation,
 )
+from .schema_016_decision_format import (
+    validate_schema_016_decision_format,
+)
 
 
 # single source for registry
@@ -54,6 +57,7 @@ SCHEMA_RULES_PER_FILE = [
     ("ADR-SCHEMA-013", validate_schema_013_non_owner_identify_ownership),
     ("ADR-SCHEMA-014", validate_schema_014_invalid_relationship_combination),
     ("ADR-SCHEMA-015", validate_schema_015_governance_constraint_violation),
+    ("ADR-SCHEMA-016", validate_schema_016_decision_format),
 ]
 
 SCHEMA_RULES_POST_RUN = []

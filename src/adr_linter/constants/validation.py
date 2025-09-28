@@ -40,6 +40,9 @@ VALID_ADR_CLASSES = {
 }
 
 VALID_SCOPE_VALUES = {"cli", "engine", "services", "other"}
+VALID_SCOPE_TOPIC_VALUES = {"shared", "other"}
+VALID_SCOPE_YAML_KEYS = {"REQUIRED", "FORBIDDEN", "OWNED_BY"}
+
 VALID_GOVERNED_CLASSES = {"owner", "delta", "strategy"}
 VALID_TEMPLATED_CLASSES = VALID_ADR_CLASSES - {"template"}
 
@@ -151,6 +154,10 @@ DECISION_ONE_LINER_KEY_PATTERN_RX = re.compile(
     re.DOTALL,
 )
 
+CONSTRAINT_RULES_KEY_PATTERN_RX = re.compile(
+    r"<!-- key: constraint_rules -->\s*\n(.*?)(?=<!-- key: \w+|$)", re.DOTALL
+)
+
 # --- Regex List of RegEx -----------------------------------------------------
 
 # Common placeholder patterns in templates
@@ -188,6 +195,8 @@ PLACEHOLDER_BRACKET_PATTERNS_RXL = [
     re.compile(r"\[[^\]]+\]"),  # Square brackets
 ]
 
+# VALID_SCOPE_TOPIC_PATTERNS_RXL = _build_topic_patterns()
+
 # --- Status Transition Rules -------------------------------------------------
 
 VALID_STATUS_TRANSITIONS = {
@@ -205,8 +214,8 @@ VALID_STATUS_TRANSITIONS = {
 #           (e.g., one statement ending with one period '.') and to me, that
 #           logic looked like it should be centralized somewhere for wider
 #           reuse instead of being stuck in a validation rule file.
-# TODO: Where should validation logic go?  parser? here like sections.py
-#       provides canonical key API?
+# TOREVIEW: Where should validation logic go?  parser? here like sections.py
+#           provides canonical key API?
 
 
 def has_placeholder_content(content: str) -> bool:
@@ -224,3 +233,88 @@ def is_single_statement(content: str) -> bool:
     """
     sentences = re.split(r"[.!?]+\s+", content.strip())
     return len([s for s in sentences if s.strip()]) == 1
+
+
+# TOREVIEW: Where should this logic go?  parser? here like sections.py
+#           provides canonical key API?
+#           Building scope.topic patterns from centralized constants
+
+
+def get_scope_topic_patterns():
+    """Build compiled regex patterns for real topic detection."""
+    patterns = []
+
+    # Standard scope.topic patterns (cli.topic, engine.topic, etc.)
+    scope_pattern = "|".join(VALID_SCOPE_VALUES)
+    patterns.append(
+        re.compile(rf"\b({scope_pattern})\.[a-zA-Z_][a-zA-Z0-9_]*")
+    )
+
+    # Scope topic patterns (shared.topic, other.topic, etc.)
+    scope_topic_pattern = "|".join(VALID_SCOPE_TOPIC_VALUES)
+    patterns.append(
+        re.compile(rf"\b({scope_topic_pattern})\.[a-zA-Z_][a-zA-Z0-9_]*")
+    )
+
+    return patterns
+
+
+# TOREVIEW: Where should this logic go?  parser? here like sections.py
+#           provides canonical key API?
+#           Detecting real governance patterns from constraint_data yaml
+#           blocks
+
+
+def detect_real_governance_values(constraint_data: dict) -> list[str]:
+    """Detect real governance values in constraint rules."""
+    violations = []
+    _REAL_TOPIC_PATTERNS_RXL = get_scope_topic_patterns()
+
+    _YAML_CHECK_KEYS = VALID_SCOPE_YAML_KEYS - {"OWNED_BY"}
+    _YAML_KEY_OWNED_BY = "OWNED_BY"
+
+    # Check REQUIRED and FORBIDDEN lists for real topic patterns
+    for key in _YAML_CHECK_KEYS:
+        if key in constraint_data and isinstance(constraint_data[key], list):
+            for topic in constraint_data[key]:
+                if isinstance(topic, str):
+                    # Check for real topic patterns
+                    for pattern in _REAL_TOPIC_PATTERNS_RXL:
+                        if pattern.search(
+                            topic
+                        ) and not has_placeholder_content(topic):
+                            violations.append(
+                                f"{key} contains real topic '{topic}'"
+                            )
+
+    # Check OWNED_BY for real scope and topic values
+    if _YAML_KEY_OWNED_BY in constraint_data and isinstance(
+        constraint_data[_YAML_KEY_OWNED_BY], list
+    ):
+        for item in constraint_data[_YAML_KEY_OWNED_BY]:
+            if isinstance(item, dict):
+                # Check topic field
+                if "topic" in item and isinstance(item["topic"], str):
+                    topic = item["topic"]
+                    for pattern in _REAL_TOPIC_PATTERNS_RXL:
+                        if pattern.search(
+                            topic
+                        ) and not has_placeholder_content(topic):
+                            violations.append(
+                                f"{_YAML_KEY_OWNED_BY} contains real "
+                                f"topic '{topic}'"
+                            )
+
+                # Check owner field for real scope values
+                if "owner" in item and isinstance(item["owner"], str):
+                    owner = item["owner"]
+                    if (
+                        owner in VALID_SCOPE_VALUES
+                        and not has_placeholder_content(owner)
+                    ):
+                        violations.append(
+                            f"{_YAML_KEY_OWNED_BY} contains real "
+                            f"scope '{owner}'"
+                        )
+
+    return violations

@@ -102,6 +102,11 @@ CODES = {
         "E",
         "ADR metadata violates its declared governance constraints",
     ),
+    "ADR-SCHEMA-016": (
+        "E",
+        "Section content formatting does not match documented format. "
+        "Production validation rule equivalent of TEMPLATE-606.",
+    ),
     # T
     "ADR-TEMPLATE-600": (
         "E",
@@ -132,7 +137,8 @@ CODES = {
     ),
     "ADR-TEMPLATE-606": (
         "W",
-        "Section content formatting does not match documented format.",
+        "Section content formatting does not match documented format. "
+        "Template validation rule equivalent of SCHEMA-016.",
     ),
     "ADR-TEMPLATE-607": (
         "E",
@@ -141,6 +147,10 @@ CODES = {
     "ADR-TEMPLATE-608": (
         "W",
         "Template contains real values instead of placeholders.",
+    ),
+    "ADR-TEMPLATE-609": (
+        "W",
+        "Governance template contains real values instead of placeholders.",
     ),
 }
 

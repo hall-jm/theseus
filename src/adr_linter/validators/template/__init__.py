@@ -27,6 +27,9 @@ from .template_607_governance_constraint_rules import (
 from .template_608_real_values_not_placeholders import (
     validate_template_608_real_values_not_placeholders,
 )
+from .template_609_governance_real_values import (
+    validate_template_609_governance_real_values,
+)
 
 # single source for registry
 TEMPLATE_RULES_PER_FILE = [
@@ -39,6 +42,7 @@ TEMPLATE_RULES_PER_FILE = [
     ("ADR-TEMPLATE-606", validate_template_606_content_formatting),
     ("ADR-TEMPLATE-607", validate_template_607_governance_constraint_rules),
     ("ADR-TEMPLATE-608", validate_template_608_real_values_not_placeholders),
+    ("ADR-TEMPLATE-609", validate_template_609_governance_real_values),
 ]
 
 TEMPLATE_RULES_POST_RUN = []
