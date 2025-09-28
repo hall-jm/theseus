@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python3
-# tests/adr_linter/validators/template/adrlint_test_templt_704_rfc_only_in_examples.py
+# tests/adr_linter/validators/template/adrlint_test_template_604_rfc_only_in_examples.py
 
 """
 ADR-0001 · §14 Linter Rules Reference
-ADR-TEMPLATE-704 (W): RFC-2119 keyword outside code fences/inline code
+ADR-TEMPLATE-604 (W): RFC-2119 keyword outside code fences/inline code
                     in template.
-Linting Tests: ADRLINT-033/036/037/038/039
 """
 
 from __future__ import annotations
@@ -21,14 +20,24 @@ from ...conftest import (
     _has_code,
 )
 
+from adr_linter.validators.template.template_604_rfc_only_in_examples import (
+    _ERROR_CODE as _ADR_ERROR_CODE,
+)
 
-def test_adrlint033_templt704_only_code_and_inline_allowed(
+# TOREVIEW: Confirm minor gaps in tests for these scenarios:
+#         - No test for non-template classes being ignored
+#         - No test for URL exclusions (validator handles https?:// patterns)
+#         - No test for blockquote exclusions:
+#           (validator handles ^[ \t]*>.*$ patterns)
+# TOREVIEW: If gaps exist, create tests for these gaps
+
+
+def test_adrlint_template704_only_code_and_inline_allowed(
     _route_and_reset_workspace,
 ):
     """
-    Pre-refactored pytest: ADRLINT-033
-    Rule being tested: ADR-TEMPLATE-704 — RFC terms in code/inline/comments
-                       only → no 704
+    Rule being tested: ADR-TEMPLATE-604 — RFC terms in code/inline/comments
+                       only → no 604
     """
     md = (
         _good_meta_front_matter(
@@ -56,15 +65,14 @@ def test_adrlint033_templt704_only_code_and_inline_allowed(
     ctx = _ctx_from_path(p)
     rpt = Report()
     run_all(ctx, rpt)
-    assert not _has_code(rpt, "ADR-TEMPLATE-704")
+    assert not _has_code(rpt, _ADR_ERROR_CODE)
 
 
-def test_adrlint036_templt704_rfc_in_prose_triggers(
+def test_adrlint_template704_rfc_in_prose_triggers(
     _route_and_reset_workspace,
 ):
     """
-    Pre-refactored pytest: ADRLINT-036
-    Rule being tested: ADR-TEMPLT-704 — RFC terms in prose → 704
+    Rule being tested: ADR-TEMPLATE-604 — RFC terms in prose → 604
     """
     md = (
         _good_meta_front_matter(
@@ -90,15 +98,14 @@ def test_adrlint036_templt704_rfc_in_prose_triggers(
     ctx = _ctx_from_path(p)
     rpt = Report()
     run_all(ctx, rpt)
-    assert _has_code(rpt, "ADR-TEMPLATE-704")
+    assert _has_code(rpt, _ADR_ERROR_CODE)
 
 
-def test_adrlint037_templt704_only_code_blocks_and_inline_ok(
+def test_adrlint_template704_only_code_blocks_and_inline_ok(
     _route_and_reset_workspace,
 ):
     """
-    Pre-refactored pytest: ADRLINT-037
-    Rule being tested: ADR-TEMPLATE-704 — only code/inline → no 704
+    Rule being tested: ADR-TEMPLATE-604 — only code/inline → no 604
     """
     md = (
         _good_meta_front_matter(
@@ -126,15 +133,14 @@ def test_adrlint037_templt704_only_code_blocks_and_inline_ok(
     ctx = _ctx_from_path(p)
     rpt = Report()
     run_all(ctx, rpt)
-    assert not _has_code(rpt, "ADR-TEMPLATE-704")
+    assert not _has_code(rpt, _ADR_ERROR_CODE)
 
 
-def test_adrlint038_templt704_html_comments_ignored(
+def test_adrlint_template704_html_comments_ignored(
     _route_and_reset_workspace,
 ):
     """
-    Pre-refactored pytest: ADRLINT-038
-    Rule being tested: ADR-TEMPLATE-704 — RFC terms in HTML comments are
+    Rule being tested: ADR-TEMPLATE-604 — RFC terms in HTML comments are
     ignored
     """
     md = (
@@ -163,15 +169,14 @@ def test_adrlint038_templt704_html_comments_ignored(
     ctx = _ctx_from_path(p)
     rpt = Report()
     run_all(ctx, rpt)
-    assert not _has_code(rpt, "ADR-TEMPLATE-704")
+    assert not _has_code(rpt, _ADR_ERROR_CODE)
 
 
-def test_adrlint039_templt704_nested_code_blocks_ok(
+def test_adrlint_template704_nested_code_blocks_ok(
     _route_and_reset_workspace,
 ):
     """
-    Pre-refactored pytest: ADRLINT-039
-    Rule being tested: ADR-TEMPLATE-704 — nested code structures handled
+    Rule being tested: ADR-TEMPLATE-604 — nested code structures handled
                        correctly
     """
     md = (
@@ -205,4 +210,4 @@ def test_adrlint039_templt704_nested_code_blocks_ok(
     ctx = _ctx_from_path(p)
     rpt = Report()
     run_all(ctx, rpt)
-    assert not _has_code(rpt, "ADR-TEMPLATE-704")
+    assert not _has_code(rpt, _ADR_ERROR_CODE)

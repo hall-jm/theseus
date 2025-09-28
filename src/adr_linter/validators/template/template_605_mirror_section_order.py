@@ -14,7 +14,7 @@ def validate_template_605_mirror_section_order(ctx, rpt) -> None:
     """
     ADR-TEMPLATE-605 — mirror canonical section order of template_of.
 
-    Ref: ADR-0001 §7.5/§10.5 · ADR-TEMPLATE-705
+    Ref: ADR-0001 §7.5/§10.5 · ADR-TEMPLATE-605
     """
 
     meta = ctx.meta

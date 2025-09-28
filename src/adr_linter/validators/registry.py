@@ -67,16 +67,15 @@ from .template import TEMPLATE_RULES_PER_FILE  # , TEMPLATE_RULES_POST_RUN
 # from .template.template_701_status_proposed import (
 #     validate_template_701_status_proposed,
 # )
-from .template.template_702_filename_template import (
-    validate_template_702_filename_template,
-)
-from .template.template_703_no_link_graph import (
-    validate_template_703_no_link_graph,
-)
-from .template.template_704_rfc_only_in_examples import (
-    validate_template_704_rfc_only_in_examples,
-)
-
+# from .template.template_702_filename_template import (
+#     validate_template_702_filename_template,
+# )
+# from .template.template_703_no_link_graph import (
+#     validate_template_703_no_link_graph,
+# )
+# from .template.template_704_rfc_only_in_examples import (
+#     validate_template_704_rfc_only_in_examples,
+# )
 # from .template.template_705_mirror_section_order import (
 #     validate_template_705_mirror_section_order,
 # )
@@ -151,9 +150,9 @@ ORDERED_RULES_PER_FILE: List[Tuple[str, Callable]] = [
     *TEMPLATE_RULES_PER_FILE,
     # ("ADR-TEMPLATE-700", validate_template_700_template_of_required),
     # ("ADR-TEMPLATE-701", validate_template_701_status_proposed),
-    ("ADR-TEMPLATE-702", validate_template_702_filename_template),
-    ("ADR-TEMPLATE-703", validate_template_703_no_link_graph),
-    ("ADR-TEMPLATE-704", validate_template_704_rfc_only_in_examples),
+    # ("ADR-TEMPLATE-702", validate_template_702_filename_template),
+    # ("ADR-TEMPLATE-703", validate_template_703_no_link_graph),
+    # ("ADR-TEMPLATE-704", validate_template_704_rfc_only_in_examples),
     # ("ADR-TEMPLATE-705", validate_template_705_mirror_section_order),
 ]
 

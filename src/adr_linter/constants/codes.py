@@ -112,16 +112,16 @@ CODES = {
         "W",
         "`status` MUST USE `Proposed` in a template ADR.",
     ),
-    "ADR-TEMPLATE-702": (
+    "ADR-TEMPLATE-602": (
         "W",
         "filename does not include `-template-` (discoverability).",
     ),
-    "ADR-TEMPLATE-703": (
+    "ADR-TEMPLATE-603": (
         "E",
         "template participates in link graph (`extends` or `supersedes` "
         "non-null).",
     ),
-    "ADR-TEMPLATE-704": (
+    "ADR-TEMPLATE-604": (
         "W",
         "RFC-2119 keyword outside code fences/inline code in template.",
     ),

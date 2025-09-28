@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python3
-# tests/adr_linter/validators/template/adrlint_test_templt_702_filename_template.py
+# tests/adr_linter/validators/template/adrlint_test_template_602_filename_template.py
 
 """
 ADR-0001 · §14 Linter Rules Reference
-ADR-TEMPLATE-702 (W): filename does not include `-template-` (discoverability).
-Linting Tests: ADRLINT-027
+ADR-TEMPLATE-602 (W): filename does not include `-template-` (discoverability).
 """
 
 from __future__ import annotations
 
 from adr_linter.validators.registry import run_all
 from adr_linter.report import Report
+from adr_linter.validators.template.template_602_filename_template import (
+    _ERROR_CODE as _ADR_ERROR_CODE,
+)
 
 from ...conftest import (
     _write_and_ctx,
@@ -20,12 +22,11 @@ from ...conftest import (
 )
 
 
-def test_adrlint027_templt702_filename_must_include_template(
+def test_adrlint_template602_filename_must_include_template(
     _route_and_reset_workspace,
 ):
     """
-    Pre-refactored pytest: ADRLINT-027
-    Rule being tested: ADR-TEMPLATE-702 — filename should include -template-
+    Rule being tested: ADR-TEMPLATE-602 — filename should include -template-
     """
     md = (
         _good_meta_front_matter(
@@ -39,4 +40,4 @@ def test_adrlint027_templt702_filename_must_include_template(
     )
     rpt = Report()
     run_all(ctx, rpt)
-    assert _has_code(rpt, "ADR-TEMPLATE-702")
+    assert _has_code(rpt, _ADR_ERROR_CODE)

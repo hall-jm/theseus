@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python3
-# src/adr_linter/validators/template/template_704_rfc_only_in_examples.py
+# src/adr_linter/validators/template/template_604_rfc_only_in_examples.py
 
 from __future__ import annotations
 
@@ -8,13 +8,13 @@ from ...constants import RFC_2119_RX
 from ...parser.structure import find_balanced_code_fences, line_from_pos
 
 
-def validate_template_704_rfc_only_in_examples(ctx, rpt) -> None:
-    """ADR-TEMPLATE-704 — RFC-2119 terms only inside code fences/inline code.
+_ERROR_CODE = "ADR-TEMPLATE-604"
 
-    Extracted from legacy.validate_rfc_terms_optimized (template branch).
-    Behavior unchanged.
 
-    Ref: ADR-0001 §7.5/§10.5 · ADR-TEMPLATE-704
+def validate_template_604_rfc_only_in_examples(ctx, rpt) -> None:
+    """ADR-TEMPLATE-604 — RFC-2119 terms only inside code fences/inline code.
+
+    Ref: ADR-0001 §7.5/§10.5 · ADR-TEMPLATE-604
     """
     meta = ctx.meta
     if meta.get("class") != "template":
@@ -65,7 +65,7 @@ def validate_template_704_rfc_only_in_examples(ctx, rpt) -> None:
         if pos < len(mask) and mask[pos] == 1:
             line_num = line_from_pos(body, pos)
             rpt.add(
-                "ADR-TEMPLATE-704",
+                _ERROR_CODE,
                 path,
                 f"RFC-2119 term '{m.group()}' outside code fences in template",
                 line_num,

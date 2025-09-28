@@ -15,7 +15,7 @@ def validate_template_601_status_proposed(ctx, rpt) -> None:
     """
     meta = ctx.meta
 
-    print(f"[D VAL: TEMPLATE-601] status: _{meta.get("status")}_")
+    # print(f"[D VAL: TEMPLATE-601] status: _{meta.get("status")}_")
 
     if meta.get("class") != "template":
         return
