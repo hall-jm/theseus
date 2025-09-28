@@ -130,10 +130,10 @@ CODES = {
         "template does not mirror canonical section order of `template_of` "
         "(same keys, same order).",
     ),
-    # "ADR-TEMPLATE-606": (
-    #     "W",
-    #     "Template contains real values instead of placeholders.",
-    # ),
+    "ADR-TEMPLATE-606": (
+        "W",
+        "Section content formatting does not match documented format.",
+    ),
     "ADR-TEMPLATE-607": (
         "E",
         "Governance template missing constraint_rules block placeholder.",

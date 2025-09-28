@@ -48,9 +48,16 @@ from .validation import (
     ID_RX,
     RFC_2119_RX,
     VAGUE_TERMS_RX,
+    DECISION_ONE_LINER_PATTERN_RX,
+    DECISION_ONE_LINER_KEY_PATTERN_RX,
     # - Patterns: Lists of RegEx
     PLACEHOLDER_PATTERNS,
     REAL_VALUE_INDICATORS,
+    # - Patterns: Lists of Compiled RegEx
+    PLACEHOLDER_BRACKET_PATTERNS_RXL,
+    # defs
+    has_placeholder_content,
+    is_single_statement,
 )
 
 from .sections import (
@@ -107,10 +114,17 @@ __all__ = [
     "ID_RX",
     "RFC_2119_RX",
     "VAGUE_TERMS_RX",
+    "DECISION_ONE_LINER_PATTERN_RX",
+    "DECISION_ONE_LINER_KEY_PATTERN_RX",
     # - Patterns: Lists of RegEx
     "PLACEHOLDER_PATTERNS",
     "REAL_VALUE_INDICATORS",
     "VALID_STATUS_TRANSITIONS",
+    # - Patterns: Lists of Compiled RegEx
+    "PLACEHOLDER_BRACKET_PATTERNS_RXL",
+    # - defs
+    "has_placeholder_content",
+    "is_single_statement",
     # Sections
     "SECTIONS_UNIVERSAL_OPENING",
     "SECTIONS_UNIVERSAL_CLOSING",

@@ -122,7 +122,7 @@ RFC_2119_TERMS = [
     "NOT RECOMMENDED",
 ]
 
-# --- Compiled Regex Patterns ------------------------------------------------
+# --- Compiled Regex Patterns -------------------------------------------------
 
 CODE_RX = re.compile(r"^ADR-(?P<band>[A-Z]+)-(?P<num>\d{3})$")
 PLACEHOLDER_RX = re.compile(r"_placeholder\.py\Z")
@@ -140,7 +140,18 @@ VAGUE_TERMS_RX = re.compile(
     re.I,
 )
 
-# --- Regex List of RegEx ------------------------------------------------
+# Pattern for "Because X, we choose Y so that Z" format
+DECISION_ONE_LINER_PATTERN_RX = re.compile(
+    r"Because\s+.+?,\s+we\s+choose\s+.+?\s+so\s+that\s+.+?\.",
+    re.IGNORECASE | re.DOTALL,
+)
+
+DECISION_ONE_LINER_KEY_PATTERN_RX = re.compile(
+    r"<!-- key: decision_one_liner -->\s*\n(.*?)(?=<!-- key: \w+|$)",
+    re.DOTALL,
+)
+
+# --- Regex List of RegEx -----------------------------------------------------
 
 # Common placeholder patterns in templates
 PLACEHOLDER_PATTERNS = [
@@ -151,6 +162,10 @@ PLACEHOLDER_PATTERNS = [
     r"TODO:",  # TODO markers
     r"PLACEHOLDER",  # Explicit placeholder text
     r"EXAMPLE",  # Example text
+    # Section patterns
+    r"Because\s+<[^>]+>,\s+we\s+choose\s+<[^>]+>\s+so\s+that\s+<[^>]+>\.",
+    r"Because\s+\{[^}]+\},\s+we\s+choose\s+\{[^}]+\}\s+so\s+that\s+\{[^}]+\}\.",  # noqa: E501
+    r"Because\s+\[[^\]]+\],\s+we\s+choose\s+\[[^\]]+\]\s+so\s+that\s+\[[^\]]+\]\.",  # noqa: E501
 ]
 
 # Real value indicators that suggest non-placeholder content
@@ -165,6 +180,13 @@ REAL_VALUE_INDICATORS = [
     r"\b\d{1,3}(,\d{3})*\b",  # Large numbers with commas
 ]
 
+# --- Regex List of Compiled RegEx --------------------------------------------
+
+PLACEHOLDER_BRACKET_PATTERNS_RXL = [
+    re.compile(r"<[^>]+>"),  # Angle brackets
+    re.compile(r"\{[^}]+\}"),  # Curly brackets
+    re.compile(r"\[[^\]]+\]"),  # Square brackets
+]
 
 # --- Status Transition Rules -------------------------------------------------
 
@@ -174,3 +196,31 @@ VALID_STATUS_TRANSITIONS = {
     "Deprecated": {"Superseded"},  # Can still be superseded for clarity
     "Superseded": set(),  # Terminal state
 }
+
+
+# --- Validation API ----------------------------------------------------------
+
+# TOREVIEW: Because of how TEMPLATE-606 was implemented, it created a need for
+#           parsing placeholder content and determinining single statement
+#           (e.g., one statement ending with one period '.') and to me, that
+#           logic looked like it should be centralized somewhere for wider
+#           reuse instead of being stuck in a validation rule file.
+# TODO: Where should validation logic go?  parser? here like sections.py
+#       provides canonical key API?
+
+
+def has_placeholder_content(content: str) -> bool:
+    """
+    Check if content contains any placeholder bracket patterns.
+    """
+    return any(
+        pattern.search(content) for pattern in PLACEHOLDER_BRACKET_PATTERNS_RXL
+    )
+
+
+def is_single_statement(content: str) -> bool:
+    """
+    Check if content is a single statement (one sentence).
+    """
+    sentences = re.split(r"[.!?]+\s+", content.strip())
+    return len([s for s in sentences if s.strip()]) == 1

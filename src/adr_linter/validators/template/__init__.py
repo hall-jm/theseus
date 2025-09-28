@@ -18,6 +18,9 @@ from .template_604_rfc_only_in_examples import (
 from .template_605_mirror_section_order import (
     validate_template_605_mirror_section_order,
 )
+from .template_606_content_formatting import (
+    validate_template_606_content_formatting,
+)
 from .template_607_governance_constraint_rules import (
     validate_template_607_governance_constraint_rules,
 )
@@ -33,6 +36,7 @@ TEMPLATE_RULES_PER_FILE = [
     ("ADR-TEMPLATE-603", validate_template_603_no_link_graph),
     ("ADR-TEMPLATE-604", validate_template_604_rfc_only_in_examples),
     ("ADR-TEMPLATE-605", validate_template_605_mirror_section_order),
+    ("ADR-TEMPLATE-606", validate_template_606_content_formatting),
     ("ADR-TEMPLATE-607", validate_template_607_governance_constraint_rules),
     ("ADR-TEMPLATE-608", validate_template_608_real_values_not_placeholders),
 ]
