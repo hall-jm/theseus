@@ -140,6 +140,32 @@ VAGUE_TERMS_RX = re.compile(
     re.I,
 )
 
+# --- Regex List of RegEx ------------------------------------------------
+
+# Common placeholder patterns in templates
+PLACEHOLDER_PATTERNS = [
+    r"<[^>]+>",  # <angle-bracket placeholders>
+    r"\{[^}]+\}",  # {curly-bracket placeholders}
+    r"\[[^\]]+\]",  # [square-bracket placeholders]
+    r"YYYY-MM-DD",  # Date placeholders
+    r"TODO:",  # TODO markers
+    r"PLACEHOLDER",  # Explicit placeholder text
+    r"EXAMPLE",  # Example text
+]
+
+# Real value indicators that suggest non-placeholder content
+REAL_VALUE_INDICATORS = [
+    r"\b(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\b",
+    r"\b(January|February|March|April|May|June|July|August|September|October|November|December)\b",  # noqa: E501
+    r"\b(20\d{2})\b",  # Specific years like 2024, 2025
+    r"\b(v\d+\.\d+)\b",  # Version numbers like v1.2
+    r"@\w+\.\w+",  # Email patterns
+    r"https?://[^\s]+",  # Actual URLs
+    r"\$\d+",  # Specific dollar amounts
+    r"\b\d{1,3}(,\d{3})*\b",  # Large numbers with commas
+]
+
+
 # --- Status Transition Rules -------------------------------------------------
 
 VALID_STATUS_TRANSITIONS = {

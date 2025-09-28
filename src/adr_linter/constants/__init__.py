@@ -35,6 +35,12 @@ from .validation import (
     CLASS_ALLOWED_RELATIONSHIPS,
     CLASS_FORBIDDEN_RELATIONSHIPS,
     RFC_2119_TERMS,
+    VALID_STATUS_TRANSITIONS,
+    LLM_TAIL_CORE_FIELDS,
+    LLM_TAIL_OWNERSHIP_FIELDS,
+    LLM_TAIL_ALL_FIELDS,
+    # RegEx
+    # - Patterns: Compiled
     CODE_RX,
     PLACEHOLDER_RX,
     DATE_RX,
@@ -42,10 +48,9 @@ from .validation import (
     ID_RX,
     RFC_2119_RX,
     VAGUE_TERMS_RX,
-    VALID_STATUS_TRANSITIONS,
-    LLM_TAIL_CORE_FIELDS,
-    LLM_TAIL_OWNERSHIP_FIELDS,
-    LLM_TAIL_ALL_FIELDS,
+    # - Patterns: Lists of RegEx
+    PLACEHOLDER_PATTERNS,
+    REAL_VALUE_INDICATORS,
 )
 
 from .sections import (
@@ -93,6 +98,8 @@ __all__ = [
     "CLASS_ALLOWED_RELATIONSHIPS",
     "CLASS_FORBIDDEN_RELATIONSHIPS",
     "RFC_2119_TERMS",
+    # RegEx
+    # - Patterns: Compiled
     "CODE_RX",
     "PLACEHOLDER_RX",
     "DATE_RX",
@@ -100,6 +107,9 @@ __all__ = [
     "ID_RX",
     "RFC_2119_RX",
     "VAGUE_TERMS_RX",
+    # - Patterns: Lists of RegEx
+    "PLACEHOLDER_PATTERNS",
+    "REAL_VALUE_INDICATORS",
     "VALID_STATUS_TRANSITIONS",
     # Sections
     "SECTIONS_UNIVERSAL_OPENING",

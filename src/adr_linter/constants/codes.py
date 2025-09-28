@@ -130,6 +130,18 @@ CODES = {
         "template does not mirror canonical section order of `template_of` "
         "(same keys, same order).",
     ),
+    # "ADR-TEMPLATE-606": (
+    #     "W",
+    #     "Template contains real values instead of placeholders.",
+    # ),
+    "ADR-TEMPLATE-607": (
+        "E",
+        "Governance template missing constraint_rules block placeholder.",
+    ),
+    "ADR-TEMPLATE-608": (
+        "W",
+        "Template contains real values instead of placeholders.",
+    ),
 }
 
 # --- Derived Sets (computed from CODES) -------------------------------------
