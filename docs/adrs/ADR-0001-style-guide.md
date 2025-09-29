@@ -33,7 +33,7 @@ change_history: []
 
 | Version | Date         | Notes                                        |
 | ------- | ------------ | -------------------------------------------- |
-| 0.2.3   | 28 Sept 2025 | Updated ADR-TEMPLATE section to reflect the renumbering from 7xx -> 6xx and the review and refactoring of pre-existing unit tests; created SCHEMA-016 entry to be the 'production' version of TEMPLATE-606 to enforce content rigidity for certain sections to ensure LLMs are drafting copy in a more consistent manner; created documentation for TEMPLATE-609 to handle `class: governance` explicit placeholders; added 4.1.1 section to explicitly list which sections are covered by TEMPLATE-606; added template YAML example to 5.3.2 Governance ADRs to document how `constraint_rules` should be formatted; |
+| 0.2.3   | 28 Sept 2025 | Updated ADR-TEMPLATE section to reflect the renumbering from 7xx -> 6xx and the review and refactoring of pre-existing unit tests; created SCHEMA-016 entry to be the 'production' version of TEMPLATE-606 to enforce content rigidity for certain sections to ensure LLMs are drafting copy in a more consistent manner; created documentation for TEMPLATE-609 to handle `class: governance` explicit placeholders; added 4.1.1 section to explicitly list which sections are covered by TEMPLATE-606; added template YAML example to 5.3.2 Governance ADRs to document how `constraint_rules` should be formatted; finished ADR-SCHEMA review and expanding validation rules for SCHEMA-004, 005; added Review By dates for validator rules set 4 months in the future as a signal to ensure pytests are still valid and validators are still in scope and within expectations; |
 | 0.2.2   | 26 Sept 2025 | Revising lines regarding ADR-NORM vs. ADR-GOVERN to address tension between entries on how to handle RFC-2119 in different ADR classes and sections; added more notes and descriptions to help contextualize what this document is handles and governs; looking likely that a parent style-guide ADR needs sub-ADRs for tracking class-specific rules and governance to reduce the size of this file; updated Section 3 for Templates to require use of `owners_ptr` (i.e., Project Maintainer may be the human owner of a template, but an owner ADR can own a series of templates to control scope and clarify what ADRs drive that template's updates and revisions; updated Section 14 for ADR-SCHEMA to reflect to creation of new rules, review of pre-existing rules and updated notes accordingly; relabeled ADR-META-\* from 150+ => 200+;  cleaned up the ADR-META section now that those rules have been reviewed and refactored; |
 | 0.2.1   | 25 Sept 2025 | Rewrote sections 14 to 17 in this version to finish initial review; removed entries in **Related** field due to new `governance` class and its related changes;  |
 | 0.2.0   | 24 Sept 2025 | Created new `governance` class of ADRs; added new requirements for ADR-SCHEMA-003 to handle, ADR-TEMPLATE-706 to be a catch-all error code for when explicit ADR formatting for a particular section isn't followed; rewrote Section 4 to handle the new `governance` class and create a universal set of keys vs. class-specific set of keys; rewrote Section 0 to handle this ADR's new bootstrap constitution and precedence authority; rewrote sections 0 to 13 in this version; |
@@ -355,6 +355,18 @@ Authority boundaries defined exclusively through constraint block mappings
 - Owner values must match valid scope domains: cli|engine|services|other
 - REQUIRED/FORBIDDEN lists cannot contain overlapping topics
 - OWNED_BY topic must not appear in scope's REQUIRED/FORBIDDEN lists
+
+**Historical Notes**:
+- Purpose: Prevent governance templates from containing actual constraint values that could be accidentally creating unintended authority boundaries or conflicts.
+- Description: 
+  - Templates with `template_of: governance` must use placeholder patterns in governance-specific sections rather than real constraint values. 
+  - Real governance constraints should only appear in actual governance ADRs after deliberate authority design.
+- Rationale: 
+  - Governance templates that contain real constraint values risk:
+  - Accidental authority conflicts when copied
+  - Outdated constraint logic being propagated
+  - Users not thinking through proper authority boundaries
+  - Cross-component boundary violations from template inheritance
 
 **ADR Example**
 
@@ -789,7 +801,7 @@ Notes to LLMs: this section is dated and inaccurate compared to the `### Rules (
 
 #### ADR-DELTA
 
-TODO: Relabel code in registry.py, policy.py, validators/delta/\*.py, tests/adr_linter/validators/delta/\*.py
+TODO: Relabel code in registry.py, policy.py, validators/delta/\*.py, tests/adr_linter/validators/delta/\*.py (as of 28 September 2025)
 
 Description: Inheritance and override semantics for class: `delta` (targets exist, not_applicable/overrides/adds sanity).
 
@@ -818,7 +830,7 @@ TOADD:
 
 ##### Proposed 
 
-TOADD:
+TOADD:  (as of 28 September 2025)
 
   - **ADR-GOVERN-401 (E)**: Missing required `scope` field in governance ADR
   - **ADR-GOVERN-402 (E)**: Invalid `scope` value (must be cli|engine|services|other)  
@@ -843,6 +855,7 @@ TOADD:
 #### ADR-LINK
 
 Description: Cross-ADR graph properties (pins, reciprocity, cycles).
+Review By: 28 January 2025
 
 - **ADR-LINK-300 (E)**: Handle all bi-directional keys missing the reciprocal (e.g., `supersedes` <-> `superseded_by`, `informs` <-> `informed_by`)
 - **ADR-LINK-301 (E)**: Handle all uni-directional keys (e.g., `extends`, `governed_by`)
@@ -856,7 +869,8 @@ Description: Cross-ADR graph properties (pins, reciprocity, cycles).
 
 #### ADR-META
 
-Description: (needed)
+Description: Meta data contained within ADRs about that ADR (single file scope)
+Review By: 28 January 2025
 
 - **ADR-META-200 (I)**: `llm_tail` missing (optional).
 - **ADR-META-201 (W)**: `llm_tail` disagrees with front-matter on required keys.
@@ -864,7 +878,7 @@ Description: (needed)
 
 #### ADR-NORM
 
-TODO: Relabel code in registry.py, policy.py, validators/norm/\*.py, tests/adr_linter/validators/norm/\*.py
+TODO: Relabel code in registry.py, policy.py, validators/norm/\*.py, tests/adr_linter/validators/norm/\*.py  (as of 28 September 2025)
 
 Description: Language-level misuse (RFC-2119 outside normative sections; vague terms in normative text) for **non-governance** classes; governance prose is handled by ADR-GOVERN.
 
@@ -873,7 +887,7 @@ Description: Language-level misuse (RFC-2119 outside normative sections; vague t
 
 #### ADR-PROC
 
-TODO: Does ADR-PROC-\* validation rules exist?  What about the pytests?
+TODO: Does ADR-PROC-\* validation rules exist?  What about the pytests?  (as of 28 September 2025)
 
 Description: Process/telemetry/auto-resolve.
 
@@ -885,17 +899,12 @@ Description: Process/telemetry/auto-resolve.
 #### ADR-SCHEMA
 
 Description: Front-matter and class structure constraints that don’t require link graph or prose analysis (e.g., required keys, date formats, class-specific allows/forbids).
+Review By: 28 January 2025
 
 - **ADR-SCHEMA-001 (E)**: Missing required metadata (`id,title,status,class,date,review_by`) or bad `id`.
 - **ADR-SCHEMA-002 (E)**: Invalid class (`owner|delta|governance|strategy|style-guide|template`).
-- TOVERIFY: **ADR-SCHEMA-003 (E)**: Canonical section keys missing or out of order.
-  - ADDED: Must have corresponding markdown headers which would cover (2025-09-21)
-    - Missing sections entirely
-    - Wrong section order
-    - Present sections with missing headers
-    - Present sections with mismatched headers
-- TOFIX: **ADR-SCHEMA-004 (E)**: Invalid status transition or illegal class change.
-  - See SCHEMA-004 source code files for details
+- **ADR-SCHEMA-003 (E)**: Canonical section keys missing or out of order (e.g., markdown headers, keys are missing and/or out of order).
+- **ADR-SCHEMA-004 (E)**: Invalid status transition or illegal class change.
 - **ADR-SCHEMA-005 (E)**: Invalid date format (must be `YYYY-MM-DD`) for `date` or `review_by`.
 - **ADR-SCHEMA-006 (E)**: Governance ADR missing required `scope` field
 - **ADR-SCHEMA-007 (E)**: Owner ADR missing required `governed_by` field  
@@ -907,20 +916,12 @@ Description: Front-matter and class structure constraints that don’t require l
 - **ADR-SCHEMA-013 (E)**: Non-Owner ADRs must identify ADR ownership
 - **ADR-SCHEMA-014 (E)**: Invalid relationship field combination for ADR class
 - **ADR-SCHEMA-015 (E)**: ADR metadata violates its declared governance constraints (basic stub validator)
-- TOADD: **ADR-SCHEMA-016 (E)**: content formatting matches documented format. (2025-09-28)
-  - Example: ## Decision is explicitly a one-liner following the format of: "Because <long-range driver>, we choose <strategic direction> so that <north star>."
-  - In the validator and/or pytest for this rule, we can capture additional insights as to what this rule will cover **OR** which sections are explicitly ignored for now.
-  - Expectation for this rule is: 
-    - Make decisions **atomic, auditable, and reversible**.
-    - Keep docs **human-skim friendly** and **machine-readable** (LLMs, linters).
-    - TEMPLATE-606: Ensures templates demonstrate correct format to users
-    - SCHEMA-016 equivalent: Enforces the same format requirements on actual ADRs
+- **ADR-SCHEMA-016 (E)**: content formatting matches documented format. (i.e., production version of ADR-TEMPLATE-606)
 
 #### ADR-TEMPLATE
 
-TODO: Relabel code in registry.py, policy.py, validators/template/\*.py, tests/adr_linter/validators/template/\*.py
-
 Description: Template structure and constraints that provide rules which can be validated via regex; not validating semantic content or judgment.
+Review By: 28 January 2025
 
 - **ADR-TEMPLATE-600 (E)**: `template_of` missing or invalid (`owner|delta|governance|strategy|style-guide|template`).
 - **ADR-TEMPLATE-601 (W)**: `status` not `Proposed` in a template ADR.
@@ -928,35 +929,10 @@ Description: Template structure and constraints that provide rules which can be 
 - **ADR-TEMPLATE-603 (E)**: template participates in link graph (`extends`, `supersedes` non-null).
 - **ADR-TEMPLATE-604 (W)**: RFC-2119 keyword outside code fences/inline code in template.
 - **ADR-TEMPLATE-605 (W)**: template does not mirror canonical section order of `template_of` (same keys, same order).
-- **ADR-TEMPLATE-606 (W)**: content formatting matches documented format.
-  - Example: ## Decision is explicitly a one-liner following the format of: "Because <long-range driver>, we choose <strategic direction> so that <north star>."
-  - In the validator and/or pytest for this rule, we can capture additional insights as to what this rule will cover **OR** which sections are explicitly ignored for now.
-- **TEMPLATE-607 (E)**: Governance template missing `constraint_rules` block placeholder.
-- **TEMPLATE-608 (W)**: Template contains real values instead of placeholders.
-- TOADD: **ADR-TEMPLATE-609 (W)**: Template contains real governance (i.e., ADR-GOVERN-\*) constraints instead of placeholders.
-   - Purpose: Prevent governance templates from containing actual constraint values that could be accidentally creating unintended authority boundaries or conflicts.
-   - Description: 
-     - Templates with `template_of: governance` must use placeholder patterns in governance-specific sections rather than real constraint values. 
-	 - Real governance constraints should only appear in actual governance ADRs after deliberate authority design.
-   - **Validates against:**
-     - Real YAML constraint blocks: `REQUIRED: [specific.values]` vs `REQUIRED: [<topic-list>]`
-     - Specific component topics: `cli.argument_parsing` vs `<scope>.<topic>`
-     - Actual scope assignments: `OWNED_BY: engine` vs `OWNED_BY: <scope>`
-     - Hard-coded authority mappings vs placeholder patterns
-   - **Rationale:** 
-     - Governance templates that contain real constraint values risk:
-     - Accidental authority conflicts when copied
-     - Outdated constraint logic being propagated
-     - Users not thinking through proper authority boundaries
-     - Cross-component boundary violations from template inheritance
-   - **Example violations:**
-     ```yaml
-     # BAD - real constraint
-     REQUIRED: ["cli.user_messages", "cli.exit_codes"]
-
-     # GOOD - placeholder  
-     REQUIRED: ["<scope>.<topic>", "<scope>.<topic>"]
-     ```
+- **ADR-TEMPLATE-606 (W)**: content formatting matches documented format. (i.e., template version of ADR-SCHEMA-016)
+- **ADR-TEMPLATE-607 (E)**: Governance template missing `constraint_rules` block placeholder.
+- **ADR-TEMPLATE-608 (W)**: Template contains real values instead of placeholders.
+- **ADR-TEMPLATE-609 (W)**: Template contains real governance (i.e., ADR-GOVERN-\*) constraints instead of placeholders.
 
 ##### Notes
 
