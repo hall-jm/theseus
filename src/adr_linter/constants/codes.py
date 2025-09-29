@@ -73,7 +73,7 @@ CODES = {
     "ADR-SCHEMA-003": ("E", "Canonical section keys missing or out of order."),
     "ADR-SCHEMA-004": (
         "E",
-        "Invalid status transition or illegal class change.",
+        "Status field requirements or lifecycle consistency violation.",
     ),
     "ADR-SCHEMA-005": (
         "E",

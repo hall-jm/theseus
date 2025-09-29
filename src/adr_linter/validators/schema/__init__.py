@@ -6,7 +6,7 @@ from .schema_001_required_meta import validate_schema_001_required_meta
 from .schema_002_class_value import validate_schema_002_class_value
 from .schema_003_keys_order import validate_schema_003_keys_order
 from .schema_004_status_field_requirements import (
-    validate_schema_004_status_transition,
+    validate_schema_004_status_field_requirements,
 )
 from .schema_005_date_format import validate_schema_005_date_format
 from .schema_006_governance_scope import validate_schema_006_governance_scope
@@ -45,7 +45,7 @@ SCHEMA_RULES_PER_FILE = [
     ("ADR-SCHEMA-001", validate_schema_001_required_meta),
     ("ADR-SCHEMA-002", validate_schema_002_class_value),
     ("ADR-SCHEMA-003", validate_schema_003_keys_order),
-    ("ADR-SCHEMA-004", validate_schema_004_status_transition),
+    ("ADR-SCHEMA-004", validate_schema_004_status_field_requirements),
     ("ADR-SCHEMA-005", validate_schema_005_date_format),
     ("ADR-SCHEMA-006", validate_schema_006_governance_scope),
     ("ADR-SCHEMA-007", validate_schema_007_owner_governed_by),

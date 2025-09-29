@@ -10,7 +10,12 @@ Scope-limited to ADR linter tests; no production behavior changes.
 from __future__ import annotations
 import json
 import re
-import datetime as dt
+
+# import datetime as dt
+from datetime import (
+    date as dt_date,
+    timedelta as dt_timedelta,
+)
 from pathlib import Path
 import textwrap
 import pytest
@@ -18,6 +23,7 @@ import pytest
 from adr_linter.parser.front_matter import parse_front_matter
 from adr_linter.parser.structure import (
     parse_document_structure,
+    expected_keys_for,
 )
 from adr_linter.models import ValidationData
 from adr_linter.report import Report  # noqa: F401
@@ -48,7 +54,7 @@ def _route_and_reset_workspace(tmp_path: Path, request):
     project_root = (
         Path(__file__).resolve().parents[2]
     )  # project_root -> projects/mirror_cli/
-    day = dt.date.today().isoformat()
+    day = dt_date.today().isoformat()
     base_dir = project_root / "logs" / ".pytest" / "adr_linter" / day
     nodeid = request.node.nodeid
     safe = re.sub(r"[^A-Za-z0-9._-]+", "_", nodeid)
@@ -84,14 +90,26 @@ def _write_and_ctx(root_dir: Path, filename: str, content: str):
     return p, ctx
 
 
+def _dynamic_meta_dates():
+    """
+    Generate test-appropriate dates that don't break over time.
+    """
+    today = dt_date.today()
+    return {
+        "date": today.strftime("%Y-%m-%d"),
+        "review_by": (today + dt_timedelta(days=30)).strftime("%Y-%m-%d"),
+    }
+
+
 def _good_meta_front_matter(**overrides) -> str:
     fm = {
         "id": "ADR-1234",
         "title": "Short Title",
         "status": "Proposed",
         "class": "owner",
-        "date": "2025-09-03",
-        "review_by": "2026-03-03",
+        **_dynamic_meta_dates(),  # Always current dates
+        # "date": "2025-09-03",
+        # "review_by": "2026-03-03",
     }
     fm.update(overrides)
     lines = ["---"]
@@ -104,6 +122,48 @@ def _good_meta_front_matter(**overrides) -> str:
             lines.append(f"{k}: {v}")
     lines.append("---")
     return "\n".join(lines) + "\n"
+
+
+def _good_body_structure(adr_class: str, template_of: str = None) -> str:
+    """
+    Generate valid body structure with all required canonical sections.
+    """
+
+    expected_keys = expected_keys_for(adr_class, template_of)
+    if not expected_keys:
+        return ""  # Style-guide or invalid class
+
+    sections = []
+    for key in expected_keys:
+        # Add section key marker
+        sections.append(f"<!-- key: {key} -->")
+
+        # Add corresponding markdown header
+        header_text = _get_header_text_for_key(key)
+        sections.append(f"## {header_text}")
+
+        # Special content for decision_one_liner to satisfy SCHEMA-016
+        if key == "decision_one_liner":
+            decision_one_liner = "Because testing requires valid format, we choose compliant structure so that validation passes."  # noqa:E501
+            sections.append(decision_one_liner)
+        else:
+            sections.append(f"{key.replace('_', ' ').title()} content.")
+        sections.append("")  # Empty line
+
+    return "\n".join(sections)
+
+
+def _get_header_text_for_key(key: str) -> str:
+    """Get appropriate header text for section key."""
+    from adr_linter.constants.sections import HEADING_ALIASES
+
+    # Find first alias that maps to this key
+    for header_text, mapped_key in HEADING_ALIASES.items():
+        if mapped_key == key:
+            return header_text
+
+    # Fallback to title case conversion
+    return key.replace("_", " ").title()
 
 
 # -----------------------------

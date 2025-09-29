@@ -45,7 +45,8 @@ def validate_schema_016_decision_format(ctx, rpt) -> None:
     clean_content = re.sub(
         r"<!--.*?-->", "", decision_section, flags=re.DOTALL
     )
-    clean_content = re.sub(r"^#+\s*", "", clean_content, flags=re.MULTILINE)
+    # Remove ENTIRE header line
+    clean_content = re.sub(r"^#+\s*.*$", "", clean_content, flags=re.MULTILINE)
     clean_content = clean_content.strip()
 
     if not clean_content:
@@ -63,6 +64,17 @@ def validate_schema_016_decision_format(ctx, rpt) -> None:
             re.search(r"\[[^\]]+\]", clean_content),  # [square brackets]
         ]
     )
+
+    # print(f"- [D VAL: SCHEMA-016] clean_content: {clean_content}")
+    # print(
+    #     "- [D VAL: SCHEMA-016] has_correct_structure: "
+    #     f"{has_correct_structure}"
+    # )
+    # print(f"- [D VAL: SCHEMA-016] is_single: {is_single}")
+    # print(
+    #     "- [D VAL: SCHEMA-016] has_placeholder_content: "
+    #     f"{has_placeholder_content}"
+    # )
 
     if not has_correct_structure or not is_single or has_placeholder_content:
         error_details = []
