@@ -6,7 +6,8 @@ from __future__ import annotations
 import re
 
 # Import centralized format validation from TEMPLATE-606
-from ..template.template_606_content_formatting import (
+# from ...template.template_606_content_formatting import (
+from ...constants import (
     DECISION_ONE_LINER_PATTERN_RX,
     DECISION_ONE_LINER_KEY_PATTERN_RX,
     is_single_statement,

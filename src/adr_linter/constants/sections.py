@@ -9,6 +9,8 @@ This module implements the universal + class-specific section structure
 defined in ADR-0001 §4, replacing the old hardcoded per-class lists.
 """
 
+import re
+
 from typing import List, Optional
 from .validation import VALID_ADR_CLASSES
 
@@ -159,3 +161,76 @@ def get_canonical_keys(
     # Standard class: universal + class-specific insertions
     insertions = CLASS_INSERTIONS.get(class_name, [])
     return SECTIONS_UNIVERSAL_OPENING + insertions + SECTIONS_UNIVERSAL_CLOSING
+
+
+# TOREVIEW: Where should this logic go?  Identifying section headers or
+#           section markdown does not need to be located within any
+#           individual validator
+
+
+def find_markdown_headers(body: str) -> dict[str, list[int]]:
+    """
+    Find all markdown headers and their line numbers.
+    """
+    headers = {}
+    lines = body.split("\n")
+
+    for line_num, line in enumerate(lines, 1):
+        # Match markdown headers (## Header Text)
+        header_match = re.match(r"^#+\s+(.+)$", line.strip())
+        if header_match:
+            header_text = header_match.group(1).strip()
+            if header_text not in headers:
+                headers[header_text] = []
+            headers[header_text].append(line_num)
+
+    return headers
+
+
+def get_expected_header_text(section_key: str) -> str:
+    """
+    Get all acceptable markdown header texts for a section key.
+    """
+    acceptable_headers = []
+
+    # Find all heading aliases that map to this section key
+    for heading_text, key in HEADING_ALIASES.items():
+        if key == section_key:
+            acceptable_headers.append(heading_text)
+
+    # If no aliases found, use fallback
+    if not acceptable_headers:
+        acceptable_headers.append(section_key.replace("_", " ").title())
+
+    return acceptable_headers
+
+
+# TOREVIEW: Where should this logic go?  Again if this code is validating
+#           data but the data is section-related, who owns it?
+# TODO:  Need to document and flesh out this boundary to clean it up
+
+
+def validate_section_headers(ctx, section_keys: list[str]) -> list[str]:
+    """
+    Validate that section keys have corresponding markdown headers.
+    """
+    violations = []
+    markdown_headers = find_markdown_headers(ctx.body)
+
+    for section_key in section_keys:
+        acceptable_headers = get_expected_header_text(section_key)
+
+        # Check if any acceptable header exists
+        header_found = any(
+            header in markdown_headers for header in acceptable_headers
+        )
+
+        if not header_found:
+            # Show all acceptable options in error
+            header_options = "' or '".join(acceptable_headers)
+            violations.append(
+                f"section '{section_key}' missing markdown "
+                f"header '{header_options}'"
+            )
+
+    return violations

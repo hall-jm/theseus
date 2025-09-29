@@ -72,6 +72,9 @@ from .sections import (
     CLASS_INSERTIONS,
     HEADING_ALIASES,
     get_canonical_keys,
+    get_expected_header_text,
+    find_markdown_headers,
+    validate_section_headers,
 )
 
 from .legacy import (
@@ -143,6 +146,9 @@ __all__ = [
     "CLASS_INSERTIONS",
     "HEADING_ALIASES",
     "get_canonical_keys",
+    "get_expected_header_text",
+    "find_markdown_headers",
+    "validate_section_headers",
     # LLM Tail
     "LLM_TAIL_CORE_FIELDS",
     "LLM_TAIL_OWNERSHIP_FIELDS",

@@ -45,7 +45,7 @@ from __future__ import annotations
 from adr_linter.validators.registry import run_all
 from adr_linter.report import Report
 
-from adr_linter.validators.schema.schema_004_status_transition import (
+from adr_linter.validators.schema.schema_004_status_field_requirements import (
     _ERROR_CODE as _ADR_ERROR_CODE,
 )
 

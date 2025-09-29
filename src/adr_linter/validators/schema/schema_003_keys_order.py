@@ -5,16 +5,24 @@
 """
 ADR-SCHEMA-003 — Canonical section keys missing or out of order.
 
-Behavior mirrors the legacy implementation, including template-specific
-messages when `class: template` with a valid `template_of`.
+Validates:
+- Missing sections entirely
+- Wrong section order
+- Present sections with missing headers
+- Present sections with mismatched headers
+- Duplicate sections
 
 Ref: ADR-0001 §4/§7.5 · ADR-SCHEMA-003
 """
 
 from __future__ import annotations
 
-from ...parser.structure import expected_keys_for
+# import re
 
+from ...parser.structure import expected_keys_for
+from ...constants import (
+    validate_section_headers,
+)
 
 _ERROR_CODE = "ADR-SCHEMA-003"
 
@@ -30,6 +38,12 @@ _ERROR_CODE = "ADR-SCHEMA-003"
 
 
 def validate_schema_003_keys_order(ctx, rpt) -> None:
+    """
+    ADR-SCHEMA-003 — Canonical section keys missing or out of order.
+
+    Validates canonical section structure including both key markers and
+    markdown headers.
+    """
     meta = ctx.meta
     path = ctx.path
     si = ctx.section_data
@@ -43,6 +57,12 @@ def validate_schema_003_keys_order(ctx, rpt) -> None:
     if not expected:
         return
 
+    # Template-specific error prefix
+    def error_prefix() -> str:
+        if cls == "template" and template_of:
+            return f"template for {template_of}: "
+        return ""
+
     # 1. Check for duplicate sections (highest priority)
     seen_keys = {}
     duplicates = []
@@ -54,37 +74,36 @@ def validate_schema_003_keys_order(ctx, rpt) -> None:
 
     # Report duplicates
     for key, first_line, second_line in duplicates:
-        if cls == "template" and template_of:
-            rpt.add(
-                _ERROR_CODE,
-                path,
-                f"template for {template_of}: duplicate section '{key}' "
-                f"at lines {first_line} and {second_line}",
-            )
-        else:
-            rpt.add(
-                _ERROR_CODE,
-                path,
-                f"duplicate section '{key}' at lines {first_line} and "
-                f"{second_line}",
-            )
+        rpt.add(
+            _ERROR_CODE,
+            path,
+            f"{error_prefix()}duplicate section '{key}' at "
+            f"lines {first_line} and {second_line}",
+        )
 
     # 2. Check for missing sections
     missing = [k for k in expected if k not in found_keys]
     if missing:
-        if cls == "template" and template_of:
+        rpt.add(
+            _ERROR_CODE,
+            path,
+            f"{error_prefix()}missing sections: {', '.join(missing)}",
+        )
+
+    # 3. Validate markdown headers for present sections
+    if (
+        found_keys and not duplicates
+    ):  # Only check headers if sections exist and no duplicates
+        header_violations = validate_section_headers(ctx, found_keys)
+        for violation in header_violations:
             rpt.add(
                 _ERROR_CODE,
                 path,
-                f"template for {template_of}: missing sections: "
-                f"{', '.join(missing)}",
-            )
-        else:
-            rpt.add(
-                _ERROR_CODE, path, f"missing sections: {', '.join(missing)}"
+                f"{error_prefix()}{violation}",
             )
 
-    # 3. Check order (only if no missing sections and no duplicates)
+    # 4. Check section order (only if no missing sections, duplicates,
+    #    or header issues)
     if not missing and not duplicates and si.key_markers:
         # Remove duplicates for order checking while preserving sequence
         unique_found_keys = []
@@ -98,30 +117,18 @@ def validate_schema_003_keys_order(ctx, rpt) -> None:
         order_correct = unique_found_keys == expected
 
         if not order_correct:
-            if cls == "template" and template_of:
-                rpt.add(
-                    _ERROR_CODE,
-                    path,
-                    f"template for {template_of}: sections out of order. "
-                    f"Found: [{', '.join(unique_found_keys)}], "
-                    f"Expected: [{', '.join(expected)}]",
-                )
-            else:
-                rpt.add(
-                    _ERROR_CODE,
-                    path,
-                    f"sections out of order. "
-                    f"Found: [{', '.join(unique_found_keys)}], "
-                    f"Expected: [{', '.join(expected)}]",
-                )
-
-    # 4. Handle case where no key markers found at all
-    elif not si.key_markers:
-        if cls == "template" and template_of:
             rpt.add(
                 _ERROR_CODE,
                 path,
-                f"template for {template_of}: no canonical key markers found",
+                f"{error_prefix()}sections out of order. "
+                f"Found: [{', '.join(unique_found_keys)}], "
+                f"Expected: [{', '.join(expected)}]",
             )
-        else:
-            rpt.add(_ERROR_CODE, path, "no canonical key markers found")
+
+    # 5. Handle case where no key markers found at all
+    elif not si.key_markers:
+        rpt.add(
+            _ERROR_CODE,
+            path,
+            f"{error_prefix()}no canonical key markers found",
+        )

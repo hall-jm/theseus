@@ -5,7 +5,7 @@
 from .schema_001_required_meta import validate_schema_001_required_meta
 from .schema_002_class_value import validate_schema_002_class_value
 from .schema_003_keys_order import validate_schema_003_keys_order
-from .schema_004_status_transition import (
+from .schema_004_status_field_requirements import (
     validate_schema_004_status_transition,
 )
 from .schema_005_date_format import validate_schema_005_date_format

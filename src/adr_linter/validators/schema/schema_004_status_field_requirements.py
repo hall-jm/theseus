@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python3
-# src/adr_linter/validators/schema/schema_004_status_transition.py
+# src/adr_linter/validators/schema/schema_004_status_field_requirements.py
 
 """
 ADR-SCHEMA-004 — Status field requirements
