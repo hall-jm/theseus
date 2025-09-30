@@ -23,9 +23,9 @@ change_history: []
 
 | Field                  | Value                                   |
 | ---------------------- | --------------------------------------- |
-| **Version**:           | 0.2.3                                   |
+| **Version**:           | 0.2.5                                   |
 | **Status**:            | Proposed                                |
-| **Date**:              | 2025-09-28                              |
+| **Date**:              | 2025-09-30                              |
 | **Applies to Schema**: | 0.1.0                                   |
 | **Related**:           |                                         |
 
@@ -33,6 +33,8 @@ change_history: []
 
 | Version | Date         | Notes                                        |
 | ------- | ------------ | -------------------------------------------- |
+| 0.2.5   | 30 Sept 2025 | Updated Section 0.5, 0.6 to capture current state of the ADR and the identified gaps; |
+| 0.2.4   | 29 Sept 2025 | Reviewed and consolidated some value declarations to centralized authoritative lists and options like `class`; |
 | 0.2.3   | 28 Sept 2025 | Updated ADR-TEMPLATE section to reflect the renumbering from 7xx -> 6xx and the review and refactoring of pre-existing unit tests; created SCHEMA-016 entry to be the 'production' version of TEMPLATE-606 to enforce content rigidity for certain sections to ensure LLMs are drafting copy in a more consistent manner; created documentation for TEMPLATE-609 to handle `class: governance` explicit placeholders; added 4.1.1 section to explicitly list which sections are covered by TEMPLATE-606; added template YAML example to 5.3.2 Governance ADRs to document how `constraint_rules` should be formatted; finished ADR-SCHEMA review and expanding validation rules for SCHEMA-004, 005; added Review By dates for validator rules set 4 months in the future as a signal to ensure pytests are still valid and validators are still in scope and within expectations; |
 | 0.2.2   | 26 Sept 2025 | Revising lines regarding ADR-NORM vs. ADR-GOVERN to address tension between entries on how to handle RFC-2119 in different ADR classes and sections; added more notes and descriptions to help contextualize what this document is handles and governs; looking likely that a parent style-guide ADR needs sub-ADRs for tracking class-specific rules and governance to reduce the size of this file; updated Section 3 for Templates to require use of `owners_ptr` (i.e., Project Maintainer may be the human owner of a template, but an owner ADR can own a series of templates to control scope and clarify what ADRs drive that template's updates and revisions; updated Section 14 for ADR-SCHEMA to reflect to creation of new rules, review of pre-existing rules and updated notes accordingly; relabeled ADR-META-\* from 150+ => 200+;  cleaned up the ADR-META section now that those rules have been reviewed and refactored; |
 | 0.2.1   | 25 Sept 2025 | Rewrote sections 14 to 17 in this version to finish initial review; removed entries in **Related** field due to new `governance` class and its related changes;  |
@@ -71,8 +73,9 @@ This section explicitly applies to every ADR.
 - Governance ADRs are defined by:
   - class: `governance`
   - scope: `cli|engine|services|other` (single)
-  - supersedes: chain must be linear
+    - proposed new scopes: `parser|validator`
   - subscope: future granularity to avoid having a giant `cli` governance ADR forever
+  - supersedes: chain must be linear
 - Each domain scope **MUST** have exactly one active governance ADR via linear supersession chain
 - Cross-scope conflicts resolved by Domain Scope mapping above
 - **Transitional**: ADR-0001 §0 acts as default governance **only until** the first scope-specific Governance ADR for that domain is **Accepted**. Upon acceptance, §0 ceases to govern that scope. *(review_by: 2026-03-01)*
@@ -87,6 +90,7 @@ This section explicitly applies to every ADR.
 - `supersedes`: Decision replacement with reciprocal tracking
 - `owners`: Human/team authority (who decides)
 - `owners_ptr`: Governance authority chain (which component family/domain)
+  - TOREVIEW: Renaming `owners_ptr` to represent ADR authority chain, not actual ownership
 
 ### 0.4 Conflict Resolution Protocol
 
@@ -103,7 +107,40 @@ This section explicitly applies to every ADR.
 
 **Constraint Enforcement**: Linters and automated tools MUST treat constraint blocks as the authoritative source. Governance prose MUST NOT use RFC-2119 keywords.
  
-### 0.5 Default Behavior
+### 0.5 Known Limitations & Future Work
+
+**Scope Taxonomy Gap:**
+Current scope taxonomy (cli, engine, services, other) addresses domain-level boundaries but does not capture architectural layer boundaries within domains. Engine contains multiple layers (validators, parser, constants) with distinct responsibilities and import restrictions that cannot be expressed using domain scopes alone.
+
+**Classification Dimensionality:**
+Architectural constraints span multiple orthogonal concerns:
+- Layer boundaries (what code lives where)
+- Operation permissions (who can do file I/O)
+- Error ownership (who throws/catches/translates)
+- Import restrictions (who can import from whom)
+
+Current governance model provides single-dimensional classification (scope) for multi-dimensional problems.
+
+**Exception Protocol:**
+Violations of governance constraints may be acceptable if properly documented, but formal exception protocol is not yet defined. Current practice: document as TOREVIEW comment for manual review.
+
+**Mitigation (interim):**
+
+- Use TOREVIEW/TODO/FIXME comments to flag architectural tensions
+- Manual code review for semantic violations
+- Post-hoc analysis tools for cross-file boundary detection
+
+**Review by:** 2026-01-29
+
+### 0.6 Definitions
+
+- Layer - architectural stratification within a domain (validators, parser, constants as layers within engine)
+- Domain - application-level responsibility areas (CLI handles user interface, Engine handles orchestration, Services handles I/O)
+- Constraint - restriction on what code can do (import boundaries, operation permissions)
+
+(To be completed)
+ 
+### 0.7 Default Behavior
 
 When in doubt for any governance scenario not covered here, HARD FAIL for maximum smoke detection.
 When in conflict with later sections regarding process behavior, HARD FAIL for maximum smoke detection.
@@ -126,13 +163,16 @@ If there’s still ambiguity, fail-closed in smoke-detector mode (first hit) rat
 
 ## §2. Canonical file layout & naming
 
+### 2.1 Current Canonical Implementation
+
 - Folders:
   - `docs/adrs/`: home directory for Theseus ADRs
 - ID: `ADR-XXXX` (zero-padded; monotonic; never reuse)  
 - Filename: `ADR-XXXX-short-kebab-title.md`  
-- Commit prefix: `[ADR-XXXX] <title>`
 
-### Future Enhancements
+### 2.2 Future Canonical Considerations
+
+- Commit prefix: `[ADR-XXXX] <title>`
 - Consider ID range allocation for systematic class organization
 - Evaluate folder structure for governance vs component ADR separation
 - Review filename conventions for improved discoverability
@@ -141,28 +181,28 @@ If there’s still ambiguity, fail-closed in smoke-detector mode (first hit) rat
 
 ## §3. Required metadata (YAML front-matter)
 
-The format for these values MUST only be defined in section 8
+The format for these values MUST only be defined in §8
 
 ```yaml
 id: ADR-0123
 title: Short imperative title
 status: Proposed | Accepted | Deprecated | Superseded
-class: owner | delta | strategy | style-guide | template | governance
+class: owner                   # (see §7 for list of classes)
 owners: [Project Maintainer]
 owners_ptr: ADR-0120           # Non-Owner ADRs must reference ownership
+governed_by: null              # or ADR-<id>@<pin> (see §8)
+scope: null                    # see §0.2: required for governance
+tags: [topic]
 extends: null                  # or ADR-<id>@<pin> (see §8)
 supersedes: null               # or ADR-<id>@<pin> (see §8)
 superseded_by: null            # or ADR-<id>@<pin> (see §8)
-governed_by: null              # or ADR-<id>@<pin> (see §8)
-informs: null                  # or ADR-<id>@<pin> (see §8)(strategy → owner)
-informed_by: null              # or ADR-<id>@<pin> (see §8)
-scope: null                    # cli|engine|services|other (required for governance)
-date: 2025-09-03
+informs: null                  # or ADR-<id>@<pin> (see §8) (strategy informs owner | governance)
+informed_by: null              # or ADR-<id>@<pin> (see §8) (owner | governance informed by strategy)
+date: 2025-09-03               # date stores most relevant date an action was performed (i.e., created, updated, reviewed)
 review_by: 2026-03-03
 applies_to: []                 # narrow for deltas
-tags: [topic]
 change_history: []
-template_of: null              # owner|delta|strategy|style-guide|governance (templates)
+template_of: null              # see §7 for list of classes for templating
 ```
 
 ### **Class-Specific Field Requirements**
@@ -173,7 +213,7 @@ template_of: null              # owner|delta|strategy|style-guide|governance (te
 - **OPTIONAL**: `informed_by` (list; if referenced by strategies)
 
 **Governance ADRs**:
-- **REQUIRED**: `scope` (cli|engine|services|other)
+- **REQUIRED**: `scope` (see §0.2)
 - **FORBIDDEN**: `extends`, `owners_ptr`, `governed_by`, `informs`
 
 **Strategy ADRs**:
@@ -192,8 +232,7 @@ template_of: null              # owner|delta|strategy|style-guide|governance (te
 
 ### **Relationship Field Validation**
 
-**Pin Format**: All relationship fields using `@pin` must follow format:
-- `ADR-####@YYYY-MM-DD` or `ADR-####@<7-40 lowercase hex>`
+**Pin Format**: All relationship fields using `@pin` must follow format shown in §8
 
 **Reciprocal Relationships**:
 - `supersedes` ↔ `superseded_by` (bi-directional, manually maintained, linter enforced reciprocity)
@@ -207,7 +246,7 @@ template_of: null              # owner|delta|strategy|style-guide|governance (te
 
 When `class: template`:
 
-- `template_of` is REQUIRED and must be one of: `owner|delta|governance|strategy|style-guide`.
+- `template_of` is REQUIRED and must be one of classes shown in §7 (excluding the `template`class)
 - `status` MUST be `Proposed`.
 - `extends` and `supersedes` MUST be `null`.
 - Filenames SHOULD include `-template-` for discoverability.
@@ -305,7 +344,7 @@ This structure maintains universal LLM navigation while allowing semantic differ
 
 ### 4.4 Reminders
 
-- Some classes restrict which keys may appear—see §7 (class rules).
+- Some classes restrict which keys may appear. See §7 for class rules.
 
 ---
 
@@ -403,7 +442,7 @@ constraint_rules:
 #### 5.3.4 Template ADRs
 
 - **RFC-2119 keywords allowed only in fenced code examples**.
-- Use `<angle-bracket>` placeholders for variable content.
+- Use `<angle-bracket>`, `[square-bracket]`, or `{curly-bracket}` placeholders for variable content.
 
 ### 5.4 Default Behavior
 
@@ -482,7 +521,7 @@ TODO: Once the Linter Rules are reviewed, updated, and consolidated, delete any 
 
 ### 7.2 Delta ADR
 
-- **Must**: Use `extends@<pin>` (pin per §8) to reference base ADR; include override blocks (`overrides`, `not_applicable`, `adds`, `ptr`).
+- **Must**: Use `extends@<pin>` (format shown in §8) to reference base ADR; include override blocks (`overrides`, `not_applicable`, `adds`, `ptr`).
 - **Must**: Use `owners_ptr` (inherits ownership from base).
 - **Must not**: Define `owners` or `scope`.
 - **Inheritance**: Inherits `governed_by` from base unless scope is narrowed (then must declare).
@@ -510,7 +549,7 @@ TODO: Once the Linter Rules are reviewed, updated, and consolidated, delete any 
 
 ### 7.5 Template ADR
 
-- **Must**: Include `template_of` (owner|delta|strategy|style-guide|governance); use `status: Proposed`.
+- **Must**: Include `template_of`  (see §7 for list of classes); use `status: Proposed`.
 - **Must**: Mirror section keys and order of `template_of` class.
 - **Must not**: Use `extends`, `supersedes`, `governed_by`, `scope`; define `owners`.
 - **May**: Use `<angle-bracket>` placeholders; RFC-2119 keywords only in fenced code examples.
@@ -519,7 +558,7 @@ TODO: Once the Linter Rules are reviewed, updated, and consolidated, delete any 
 
 ### 7.6 Governance ADR
 
-- **Must**: Include `scope` (cli|engine|services|other); define authority boundaries within declared scope.
+- **Must**: Include `scope`; define authority boundaries within declared scope; see §0.2 for list of scopes.
 - **Must**: Use machine-readable constraint blocks as sole binding authority source (see §5 for syntax specification).
 - **Must not**: Use `extends`, `owners_ptr`, `governed_by`, `informs`; use RFC-2119 in prose sections (violations are **ADR-GOVERN-407 (E)**).
 - **May**: Use `informed_by` (receives strategic direction).
@@ -577,14 +616,14 @@ All relationship fields using `@pin` must follow this format:
 
 ### What belongs where
 
-| Category | Examples | Codes (default severity) |
+| Category | Examples | 
 |---|---|---|
-| **PROC (style/presentation; proceed + log)** | Title style (missing initial capital, trailing period); template filename missing `-template-`; non-normative prose drift; optional metadata using `null` vs `""` where both are allowed | `ADR-PROC-241` (**I**) |
-| **PROC escalation (pattern neglect)** | ≥3 PROC-241 events for the same file/code in 30 days (tracked in ADR-LOG) | `ADR-PROC-242` (**E**) |
-| **PROC shape pattern matching** | New shape/enum/event names that exact-match or prefix-match entries in owner ADR | `ADR-PROC-242` (**I**) |
-| **PROC telemetry health** | Missing or stale run logs in ADR-LOG (older than 7 days) | `ADR-PROC-250` (**E**) |
-| **SCHEMA (structure/governance; block)** | Canonical key markers missing/out of order; class/status/ID/date format violations; owners redefined where forbidden; invalid/missing `extends`; broken supersede reciprocity | `ADR-SCHEMA-001/002/003/004/005/012/021` (all **E**); `ADR-LINK-200/201/203/204/221` (all **E**) |
-| (PROPOSED) **GOV (governance validation; block)** | Constraint syntax violations; scope conflicts; authority mapping errors; governance-specific validation | `ADR-GOV-###` codes (all **E**) |
+| **PROC (style/presentation; proceed + log)** | Title style (missing initial capital, trailing period); template filename missing `-template-`; non-normative prose drift; optional metadata using `null` vs `""` where both are allowed |
+| **PROC escalation (pattern neglect)** | ≥3 PROC-241 events for the same file/code in 30 days (tracked in ADR-LOG) |
+| **PROC shape pattern matching** | New shape/enum/event names that exact-match or prefix-match entries in owner ADR |
+| **PROC telemetry health** | Missing or stale run logs in ADR-LOG (older than 7 days) |
+| **SCHEMA (structure/governance; block)** | Canonical key markers missing/out of order; class/status/ID/date format violations; owners redefined where forbidden; invalid/missing `extends`; broken supersede reciprocity |
+| (PROPOSED) **GOV (governance validation; block)** | Constraint syntax violations; scope conflicts; authority mapping errors; governance-specific validation |
 
 > **Note:** Date format errors are **SCHEMA** (`ADR-SCHEMA-005`), not PROC.
 
@@ -619,6 +658,8 @@ If any fail, evaluate under standard **SCHEMA/LINK/NORM** rules.
 
 
 ### Implementation notes (linter)
+
+**Proposal**
 
 - Provide a CLI toggle to escalate: `--proc-250-as-error`.  
 - Record `{code,file,violation_type,date}` events in ADR-LOG`; compute rolling 30-day counts for PROC-242.  
@@ -730,8 +771,8 @@ Four primary hooks for linter implementation:
 
 > When present, it must mirror front-matter for: id, class, status, extends, ownership (owners[] or owners_ptr), governed_by, and scope.
 
-**Info**: `ADR-META-150` missing (optional).  
-**Warn**: `ADR-META-151` tail disagrees with front-matter for: `id`, `class`, `status`, `extends`, ownership (`owners[]` or `owners_ptr`), `governed_by`, `scope`.
+**Info**: `ADR-META-200` missing (optional).  
+**Warn**: `ADR-META-201` tail disagrees with front-matter for: `id`, `class`, `status`, `extends`, ownership (`owners[]` or `owners_ptr`), `governed_by`, `scope`.
 
 ---
 
@@ -747,7 +788,7 @@ Override via: `--fail-on W` to change threshold.
 
 ## §14 Linter Rules Reference
 
-**Version**: 0.1.6
+**Version**: 0.1.0
 **Severity legend**: E=block merge · W=proceed+annotate · I=log only
 
 ### Code Bands
@@ -799,13 +840,79 @@ Notes to LLMs: this section is dated and inaccurate compared to the `### Rules (
 
 ### Rules (abbrev.)
 
+#### ADR-SCHEMA
+
+Description: Front-matter and class structure constraints that don’t require link graph or prose analysis (e.g., required keys, date formats, class-specific allows/forbids).
+Review By: 28 January 2025
+
+- **ADR-SCHEMA-001 (E)**: Missing required metadata (`id,title,status,class,date,review_by`) or bad `id`.
+- **ADR-SCHEMA-002 (E)**: Invalid class (see §7 for list of classes)
+- **ADR-SCHEMA-003 (E)**: Canonical section keys missing or out of order (e.g., markdown headers, keys are missing and/or out of order).
+- **ADR-SCHEMA-004 (E)**: Invalid status transition or illegal class change.
+- **ADR-SCHEMA-005 (E)**: Invalid date format (must be `YYYY-MM-DD`) for `date` or `review_by`.
+- **ADR-SCHEMA-006 (E)**: Governance ADR missing required `scope` field
+- **ADR-SCHEMA-007 (E)**: Owner ADR missing required `governed_by` field  
+- **ADR-SCHEMA-008 (E)**: Invalid `scope` value
+- **ADR-SCHEMA-009 (E)**: Class-forbidden field present (e.g., governance with `extends`)
+- **ADR-SCHEMA-010 (E)**: Governance ADR missing required `constraint_rules` section
+- **ADR-SCHEMA-011 (E)**: Owner ADR must not use `extends`.
+- **ADR-SCHEMA-012 (E)**: Non-Owner ADRs must never use `owner`.
+- **ADR-SCHEMA-013 (E)**: Non-Owner ADRs must identify ADR ownership
+- **ADR-SCHEMA-014 (E)**: Invalid relationship field combination for ADR class
+- **ADR-SCHEMA-015 (E)**: ADR metadata violates its declared governance constraints (basic stub validator)
+- **ADR-SCHEMA-016 (E)**: content formatting matches documented format. (i.e., production version of ADR-TEMPLATE-606)
+
+#### ADR-NORM
+
+TODO: Relabel code in registry.py, policy.py, validators/norm/\*.py, tests/adr_linter/validators/norm/\*.py  (as of 28 September 2025)
+
+Description: Language-level misuse (RFC-2119 outside normative sections; vague terms in normative text) for **non-governance** classes; governance prose is handled by ADR-GOVERN.
+
+- **ADR-NORM-101 (E)**: RFC-2119 keyword outside normative sections (**excludes** governance prose; see Class interactions).
+- **ADR-NORM-102 (W)**: Vague term in normative section.
+
+#### ADR-META
+
+Description: Meta data contained within ADRs about that ADR (single file scope)
+Review By: 28 January 2025
+
+- **ADR-META-200 (I)**: `llm_tail` missing (optional).
+- **ADR-META-201 (W)**: `llm_tail` disagrees with front-matter on required keys.
+- **ADR-META-202 (W)**: `llm_tail` has malformed JSON syntax.
+
+#### ADR-LINK
+
+Description: Cross-ADR graph properties (pins, reciprocity, cycles).
+Review By: 28 January 2025
+
+- **ADR-LINK-300 (E)**: Handle all bi-directional keys missing the reciprocal (e.g., `supersedes` <-> `superseded_by`, `informs` <-> `informed_by`)
+- **ADR-LINK-301 (E)**: Handle all uni-directional keys (e.g., `extends`, `governed_by`)
+- **ADR-LINK-202 (W)**: Pointer to section key missing in base.
+- **ADR-LINK-303 (E)**: Invalid pin format for any relationship field (e.g., `extends`, `supersedes`; see §8 for details).
+- **ADR-LINK-304 (E)**: Pointer to normative section key missing in base.
+- **ADR-LINK-305 (E)**: Missing references to owner ADRs.
+- **ADR-LINK-320 (I)**: Supersede closure: multiple descendants (informational).
+- **ADR-LINK-321 (E)**: Supersede closure: cycle detected.
+- **ADR-LINK-322 (W)**: Supersede closure: fork without rationale in `change_history`.
+
+#### ADR-PROC
+
+TODO: Does ADR-PROC-\* validation rules exist?  What about the pytests?  (as of 28 September 2025)
+
+Description: Process/telemetry/auto-resolve.
+
+- **ADR-PROC-241 (to be renumbered: 401) (I)**: Minor style deviation; proceeded and logged.
+- **ADR-PROC-242 (to be renumbered: 402) (E)**: Repeated minor deviation (≥3 in 30d).
+- **ADR-PROC-243 (to be renumbered: 403) (I)**: Possible duplication of existing pattern (exact/prefix name match without reference).
+- **ADR-PROC-250 (to be renumbered: 404) (E)**: Linter run logs stale/missing in ADR linter logs directory.
+
 #### ADR-DELTA
 
 TODO: Relabel code in registry.py, policy.py, validators/delta/\*.py, tests/adr_linter/validators/delta/\*.py (as of 28 September 2025)
 
 Description: Inheritance and override semantics for class: `delta` (targets exist, not_applicable/overrides/adds sanity).
 
-- **ADR-DELTA-500 (E)**: Override targets non-existent key in base.
+- **ADR-DELTA-300 (to be renumbered: 501) (E)**: Override targets non-existent key in base.
 
 TOADD:
 
@@ -826,104 +933,12 @@ TOADD:
 - Delta attempts to change governance binding without proper scope narrowing
 - Delta tries to override relationship fields that shouldn't be modified
 
-#### ADR-GOVERN
-
-##### Proposed 
-
-TOADD:  (as of 28 September 2025)
-
-  - **ADR-GOVERN-401 (E)**: Missing required `scope` field in governance ADR
-  - **ADR-GOVERN-402 (E)**: Invalid `scope` value (must be cli|engine|services|other)  
-  - **ADR-GOVERN-403 (E)**: Missing constraint block in governance `constraint_rules` section
-  - **ADR-GOVERN-404 (E)**: Invalid constraint YAML syntax in constraint block
-  - **ADR-GOVERN-405 (E)**: Constraint block REQUIRED/FORBIDDEN topic overlap
-  - **ADR-GOVERN-406 (E)**: Invalid owner reference in OWNED_BY constraint (must match scope domains)
-  - **ADR-GOVERN-407 (E)**: RFC-2119 keyword in governance prose sections (moved from NORM-103)
-  - **ADR-GOVERN-408 (E)**: Governance ADR violates linear supersession within scope
-  - **ADR-GOVERN-409 (E)**: Constraint block syntax error (malformed YAML structure)
-  - **ADR-GOVERN-410 (E)**: Constraint OWNED_BY references invalid scope domain value
-  - **ADR-GOVERN-411 (E)**: Governance section contains binding language outside constraint blocks
-  - **ADR-GOVERN-412 (E)**: Required governance section empty or missing content
-
-**Validation coverage**:
-
-- Required fields (401, 402)
-- Constraint syntax and logic (403, 404, 405, 406) 
-- Class-specific rules (407 RFC-2119 prohibition)
-- Authority model compliance (408 linear supersession)
-
-#### ADR-LINK
-
-Description: Cross-ADR graph properties (pins, reciprocity, cycles).
-Review By: 28 January 2025
-
-- **ADR-LINK-300 (E)**: Handle all bi-directional keys missing the reciprocal (e.g., `supersedes` <-> `superseded_by`, `informs` <-> `informed_by`)
-- **ADR-LINK-301 (E)**: Handle all uni-directional keys (e.g., `extends`, `governed_by`)
-- **ADR-LINK-202 (W)**: Pointer to section key missing in base.
-- **ADR-LINK-303 (E)**: Invalid pin format for any relationship field (e.g., `extends`, `supersedes`; see Section 8 for details).
-- **ADR-LINK-304 (E)**: Pointer to normative section key missing in base.
-- **ADR-LINK-305 (E)**: Missing references to owner ADRs.
-- **ADR-LINK-320 (I)**: Supersede closure: multiple descendants (informational).
-- **ADR-LINK-321 (E)**: Supersede closure: cycle detected.
-- **ADR-LINK-322 (W)**: Supersede closure: fork without rationale in `change_history`.
-
-#### ADR-META
-
-Description: Meta data contained within ADRs about that ADR (single file scope)
-Review By: 28 January 2025
-
-- **ADR-META-200 (I)**: `llm_tail` missing (optional).
-- **ADR-META-201 (W)**: `llm_tail` disagrees with front-matter on required keys.
-- **ADR-META-202 (W)**: `llm_tail` has malformed JSON syntax.
-
-#### ADR-NORM
-
-TODO: Relabel code in registry.py, policy.py, validators/norm/\*.py, tests/adr_linter/validators/norm/\*.py  (as of 28 September 2025)
-
-Description: Language-level misuse (RFC-2119 outside normative sections; vague terms in normative text) for **non-governance** classes; governance prose is handled by ADR-GOVERN.
-
-- **ADR-NORM-101 (E)**: RFC-2119 keyword outside normative sections (**excludes** governance prose; see Class interactions).
-- **ADR-NORM-102 (W)**: Vague term in normative section.
-
-#### ADR-PROC
-
-TODO: Does ADR-PROC-\* validation rules exist?  What about the pytests?  (as of 28 September 2025)
-
-Description: Process/telemetry/auto-resolve.
-
-- **ADR-PROC-241 (I)**: Minor style deviation; proceeded and logged.
-- **ADR-PROC-242 (E)**: Repeated minor deviation (≥3 in 30d).
-- **ADR-PROC-243 (I)**: Possible duplication of existing pattern (exact/prefix name match without reference).
-- **ADR-PROC-250 (E)**: Linter run logs stale/missing in ADR linter logs directory.
-
-#### ADR-SCHEMA
-
-Description: Front-matter and class structure constraints that don’t require link graph or prose analysis (e.g., required keys, date formats, class-specific allows/forbids).
-Review By: 28 January 2025
-
-- **ADR-SCHEMA-001 (E)**: Missing required metadata (`id,title,status,class,date,review_by`) or bad `id`.
-- **ADR-SCHEMA-002 (E)**: Invalid class (`owner|delta|governance|strategy|style-guide|template`).
-- **ADR-SCHEMA-003 (E)**: Canonical section keys missing or out of order (e.g., markdown headers, keys are missing and/or out of order).
-- **ADR-SCHEMA-004 (E)**: Invalid status transition or illegal class change.
-- **ADR-SCHEMA-005 (E)**: Invalid date format (must be `YYYY-MM-DD`) for `date` or `review_by`.
-- **ADR-SCHEMA-006 (E)**: Governance ADR missing required `scope` field
-- **ADR-SCHEMA-007 (E)**: Owner ADR missing required `governed_by` field  
-- **ADR-SCHEMA-008 (E)**: Invalid `scope` value
-- **ADR-SCHEMA-009 (E)**: Class-forbidden field present (e.g., governance with `extends`)
-- **ADR-SCHEMA-010 (E)**: Governance ADR missing required `constraint_rules` section
-- **ADR-SCHEMA-011 (E)**: Owner ADR must not use `extends`.
-- **ADR-SCHEMA-012 (E)**: Non-Owner ADRs must never use `owner`.
-- **ADR-SCHEMA-013 (E)**: Non-Owner ADRs must identify ADR ownership
-- **ADR-SCHEMA-014 (E)**: Invalid relationship field combination for ADR class
-- **ADR-SCHEMA-015 (E)**: ADR metadata violates its declared governance constraints (basic stub validator)
-- **ADR-SCHEMA-016 (E)**: content formatting matches documented format. (i.e., production version of ADR-TEMPLATE-606)
-
 #### ADR-TEMPLATE
 
 Description: Template structure and constraints that provide rules which can be validated via regex; not validating semantic content or judgment.
 Review By: 28 January 2025
 
-- **ADR-TEMPLATE-600 (E)**: `template_of` missing or invalid (`owner|delta|governance|strategy|style-guide|template`).
+- **ADR-TEMPLATE-600 (E)**: `template_of` missing or invalid class  (see §7 for list of classes).
 - **ADR-TEMPLATE-601 (W)**: `status` not `Proposed` in a template ADR.
 - **ADR-TEMPLATE-602 (W)**: filename does not include `-template-` (discoverability).
 - **ADR-TEMPLATE-603 (E)**: template participates in link graph (`extends`, `supersedes` non-null).
@@ -936,7 +951,33 @@ Review By: 28 January 2025
 
 ##### Notes
 
-> The expectation for TEMPLATE-605 should serve as a soft wrapper around SCHEMA-003 so reviewers can see “it failed because it’s a template not mirroring the base,” while SCHEMA-003 remains the hard rule that enforces order.
+> The expectation for TEMPLATE-605: a validator to separate issues related to “the ADR's linting failed because the template is not mirroring the base ADR's structure” versus the ADR's sections are out of order.
+
+#### ADR-GOVERN
+
+##### Proposed 
+
+TOADD:  (as of 28 September 2025)
+
+  - **ADR-GOVERN-701 (E)**: Missing required `scope` field in governance ADR
+  - **ADR-GOVERN-702 (E)**: Invalid `scope` value  (see §0.2 for list of scopes)
+  - **ADR-GOVERN-703 (E)**: Missing constraint block in governance `constraint_rules` section
+  - **ADR-GOVERN-704 (E)**: Invalid constraint YAML syntax in constraint block
+  - **ADR-GOVERN-705 (E)**: Constraint block REQUIRED/FORBIDDEN topic overlap
+  - **ADR-GOVERN-706 (E)**: Invalid owner reference in OWNED_BY constraint (must match scope domains)
+  - **ADR-GOVERN-707 (E)**: RFC-2119 keyword in governance prose sections (moved from NORM-103)
+  - **ADR-GOVERN-708 (E)**: Governance ADR violates linear supersession within scope
+  - **ADR-GOVERN-709 (E)**: Constraint block syntax error (malformed YAML structure)
+  - **ADR-GOVERN-710 (E)**: Constraint OWNED_BY references invalid scope domain value
+  - **ADR-GOVERN-711 (E)**: Governance section contains binding language outside constraint blocks
+  - **ADR-GOVERN-712 (E)**: Required governance section empty or missing content
+
+**Validation coverage**:
+
+- Required fields (701, 702)
+- Constraint syntax and logic (703, 704, 705, 706) 
+- Class-specific rules (707 RFC-2119 prohibition)
+- Authority model compliance (708 linear supersession)
 
 ### STRICT-PROCEED (Auto-resolve) Policy
 
@@ -991,7 +1032,6 @@ Review By: 28 January 2025
 ### Typical Fixes
 
 - **ADR-SCHEMA-003**: Add missing `<!-- key: … -->` markers in canonical order.
-- **ADR-SCHEMA-021**: Remove `## Rollout & Backout` from strategy (or convert doc class).
 - **ADR-NORM-101**: Move RFC-2119 phrasing into a normative section or de-normativize the wording.
 - **ADR-LINK-203**: Pin `extends` as `ADR-0001@2025-03-14` or `ADR-0001@deadbeef`.
 
@@ -1003,7 +1043,7 @@ Review By: 28 January 2025
 
 ### Implementation Notes
 
-- Use existing `verify_adr_architecture.py` framework
+- Use existing `verify_adr_architecture.py` framework (BLOCKED: validator refactoring needs to be completed before refactoring this tool)
 - Leverage `anchor_snapshot.py` comment detection where possible
 
 ### ADR Improvements (in order)
